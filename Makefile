@@ -4,19 +4,29 @@ CFLAGS ?= -O2 -std=c99 -Wall -Wextra
 SRC_DIR ?= src
 BIN_DIR ?= bin
 ARTIFACT_DIR ?= artifacts
+TRIE_SAMPLE_DIR ?= $(ARTIFACT_DIR)/xX/p0/0/0
 
 PROGRAM ?= TICK_A TICK_B REFLECT ROTATE TANGENT
 MODE ?= ascii
-OUT ?= $(ARTIFACT_DIR)/aztec.txt
+OUT ?= $(TRIE_SAMPLE_DIR)/aztec_legacy.txt
+RULES_OUT ?= $(TRIE_SAMPLE_DIR)/rules_run.ndjson
 
 ASM := $(SRC_DIR)/ttc_asm.awk
 VM := $(SRC_DIR)/ttc_vm.awk
 ENC_SRC := $(SRC_DIR)/ttc_fano_aztec.c
 ENC_BIN := $(BIN_DIR)/ttc_fano_aztec
+CAN_ENC_SRC := $(SRC_DIR)/ttc_encode.c
+CAN_DEC_SRC := $(SRC_DIR)/ttc_decode.c
+WIT_SRC := $(SRC_DIR)/ttc_witness.c
+CAN_RUNTIME_SRC := $(SRC_DIR)/ttc_canonical_runtime.c
+CAN_ENC_BIN := $(BIN_DIR)/ttc_encode
+CAN_DEC_BIN := $(BIN_DIR)/ttc_decode
+WIT_BIN := $(BIN_DIR)/ttc_witness
+CAN_RUNTIME_BIN := $(BIN_DIR)/ttc_canonical_runtime
 
-.PHONY: build pipe clean
+.PHONY: build pipe clean codec codec-test canonical canonical-smoke busybox-smoke busybox-uri-smoke factoradic-smoke factoradic-fifo-demo braille-mnemonic adapters-smoke adapters-check rules.extract rules.validate rules.digest rules.run rules.check
 
-build: $(ENC_BIN)
+build: $(ENC_BIN) $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) $(CAN_RUNTIME_BIN)
 
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
@@ -27,7 +37,62 @@ $(ARTIFACT_DIR):
 $(ENC_BIN): $(ENC_SRC) | $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $<
 
+$(CAN_ENC_BIN): $(CAN_ENC_SRC) | $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(CAN_DEC_BIN): $(CAN_DEC_SRC) | $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(WIT_BIN): $(WIT_SRC) | $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(CAN_RUNTIME_BIN): $(CAN_RUNTIME_SRC) | $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $<
+
+codec: $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) | $(ARTIFACT_DIR)
+	mkdir -p $(TRIE_SAMPLE_DIR)
+	printf 'TICK_A TICK_B REFLECT ROTATE TANGENT\n' > $(TRIE_SAMPLE_DIR)/codec_sample.txt
+	$(CAN_ENC_BIN) -m slots < $(TRIE_SAMPLE_DIR)/codec_sample.txt > $(TRIE_SAMPLE_DIR)/codec_slots.txt
+	$(CAN_DEC_BIN) < $(TRIE_SAMPLE_DIR)/codec_slots.txt > $(TRIE_SAMPLE_DIR)/codec_roundtrip.bin
+	$(WIT_BIN) -m ascii < $(TRIE_SAMPLE_DIR)/codec_slots.txt > $(TRIE_SAMPLE_DIR)/codec_witness.txt
+	@echo "wrote codec artifacts in $(TRIE_SAMPLE_DIR)"
+
+codec-test: codec
+	cmp $(TRIE_SAMPLE_DIR)/codec_sample.txt $(TRIE_SAMPLE_DIR)/codec_roundtrip.bin
+	@echo "codec roundtrip ok"
+
+canonical: $(CAN_RUNTIME_BIN)
+
+canonical-smoke: $(CAN_RUNTIME_BIN) | $(ARTIFACT_DIR)
+	./scripts/smoke_canonical_runtime.sh
+
+busybox-smoke: | $(ARTIFACT_DIR)
+	printf '120 88 95 1 2 3 255 0 42\n' | ./scripts/ttc_busybox.sh > $(TRIE_SAMPLE_DIR)/busybox_trace.txt
+	@echo "wrote $(TRIE_SAMPLE_DIR)/busybox_trace.txt"
+
+busybox-uri-smoke: | $(ARTIFACT_DIR)
+	printf '120 88 95 1 2 3 255 0 42\n' | ./scripts/ttc_busybox.sh --no-write > $(TRIE_SAMPLE_DIR)/busybox_trace_uri.txt
+	gawk -f ./scripts/ttc_uri.awk < $(TRIE_SAMPLE_DIR)/busybox_trace_uri.txt > $(TRIE_SAMPLE_DIR)/busybox_uri.tsv
+	gawk -v MODE=rdf -f ./scripts/ttc_uri.awk < $(TRIE_SAMPLE_DIR)/busybox_trace_uri.txt > $(TRIE_SAMPLE_DIR)/busybox_uri.ttl
+	@echo "wrote $(TRIE_SAMPLE_DIR)/busybox_uri.tsv and $(TRIE_SAMPLE_DIR)/busybox_uri.ttl"
+
+factoradic-smoke: | $(ARTIFACT_DIR)
+	printf '120 88 95 1 2 3 255 0 42\n' | ./scripts/materialize_factoradic_5040.sh
+
+factoradic-fifo-demo: | $(ARTIFACT_DIR)
+	./scripts/factoradic_fifo_demo.sh
+
+braille-mnemonic: $(CAN_RUNTIME_BIN) | $(ARTIFACT_DIR)
+	./scripts/build_braille_mnemonic_sample.sh
+
+adapters-smoke: | $(ARTIFACT_DIR)
+	printf '120 88 95 1 2 3 255 0 42\n' | ./scripts/export_adapters.sh
+
+adapters-check: adapters-smoke
+	./scripts/validate_adapters.sh
+
 pipe: $(ENC_BIN) | $(ARTIFACT_DIR)
+	mkdir -p $(dir $(OUT))
 	printf '%s\n' "$(PROGRAM)" \
 	| gawk -f $(ASM) -v MODE=hex \
 	| gawk -b -f $(VM) -v TRACE_HEX_STDIN=1 -v OUT=modem_raw \
@@ -36,4 +101,23 @@ pipe: $(ENC_BIN) | $(ARTIFACT_DIR)
 
 clean:
 	rm -f $(ENC_BIN)
-	rm -f $(ARTIFACT_DIR)/aztec.txt $(ARTIFACT_DIR)/aztec.json $(ARTIFACT_DIR)/aztec.pgm
+	rm -f $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) $(CAN_RUNTIME_BIN)
+	rm -f $(ARTIFACT_DIR)/*.txt $(ARTIFACT_DIR)/*.json $(ARTIFACT_DIR)/*.pgm $(ARTIFACT_DIR)/*.ndjson $(ARTIFACT_DIR)/*.bin
+	find $(ARTIFACT_DIR)/xx $(ARTIFACT_DIR)/xX $(ARTIFACT_DIR)/Xx $(ARTIFACT_DIR)/XX -type f \( -name "trace.log" -o -name "state.bin" -o -name "board.txt" -o -name "aztec.txt" -o -name "meta.json" \) 2>/dev/null | xargs -r rm -f
+
+rules.extract:
+	./scripts/extract_rules.sh
+
+rules.validate:
+	./scripts/validate_rules.sh
+
+rules.digest:
+	./scripts/rules_digest.sh
+
+rules.run:
+	mkdir -p $(dir $(RULES_OUT))
+	./scripts/rule_runtime.sh > $(RULES_OUT)
+	@echo "wrote $(RULES_OUT)"
+
+rules.check: rules.extract rules.validate rules.digest rules.run
+	@echo "rules check passed"

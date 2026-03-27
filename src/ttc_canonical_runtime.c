@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #define GS 0x1Du
 #define MASTER_RESET 5040u
@@ -33,6 +34,13 @@ static const int AZTEC_TABLE[60][2] = {
 };
 
 typedef struct {
+    char block_id[64];
+    uint32_t start;
+    uint32_t end;
+    int is_unicode;
+} BlockRule;
+
+typedef struct {
     uint32_t tick;
     uint8_t input;
     uint8_t state;
@@ -43,16 +51,148 @@ typedef struct {
     uint8_t boundary;
     uint8_t winner;
     uint16_t braille;
+    char input_block[64];
+    char braille_block[64];
+    char braille_scale[16];
     uint8_t board[BOARD_SLOTS];
 } Snapshot;
 
 typedef enum { OUT_BOARD = 0, OUT_AZTEC = 1, OUT_JSON = 2 } OutputMode;
 
+static BlockRule g_rules[128];
+static size_t g_rule_count = 0;
+
+static int parse_u32_range(const char *s, uint32_t *out, int *is_unicode) {
+    unsigned int v = 0;
+    if (sscanf(s, "U+%x", &v) == 1) {
+        *out = v;
+        *is_unicode = 1;
+        return 1;
+    }
+    if (sscanf(s, "0x%x", &v) == 1) {
+        *out = v;
+        *is_unicode = 0;
+        return 1;
+    }
+    return 0;
+}
+
+static void install_default_block_rules(void) {
+    g_rule_count = 0;
+    strcpy(g_rules[g_rule_count].block_id, "control_plane_header");
+    g_rules[g_rule_count].start = 0x1C; g_rules[g_rule_count].end = 0x1F; g_rules[g_rule_count].is_unicode = 0; g_rule_count++;
+    strcpy(g_rules[g_rule_count].block_id, "braille_patterns");
+    g_rules[g_rule_count].start = 0x2800; g_rules[g_rule_count].end = 0x28FF; g_rules[g_rule_count].is_unicode = 1; g_rule_count++;
+    strcpy(g_rules[g_rule_count].block_id, "braille_a_6dot");
+    g_rules[g_rule_count].start = 0x2800; g_rules[g_rule_count].end = 0x283F; g_rules[g_rule_count].is_unicode = 1; g_rule_count++;
+    strcpy(g_rules[g_rule_count].block_id, "braille_b_extended");
+    g_rules[g_rule_count].start = 0x2840; g_rules[g_rule_count].end = 0x28FF; g_rules[g_rule_count].is_unicode = 1; g_rule_count++;
+}
+
+static void load_block_registry(const char *path) {
+    FILE *fp = fopen(path, "r");
+    char line[1024];
+    if (!fp) {
+        install_default_block_rules();
+        fprintf(stderr, "warning: could not open %s, using built-in block defaults\n", path);
+        return;
+    }
+
+    g_rule_count = 0;
+    while (fgets(line, sizeof(line), fp)) {
+        char *cols[9];
+        char *tok;
+        int c = 0;
+        uint32_t start = 0, end = 0;
+        int us = 0, ue = 0;
+
+        if (line[0] == '\0' || line[0] == '\n') continue;
+        if (strncmp(line, "block_id\t", 9) == 0) continue;
+
+        tok = strtok(line, "\t");
+        while (tok && c < 9) {
+            cols[c++] = tok;
+            tok = strtok(NULL, "\t");
+        }
+        if (c < 4) continue;
+        if (!parse_u32_range(cols[2], &start, &us)) continue;
+        if (!parse_u32_range(cols[3], &end, &ue)) continue;
+        if (us != ue) continue;
+        if (g_rule_count >= 128) break;
+
+        snprintf(g_rules[g_rule_count].block_id, sizeof(g_rules[g_rule_count].block_id), "%s", cols[0]);
+        g_rules[g_rule_count].start = start;
+        g_rules[g_rule_count].end = end;
+        g_rules[g_rule_count].is_unicode = us;
+        g_rule_count++;
+    }
+    fclose(fp);
+
+    if (g_rule_count == 0) {
+        install_default_block_rules();
+        fprintf(stderr, "warning: empty/unusable block registry at %s, using built-in defaults\n", path);
+    }
+}
+
+static int file_exists(const char *path) {
+    struct stat st;
+    return stat(path, &st) == 0;
+}
+
+static void load_block_registry_auto(const char *path) {
+    char p1[512];
+    char p2[512];
+    struct stat st;
+
+    if (stat(path, &st) != 0) {
+        load_block_registry(path);
+        return;
+    }
+
+    if (S_ISDIR(st.st_mode)) {
+        snprintf(p1, sizeof(p1), "%s/registry/blocks.normalized.tsv", path);
+        snprintf(p2, sizeof(p2), "%s/blocks.normalized.tsv", path);
+        if (file_exists(p1)) {
+            load_block_registry(p1);
+            return;
+        }
+        if (file_exists(p2)) {
+            load_block_registry(p2);
+            return;
+        }
+        install_default_block_rules();
+        fprintf(stderr, "warning: no canonical blocks.normalized.tsv under %s, using built-in defaults\n", path);
+        return;
+    }
+
+    /* regular file or FIFO path */
+    load_block_registry(path);
+}
+
+static const BlockRule *lookup_block(uint32_t value, int is_unicode) {
+    size_t i;
+    const BlockRule *best = NULL;
+    uint32_t best_span = 0xFFFFFFFFu;
+    for (i = 0; i < g_rule_count; i++) {
+        const BlockRule *r = &g_rules[i];
+        if (r->is_unicode != is_unicode) continue;
+        if (value < r->start || value > r->end) continue;
+        {
+            uint32_t span = r->end - r->start;
+            if (!best || span < best_span) {
+                best = r;
+                best_span = span;
+            }
+        }
+    }
+    return best;
+}
+
 static void usage(const char *argv0) {
     fprintf(stderr,
       "usage:\n"
-      "  %s encode [--aztec|--json]\n"
-      "  %s decode\n",
+      "  %s encode [--aztec|--json] [--blocks PATH]\n"
+      "  %s decode [--blocks PATH]\n",
       argv0, argv0);
 }
 
@@ -119,6 +259,8 @@ static void project_board(uint8_t board[BOARD_SLOTS], uint8_t state, uint32_t ti
 }
 
 static void snapshot_fill(Snapshot *s, uint32_t tick, uint8_t input, uint8_t state) {
+    const BlockRule *in_rule;
+    const BlockRule *br_rule;
     s->tick = tick;
     s->input = input;
     s->state = state;
@@ -129,23 +271,36 @@ static void snapshot_fill(Snapshot *s, uint32_t tick, uint8_t input, uint8_t sta
     s->boundary = (uint8_t)((state & 0x80u) ? 1u : 0u);
     s->winner = (uint8_t)(((tick / 7u) % 2u) ? FANO_LINES[s->basis7][2] : FANO_LINES[s->basis7][0]);
     s->braille = (uint16_t)(0x2800u + state);
+
+    in_rule = lookup_block(input, 0);
+    if (in_rule) snprintf(s->input_block, sizeof(s->input_block), "%s", in_rule->block_id);
+    else snprintf(s->input_block, sizeof(s->input_block), "byte_data");
+
+    br_rule = lookup_block(s->braille, 1);
+    if (br_rule) snprintf(s->braille_block, sizeof(s->braille_block), "%s", br_rule->block_id);
+    else snprintf(s->braille_block, sizeof(s->braille_block), "unknown");
+
+    if (s->braille >= 0x2800u && s->braille <= 0x283Fu) snprintf(s->braille_scale, sizeof(s->braille_scale), "A");
+    else if (s->braille >= 0x2840u && s->braille <= 0x28FFu) snprintf(s->braille_scale, sizeof(s->braille_scale), "B");
+    else snprintf(s->braille_scale, sizeof(s->braille_scale), "-");
+
     project_board(s->board, state, tick);
 }
 
 static void emit_board_line(const Snapshot *s) {
     unsigned i;
-    printf("tick=%u input=0x%02X state=0x%02X basis7=%u basis8=%u law=0x%X edit=0x%X boundary=%u winner=%u braille=U+%04X board=",
-           s->tick, s->input, s->state, s->basis7, s->basis8,
-           s->law, s->edit, s->boundary, s->winner, s->braille);
+    printf("tick=%u input=0x%02X input_block=%s state=0x%02X basis7=%u basis8=%u law=0x%X edit=0x%X boundary=%u winner=%u braille=U+%04X braille_block=%s braille_scale=%s board=",
+           s->tick, s->input, s->input_block, s->state, s->basis7, s->basis8,
+           s->law, s->edit, s->boundary, s->winner, s->braille, s->braille_block, s->braille_scale);
     for (i = 0; i < BOARD_SLOTS; i++) putchar(s->board[i] ? '1' : '0');
     putchar('\n');
 }
 
 static void emit_json_step(const Snapshot *s, int comma) {
     unsigned i;
-    printf("  {\"tick\":%u,\"input\":%u,\"state\":%u,\"basis7\":%u,\"basis8\":%u,\"law\":%u,\"edit\":%u,\"boundary\":%u,\"winner\":%u,\"braille\":%u,\"board\":\"",
-           s->tick, s->input, s->state, s->basis7, s->basis8,
-           s->law, s->edit, s->boundary, s->winner, s->braille);
+    printf("  {\"tick\":%u,\"input\":%u,\"input_block\":\"%s\",\"state\":%u,\"basis7\":%u,\"basis8\":%u,\"law\":%u,\"edit\":%u,\"boundary\":%u,\"winner\":%u,\"braille\":%u,\"braille_block\":\"%s\",\"braille_scale\":\"%s\",\"board\":\"",
+           s->tick, s->input, s->input_block, s->state, s->basis7, s->basis8,
+           s->law, s->edit, s->boundary, s->winner, s->braille, s->braille_block, s->braille_scale);
     for (i = 0; i < BOARD_SLOTS; i++) putchar(s->board[i] ? '1' : '0');
     printf("\"}%s\n", comma ? "," : "");
 }
@@ -269,7 +424,11 @@ static int run_decode(void) {
 
         {
             uint8_t state = recover_state_from_board(board, tick);
-            printf("tick=%u state=0x%02X braille=U+%04X\n", tick, state, 0x2800u + state);
+            uint32_t cp = (uint32_t)(0x2800u + state);
+            const BlockRule *br = lookup_block(cp, 1);
+            const char *scale = (cp <= 0x283Fu) ? "A" : "B";
+            printf("tick=%u state=0x%02X braille=U+%04X braille_block=%s braille_scale=%s\n",
+                   tick, state, cp, br ? br->block_id : "unknown", scale);
         }
         tick++;
     }
@@ -278,6 +437,8 @@ static int run_decode(void) {
 
 int main(int argc, char **argv) {
     OutputMode out_mode = OUT_BOARD;
+    const char *blocks_path = "blocks";
+    int i;
 
     if (argc < 2) {
         usage(argv[0]);
@@ -285,19 +446,28 @@ int main(int argc, char **argv) {
     }
 
     if (strcmp(argv[1], "encode") == 0) {
-        int i;
         for (i = 2; i < argc; i++) {
             if (strcmp(argv[i], "--aztec") == 0) out_mode = OUT_AZTEC;
             else if (strcmp(argv[i], "--json") == 0) out_mode = OUT_JSON;
+            else if (strcmp(argv[i], "--blocks") == 0 && i + 1 < argc) blocks_path = argv[++i];
             else {
                 usage(argv[0]);
                 return 1;
             }
         }
+        load_block_registry_auto(blocks_path);
         return run_encode(out_mode);
     }
 
     if (strcmp(argv[1], "decode") == 0) {
+        for (i = 2; i < argc; i++) {
+            if (strcmp(argv[i], "--blocks") == 0 && i + 1 < argc) blocks_path = argv[++i];
+            else {
+                usage(argv[0]);
+                return 1;
+            }
+        }
+        load_block_registry_auto(blocks_path);
         return run_decode();
     }
 

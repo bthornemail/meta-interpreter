@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atomic Kernel — SVG Coordinate Overlay</title>
+<style>
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --border: #2a2d3a;
+    --accent: #5b8dee; --text: #e2e8f0; --muted: #718096;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text);
+    font-family: 'SF Mono','Fira Code',monospace; font-size:13px; }
+  .wrap { display: flex; gap: 24px; padding: 24px; align-items: flex-start;
+    flex-wrap: wrap; }
+  h1 { font-size:15px; font-weight:600; padding:18px 24px;
+    border-bottom:1px solid var(--border); letter-spacing:.02em; }
+  .controls { display:flex; flex-direction:column; gap:14px; min-width:220px; }
+  label { font-size:10px; text-transform:uppercase; letter-spacing:.1em;
+    color: var(--muted); display:block; margin-bottom:4px; }
+  select, input { background:var(--bg); border:1px solid var(--border);
+    border-radius:5px; color:var(--text); font-family:inherit;
+    font-size:12px; padding:6px 10px; width:100%; }
+  input[type=range] { padding:3px 0; }
+  .btn { padding:9px; border-radius:6px; border:none; font-family:inherit;
+    font-size:12px; font-weight:600; cursor:pointer; width:100%;
+    background:var(--accent); color:#fff; margin-top:4px; }
+  .btn:hover { opacity:.85; }
+  .info { background:var(--surface); border:1px solid var(--border);
+    border-radius:6px; padding:12px; font-size:11px; line-height:1.8; }
+  .info b { color:var(--accent); }
+  #svgWrap { overflow:auto; max-width:100%; }
+  .tip { position:fixed; background:var(--surface); border:1px solid var(--border);
+    border-radius:5px; padding:5px 10px; font-size:11px; display:none;
+    pointer-events:none; z-index:9; white-space:nowrap; }
+  .ch-us { color:#f6ad55; } .ch-rs { color:#68d391; }
+  .ch-gs { color:#76e4f7; } .ch-fs { color:#fc8181; }
+  .legend { display:flex; flex-wrap:wrap; gap:8px; }
+  .li { display:flex; align-items:center; gap:5px; font-size:11px; }
+  .sw { width:11px; height:11px; border-radius:2px; }
+</style>
+</head>
+<body>
+<h1>Atomic Kernel — SVG Coordinate Overlay (27×27)</h1>
+<div class="wrap">
+
+  <div class="controls">
+
+    <div>
+      <label>Cell size (px)</label>
+      <input type="range" id="cellSize" min="8" max="28" value="18">
+      <span id="cellSizeVal">18</span>px
+    </div>
+
+    <div>
+      <label>Show labels</label>
+      <select id="showLabels">
+        <option value="lane">Lane numbers</option>
+        <option value="coord">Coord values</option>
+        <option value="none">None</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Highlight channel</label>
+      <select id="highlight">
+        <option value="all">All channels</option>
+        <option value="0">US only</option>
+        <option value="1">RS only</option>
+        <option value="2">GS only</option>
+        <option value="3">FS only</option>
+      </select>
+    </div>
+
+    <button class="btn" onclick="buildSVG()">Refresh</button>
+    <button class="btn" style="background:#2a2d3a" onclick="downloadSVG()">↓ Download SVG</button>
+
+    <div class="info">
+      <b>27×27 reference symbol</b><br>
+      Center: (13,13)<br>
+      Bull's-eye: r ≤ 2 (25 cells)<br>
+      Mode ring: r = 3 (24 cells)<br>
+      <span class="ch-us">US</span>: r ∈ {4,5} · 15 lanes<br>
+      <span class="ch-rs">RS</span>: r ∈ {6,7} · 15 lanes<br>
+      <span class="ch-gs">GS</span>: r ∈ {8,9} · 15 lanes<br>
+      <span class="ch-fs">FS</span>: r ∈ {10,11} · 15 lanes<br>
+      Total canonical slots: <b>60</b>
+    </div>
+
+    <div>
+      <label>Legend</label>
+      <div class="legend">
+        <div class="li"><div class="sw" style="background:#5b8dee"></div>Bull's-eye</div>
+        <div class="li"><div class="sw" style="background:#2a2d3a"></div>Mode ring</div>
+        <div class="li"><div class="sw" style="background:#f6ad55"></div>US ch0</div>
+        <div class="li"><div class="sw" style="background:#68d391"></div>RS ch1</div>
+        <div class="li"><div class="sw" style="background:#76e4f7"></div>GS ch2</div>
+        <div class="li"><div class="sw" style="background:#fc8181"></div>FS ch3</div>
+        <div class="li"><div class="sw" style="background:#4a5568"></div>Null lane</div>
+        <div class="li"><div class="sw" style="background:#1e2235"></div>ECC/data</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="svgWrap"></div>
+
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+const N = 27, CX = 13, CY = 13;
+const CH_NAMES  = ['US','RS','GS','FS'];
+const CH_COLORS = ['#f6ad55','#68d391','#76e4f7','#fc8181'];
+
+// Full normative table from AZTEC_COORD_TABLE §6
+const TABLE = [
+  [0,1,17,13],[0,2,16,17],[0,3,11,17],[0,4,9,15],[0,5,9,11],[0,6,12,9],
+  [0,7,18,8],[0,8,18,12],[0,9,18,16],[0,10,15,18],[0,11,10,18],[0,12,8,16],
+  [0,13,8,12],[0,14,9,8],[0,15,14,8],
+  [1,1,19,13],[1,2,18,19],[1,3,11,19],[1,4,7,17],[1,5,7,11],[1,6,10,7],
+  [1,7,17,7],[1,8,20,10],[1,9,20,16],[1,10,17,20],[1,11,10,20],[1,12,6,18],
+  [1,13,6,12],[1,14,7,6],[1,15,14,6],
+  [2,1,21,13],[2,2,20,21],[2,3,11,21],[2,4,5,19],[2,5,5,11],[2,6,8,5],
+  [2,7,17,5],[2,8,22,8],[2,9,22,16],[2,10,19,22],[2,11,10,22],[2,12,4,20],
+  [2,13,4,12],[2,14,5,4],[2,15,14,4],
+  [3,1,23,13],[3,2,22,23],[3,3,11,23],[3,4,3,21],[3,5,3,11],[3,6,6,3],
+  [3,7,17,3],[3,8,24,6],[3,9,24,16],[3,10,21,24],[3,11,10,24],[3,12,2,22],
+  [3,13,2,12],[3,14,3,2],[3,15,14,2]
+];
+
+// Null lane positions per channel (AZTEC_COORD_TABLE §7)
+const NULL_POSITIONS = [[13,9],[13,6],[13,4],[13,2]];
+
+// Build lookup maps
+const slotMap = new Map(); // "x,y" -> {ch, ln}
+TABLE.forEach(([ch,ln,x,y]) => slotMap.set(`${x},${y}`, {ch, ln}));
+const nullSet = new Set(NULL_POSITIONS.map(([x,y]) => `${x},${y}`));
+
+function chebyshev(x,y) { return Math.max(Math.abs(x-CX), Math.abs(y-CY)); }
+
+// Is this position part of the Aztec bull's-eye dark pattern?
+// Bull's-eye: r=0 dark, r=1 light, r=2 dark (concentric square rings)
+function bullseyeDark(x,y) {
+  const r = chebyshev(x,y);
+  return r === 0 || r === 2;
+}
+
+function buildSVG() {
+  const SZ       = parseInt(document.getElementById('cellSize').value);
+  const labelMode = document.getElementById('showLabels').value;
+  const hlCh     = document.getElementById('highlight').value;
+  const W = N * SZ, H = N * SZ;
+
+  let rects = '', texts = '';
+
+  for (let y = 0; y < N; y++) {
+    for (let x = 0; x < N; x++) {
+      const r   = chebyshev(x, y);
+      const key = `${x},${y}`;
+      const px  = x * SZ, py = y * SZ;
+
+      let fill = '#18192a', stroke = '#22253a', opacity = 1;
+      let tipText = `(${x},${y}) r=${r}`;
+      let labelTxt = '';
+
+      if (r <= 2) {
+        // Bull's-eye
+        fill   = bullseyeDark(x,y) ? '#5b8dee' : '#0f1117';
+        stroke = '#5b8dee55';
+        tipText = `bull's-eye r=${r} (${x},${y}) — ${bullseyeDark(x,y)?'dark':'light'}`;
+
+      } else if (r === 3) {
+        // Mode ring
+        fill   = '#2a2d3a';
+        stroke = '#3a3d4a';
+        tipText = `mode ring (${x},${y})`;
+
+      } else if (nullSet.has(key)) {
+        // Null lane
+        const chIdx = NULL_POSITIONS.findIndex(([nx,ny]) => nx===x && ny===y);
+        fill   = '#4a5568';
+        stroke = '#5a6578';
+        tipText = `null lane — ${CH_NAMES[chIdx]} ch${chIdx} (${x},${y})`;
+
+      } else if (slotMap.has(key)) {
+        const {ch, ln} = slotMap.get(key);
+        const active = hlCh === 'all' || parseInt(hlCh) === ch;
+        fill   = CH_COLORS[ch];
+        stroke = fill;
+        opacity = active ? 0.9 : 0.15;
+        tipText = `${CH_NAMES[ch]} ch${ch} lane ${ln} (${x},${y}) r=${r}`;
+
+        if (active && SZ >= 11) {
+          const label = labelMode === 'lane' ? ln
+                      : labelMode === 'coord' ? `L${ln}` : '';
+          if (label !== '') {
+            labelTxt = `<text x="${px+SZ/2}" y="${py+SZ/2+Math.floor(SZ*0.18)}"
+              text-anchor="middle" dominant-baseline="middle"
+              font-size="${Math.max(6, Math.floor(SZ*0.42))}"
+              font-family="monospace" font-weight="700"
+              fill="#000a" pointer-events="none">${label}</text>`;
+          }
+        }
+
+      } else {
+        // ECC / general data region — shade by ring depth
+        const shade = Math.max(0, 30 - r);
+        fill   = `rgb(${18+shade},${19+shade},${35+shade})`;
+        stroke = '#22253a';
+        tipText = `ECC/data region r=${r} (${x},${y})`;
+      }
+
+      rects += `<rect x="${px}" y="${py}" width="${SZ}" height="${SZ}"
+        fill="${fill}" stroke="${stroke}" stroke-width="0.5"
+        opacity="${opacity}" rx="1.5"
+        data-tip="${tipText.replace(/"/g,"'")}"/>`;
+      texts += labelTxt;
+    }
+  }
+
+  // Ring boundary guides (thin circles at r=3,5,7,9,11)
+  let guides = '';
+  for (const rb of [3,5,7,9,11]) {
+    const side = (rb * 2 + 1) * SZ;
+    const ox   = (CX - rb) * SZ;
+    const oy   = (CY - rb) * SZ;
+    guides += `<rect x="${ox}" y="${oy}" width="${side}" height="${side}"
+      fill="none" stroke="#ffffff10" stroke-width="1" rx="2"/>`;
+  }
+
+  // Axis crosshairs through center
+  guides += `<line x1="${CX*SZ+SZ/2}" y1="0" x2="${CX*SZ+SZ/2}" y2="${H}"
+    stroke="#ffffff08" stroke-width="1"/>`;
+  guides += `<line x1="0" y1="${CY*SZ+SZ/2}" x2="${W}" y2="${CY*SZ+SZ/2}"
+    stroke="#ffffff08" stroke-width="1"/>`;
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg"
+    width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"
+    id="mainSVG" style="display:block;cursor:crosshair;border:1px solid #2a2d3a;border-radius:4px">
+    <rect width="${W}" height="${H}" fill="#0f1117"/>
+    ${guides}
+    ${rects}
+    ${texts}
+  </svg>`;
+
+  document.getElementById('svgWrap').innerHTML = svg;
+  attachTips();
+}
+
+function attachTips() {
+  const tip = document.getElementById('tip');
+  document.getElementById('mainSVG')?.querySelectorAll('rect[data-tip]').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      tip.textContent = el.dataset.tip;
+      tip.style.display = 'block';
+      tip.style.left = (e.clientX + 14) + 'px';
+      tip.style.top  = (e.clientY - 8) + 'px';
+    });
+    el.addEventListener('mouseleave', () => tip.style.display = 'none');
+  });
+}
+
+function downloadSVG() {
+  const el = document.getElementById('mainSVG');
+  if (!el) { alert('Build first.'); return; }
+  const src = new XMLSerializer().serializeToString(el);
+  const blob = new Blob([src], {type:'image/svg+xml'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'aztec-coord-overlay.svg';
+  a.click();
+}
+
+document.getElementById('cellSize').addEventListener('input', function() {
+  document.getElementById('cellSizeVal').textContent = this.value;
+  buildSVG();
+});
+document.getElementById('showLabels').addEventListener('change', buildSVG);
+document.getElementById('highlight').addEventListener('change', buildSVG);
+
+buildSVG();
+</script>
+</body>
+</html>

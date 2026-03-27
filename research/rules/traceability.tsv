@@ -23,3 +23,11 @@ research/archive/research/Consensus Promotion Logic..md:234	A26	target_state	con
 research/archive/research/Consensus Promotion Logic..md:298	A27	target_state	consensus	explicit A-header
 research/archive/research/Consensus Promotion Logic..md:354	A29	research_open	consensus	explicit A-header
 research/archive/research/Consensus Promotion Logic..md:412	A30	target_state	consensus	explicit A-header
+inferred	A4	research_open_inferred	alphabet	template-inferred-nearest-neighbors
+inferred	A5	research_open_inferred	alphabet	template-inferred-nearest-neighbors
+inferred	A6	research_open_inferred	alphabet	template-inferred-nearest-neighbors
+inferred	A7	research_open_inferred	alphabet	template-inferred-nearest-neighbors
+inferred	A8	research_open_inferred	alphabet	template-inferred-nearest-neighbors
+inferred	A9	research_open_inferred	alphabet	template-inferred-nearest-neighbors
+inferred	A14	research_open_inferred	projection	template-inferred-nearest-neighbors
+inferred	A28	research_open_inferred	consensus	template-inferred-nearest-neighbors

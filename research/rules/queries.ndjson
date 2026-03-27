@@ -1,0 +1,2 @@
+{"kind":"ttc.query.v1","query_id":"implemented_and_target_projection","select":["rule_id","domain","status","inferred"],"where":["domain=projection"],"order":["rule_id asc"],"limit":"256"}
+{"kind":"ttc.query.v1","query_id":"alphabet_visible_default_policy","select":["rule_id","status","inferred"],"where":["domain=alphabet"],"order":["rule_id asc"],"limit":"256"}

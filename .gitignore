@@ -4,11 +4,18 @@
 # Generated artifacts
 /artifacts/*.txt
 /artifacts/*.json
+/artifacts/*.ndjson
 /artifacts/*.pgm
+/artifacts/*.bin
+/artifacts/**/trace.log
+/artifacts/**/state.bin
+/artifacts/**/board.txt
+/artifacts/**/aztec.txt
+/artifacts/**/decode_preview.txt
+/artifacts/**/meta.json
 !artifacts/.gitkeep
 
 # Temp/editor
 *.swp
 *.tmp
 .DS_Store
-archive/

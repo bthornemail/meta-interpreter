@@ -1,0 +1,35 @@
+{
+  "name": "Composition.hs",
+  "source_size": 16211,
+  "compressed_size": 5034,
+  "source_sha256": "6aa05bbd6ca3500e99ed6594acb3ec23032b6f7a587eae6ac3d9a6a6735ed447",
+  "compressed_sha256": "37d62dca68178d68687b8594bbc120ea09406093ded7caf6755ef068fb93ee51",
+  "symbol_count": 60,
+  "chunk_bytes": 84,
+  "grid": {
+    "size": 27,
+    "center": [
+      13,
+      13
+    ],
+    "mode_ring_radius": 3,
+    "null_markers": [
+      [
+        13,
+        2
+      ],
+      [
+        13,
+        4
+      ],
+      [
+        13,
+        6
+      ],
+      [
+        13,
+        9
+      ]
+    ]
+  }
+}

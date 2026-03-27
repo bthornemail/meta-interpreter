@@ -1,0 +1,12 @@
+artifacts/archive/20260327-135350/legacy/aztec.txt
+artifacts/archive/20260327-135350/legacy/canonical_aztec.txt
+artifacts/archive/20260327-135350/legacy/canonical_board.txt
+artifacts/archive/20260327-135350/legacy/canonical_recovered.txt
+artifacts/archive/20260327-135350/legacy/canonical_run.json
+artifacts/archive/20260327-135350/legacy/canonical_sample.bin
+artifacts/archive/20260327-135350/legacy/codec_roundtrip.bin
+artifacts/archive/20260327-135350/legacy/codec_sample.txt
+artifacts/archive/20260327-135350/legacy/codec_slots.txt
+artifacts/archive/20260327-135350/legacy/codec_witness.txt
+artifacts/archive/20260327-135350/legacy/files.list
+artifacts/archive/20260327-135350/legacy/rules_run.ndjson

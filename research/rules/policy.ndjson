@@ -1,0 +1,1 @@
+{"kind":"ttc.policy.v1","allow_status":["implemented","target_state"],"allow_inferred":false,"fail_on_unknown_rule":true,"fail_on_schema_error":true}

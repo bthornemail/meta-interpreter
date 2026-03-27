@@ -11,7 +11,7 @@ This framework normalizes archived research prose into deterministic rule IR con
 1. `src/` runtime behavior and `docs/ttc_canonical_spec_v1.md` remain authoritative for implemented semantics.
 2. Rule packs in `research/rules/*.rules.ndjson` are normalized projections of archived research.
 3. Any rule with `status != implemented` must not alter normative execution unless explicitly enabled by policy.
-4. Unknown rule IDs, missing required fields, invalid status, or malformed sources are hard failures.
+4. Unknown rule IDs, missing required fields, invalid status, malformed sources, or unknown rule-object keys are hard failures.
 
 ## 3. Rule IR (NDJSON)
 
@@ -24,8 +24,13 @@ Required keys for every rule object:
 - `when` (array of predicates/guards)
 - `then` (array of deterministic effects)
 - `invariants` (array of must-hold assertions)
-- `status` (`implemented|target_state|research_open|deprecated`)
+- `status` (`implemented|target_state|research_open|deprecated|research_open_inferred`)
 - `sources` (array of `path:line`)
+
+Optional inferred metadata keys:
+- `inferred` (bool)
+- `template_basis` (array of rule IDs)
+- `inference_version` (string)
 
 ### Canonical ordering
 
@@ -58,6 +63,13 @@ Query object required keys:
 - `order`
 - `limit`
 
+Policy object required keys:
+- `kind` (must be `ttc.policy.v1`)
+- `allow_status`
+- `allow_inferred`
+- `fail_on_unknown_rule`
+- `fail_on_schema_error`
+
 Example fact:
 
 ```json
@@ -74,7 +86,7 @@ Example query:
 
 - If multiple archived occurrences map to the same A-number, preserve all as suffixed rule IDs (`A11.1`, `A11.2`, `A21.1`, `A21.2`).
 - If archived rule semantics conflict with canonical runtime, set `status=research_open` or `target_state` and attach runtime reference in `invariants`.
-- Non-explicit A-numbers (`A4-A9`, `A14`, `A28`) are represented as placeholders in `complex.rules.ndjson` with `status=deprecated` and empty sources.
+- Non-explicit A-numbers (`A4-A9`, `A14`, `A28`) are template-inferred with `status=research_open_inferred`, `inferred=true`, and disabled by default policy.
 
 ## 6. Mapping Outputs
 
@@ -87,6 +99,10 @@ Example query:
   - `research/rules/complex.rules.ndjson`
 - Traceability:
   - `research/rules/traceability.tsv`
+- Runtime policy and example IO:
+  - `research/rules/policy.ndjson`
+  - `research/rules/facts.ndjson`
+  - `research/rules/queries.ndjson`
 
 ## 7. Validation Requirements
 

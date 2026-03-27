@@ -1,0 +1,1 @@
+{"kind":"ttc.fact.v1","fact_id":"runtime.opcodes","domain":"alphabet","payload":{"TICK_A":"0x01","TICK_B":"0x02","REFLECT":"0x03","ROTATE":"0x04","TANGENT":"0x05","BOUNDARY":"0x80"},"sources":["src/ttc_vm.awk:39"]}
