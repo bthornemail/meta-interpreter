@@ -13,6 +13,7 @@ OUT_ROOT="artifacts"
 STATE=29   # GS anchor (0x1d)
 TICK=0
 PREV_PATH="artifacts/xx/p0/0/0"
+MODEM_INFLIGHT=0
 
 usage() {
   cat <<'USAGE'
@@ -134,20 +135,69 @@ process_byte() {
   incidence_seq="${winner},${class},${point},${lane}"
   config_seq="${leaf},${address_bits}"
 
+  # Metacircular modem projection semantics:
+  # one shared carrier (xxxx), with class as visible projection.
+  left_ch=$(printf '%s' "$class" | cut -c1)
+  right_ch=$(printf '%s' "$class" | cut -c2)
+  if [ "$left_ch" = "X" ]; then left_diff=1; else left_diff=0; fi
+  if [ "$right_ch" = "X" ]; then right_diff=1; else right_diff=0; fi
+  if [ "$left_diff" -eq "$right_diff" ]; then
+    side_compare="same"
+  else
+    side_compare="different"
+  fi
+
+  modem_state="deterministic"
+  proposal_state="none"
+  case "$class" in
+    xx)
+      if [ "$MODEM_INFLIGHT" -eq 1 ]; then
+        modem_state="resolved"
+        proposal_state="collapsed"
+        MODEM_INFLIGHT=0
+      else
+        modem_state="deterministic"
+      fi
+      ;;
+    Xx)
+      MODEM_INFLIGHT=1
+      modem_state="proposal"
+      proposal_state="left_update"
+      ;;
+    xX)
+      MODEM_INFLIGHT=1
+      modem_state="proposal"
+      proposal_state="right_update"
+      ;;
+    XX)
+      if [ "$MODEM_INFLIGHT" -eq 1 ]; then
+        modem_state="reconciling"
+      else
+        MODEM_INFLIGHT=1
+        modem_state="proposal"
+      fi
+      proposal_state="both_marked"
+      ;;
+  esac
+
+  step_count=$((TICK + 1))
+  epoch_status="open"
+  if [ $((step_count % 5040)) -eq 0 ]; then
+    if [ "$MODEM_INFLIGHT" -eq 1 ]; then
+      epoch_status="unresolved"
+    else
+      epoch_status="resolved"
+    fi
+  fi
+
   if [ "$WRITE_MODE" -eq 1 ]; then
     mkdir -p "$path"
-    printf 'tick=%d input=0x%02X state=0x%02X basis7=%d basis8=%d winner=%d class=%s point=%s lane=%d leaf=%d replay_seq=%s incidence_seq=%s config_seq=%s address_bits="%s" parent=%s path=%s\n' \
-      "$TICK" "$input" "$STATE" "$basis7" "$basis8" "$winner" "$class" "$point" "$lane" "$leaf" \
-      "$replay_seq" "$incidence_seq" "$config_seq" "$address_bits" "$PREV_PATH" "$path" >> "$path/trace.log"
-    cat > "$path/meta.json" <<EOF
-{"schema":"ttc.busybox.addr.v1","tick":$TICK,"input":$input,"state":$STATE,"basis7":$basis7,"basis8":$basis8,"winner":$winner,"class":"$class","class_bits":$class_idx,"point":"$point","point_index":$point_idx,"lane":"$lane_hex","lane_value":$lane,"leaf":"$leaf_hex","leaf_value":$leaf,"address_bits":"$address_bits","parent":"$PREV_PATH","path":"$path"}
-EOF
     ttc_write_leaf_contract "$path" "ttc.busybox.addr.v1" "$class" "$point" "$lane_hex" "$leaf_hex" "$address_bits" "$TICK" "$input" "$STATE" "$PREV_PATH" "scripts/ttc_busybox.sh"
   fi
 
-  printf 'tick=%d input=0x%02X state=0x%02X basis7=%d basis8=%d winner=%d class=%s point=%s lane=%d leaf=%d replay_seq=%s incidence_seq=%s config_seq=%s address_bits="%s" parent=%s path=%s\n' \
+  printf 'tick=%d input=0x%02X state=0x%02X basis7=%d basis8=%d winner=%d class=%s point=%s lane=%d leaf=%d replay_seq=%s incidence_seq=%s config_seq=%s address_bits="%s" carrier=xxxx projection=%s left_diff=%d right_diff=%d side_compare=%s modem_state=%s proposal_state=%s epoch_status=%s parent=%s path=%s\n' \
     "$TICK" "$input" "$STATE" "$basis7" "$basis8" "$winner" "$class" "$point" "$lane" "$leaf" \
-    "$replay_seq" "$incidence_seq" "$config_seq" "$address_bits" "$PREV_PATH" "$path"
+    "$replay_seq" "$incidence_seq" "$config_seq" "$address_bits" "$class" "$left_diff" "$right_diff" "$side_compare" "$modem_state" "$proposal_state" "$epoch_status" "$PREV_PATH" "$path"
 
   PREV_PATH="$path"
   TICK=$((TICK + 1))

@@ -64,35 +64,12 @@ while IFS=$'\t' read -r tick byte class point winner lane lane_hex leaf leaf_hex
   dir="$OUT_ROOT/$path_root"
   mkdir -p "$dir"
 
-  printf 'tick=%s byte=%s class=%s point=%s winner=%s lane=%s lane_hex=%s lane_divisor=%s leaf=%s leaf_hex=%s path=%s\n' \
-    "$tick" "$byte" "$class" "$point" "$winner" "$lane" "$lane_hex" "$lane_divisor" "$leaf" "$leaf_hex" "$path" >> "$dir/trace.log"
-
   class_bits_dec="$(class_to_bits "$class")"
   point_idx="${point#p}"
   class_bits_bin="$(to_bin_padded "$class_bits_dec" 2)"
   point_bits_bin="$(to_bin_padded "$point_idx" 2)"
   lane_bits_bin="$(to_bin_padded "$lane" 6)"
   leaf_bits_bin="$(to_bin_padded "$leaf" 13)"
-
-  cat > "$dir/meta.json" <<EOF
-{
-  "schema": "ttc.artifact.addr.v1",
-  "class": "$class",
-  "class_bits": $class_bits_dec,
-  "point": "$point",
-  "point_index": $point_idx,
-  "winner": $winner,
-  "lane": "$lane_hex",
-  "lane_index": $lane,
-  "lane_divisor": $lane_divisor,
-  "leaf_hex": "$leaf_hex",
-  "leaf": $leaf,
-  "address_bits": "$class_bits_bin $point_bits_bin $lane_bits_bin $leaf_bits_bin",
-  "tick": $tick,
-  "byte": $byte,
-  "parent": "$prev"
-}
-EOF
 
   ttc_write_leaf_contract "$dir" "ttc.artifact.addr.v1" "$class" "$point" "$lane_hex" "$leaf_hex" \
     "$class_bits_bin $point_bits_bin $lane_bits_bin $leaf_bits_bin" "$tick" "$byte" "$byte" "$prev" "scripts/materialize_factoradic_5040.sh"

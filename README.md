@@ -88,12 +88,14 @@ By default it also writes directly to trie leaf paths:
   - `.golden`
   - `.negative`
 
-And a deterministic blocks mirror leaf for registry inclusion control:
+And a deterministic blocks mirror leaf with the same fixed contract:
 - `blocks/{xx|xX|Xx|XX}/{p0|p1|p2}/{lane}/{leaf}/`
   - `.canon`
+  - `.block`
   - `.artifact`
-  - `.registry`
-  - `.include.*` (dotfiles determine block inclusion)
+  - `.bitboard`
+  - `.golden`
+  - `.negative`
 
 URI/RDF adapter from busybox lines:
 

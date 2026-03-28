@@ -219,9 +219,9 @@ for f in .canon .block .artifact .bitboard .golden .negative; do
   fi
 done
 
-# 9) Blocks mirror leaf structure + inclusion dotfiles
+# 9) Blocks mirror leaf structure mirrors fixed six-file contract
 block_leaf="${leaf_dir/contract_artifacts/contract_blocks}"
-for f in .canon .artifact .registry .include.braille_patterns; do
+for f in .canon .block .artifact .bitboard .golden .negative; do
   if [[ ! -e "$block_leaf/$f" ]]; then
     echo "missing block mirror file: $block_leaf/$f" >&2
     exit 1

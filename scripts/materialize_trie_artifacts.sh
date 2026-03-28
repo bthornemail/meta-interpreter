@@ -108,30 +108,6 @@ fi
 while IFS=$'\t' read -r dir class class_idx point point_idx lane_hex lane_val leaf_hex leaf_val addr_bits parent tick input state board line; do
   mkdir -p "$dir"
 
-  printf '%s\n' "$line" >> "$dir/trace.log"
-  printf '%s\n' "$board" >> "$dir/board.txt"
-  printf '%s\n' "$line" >> "$dir/aztec.txt"
-  printf '%b' "\\x$(printf '%02x' "$state")" >> "$dir/state.bin"
-
-  cat > "$dir/meta.json" <<EOF
-{
-  "schema": "ttc.artifact.addr.v1",
-  "class": "$class",
-  "class_bits": $class_idx,
-  "point": "$point",
-  "point_index": $point_idx,
-  "lane": "$lane_hex",
-  "lane_value": $lane_val,
-  "leaf": "$leaf_hex",
-  "leaf_value": $leaf_val,
-  "address_bits": "$addr_bits",
-  "parent": "$parent",
-  "tick": $tick,
-  "input": $input,
-  "state": $state
-}
-EOF
-
   ttc_write_leaf_contract "$dir" "ttc.artifact.addr.v1" "$class" "$point" "$lane_hex" "$leaf_hex" "$addr_bits" "$tick" "$input" "$state" "$parent" "scripts/materialize_trie_artifacts.sh" "$board"
 
 done < "$TMP_TSV"

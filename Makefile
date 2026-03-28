@@ -116,7 +116,7 @@ clean:
 	rm -f $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) $(CAN_RUNTIME_BIN)
 	rm -f $(ARTIFACT_DIR)/*.txt $(ARTIFACT_DIR)/*.json $(ARTIFACT_DIR)/*.pgm $(ARTIFACT_DIR)/*.ndjson $(ARTIFACT_DIR)/*.bin
 	find $(ARTIFACT_DIR)/xx $(ARTIFACT_DIR)/xX $(ARTIFACT_DIR)/Xx $(ARTIFACT_DIR)/XX -type f \( -name "trace.log" -o -name "state.bin" -o -name "board.txt" -o -name "aztec.txt" -o -name "meta.json" -o -name ".canon" -o -name ".block" -o -name ".artifact" -o -name ".bitboard" -o -name ".golden" -o -name ".negative" -o -name ".vs_overlay" \) 2>/dev/null | xargs -r rm -f
-	find blocks/xx blocks/xX blocks/Xx blocks/XX -type f \( -name ".canon" -o -name ".artifact" -o -name ".registry" -o -name ".include.*" \) 2>/dev/null | xargs -r rm -f
+	find blocks/xx blocks/xX blocks/Xx blocks/XX -type f \( -name ".canon" -o -name ".block" -o -name ".artifact" -o -name ".bitboard" -o -name ".golden" -o -name ".negative" \) 2>/dev/null | xargs -r rm -f
 
 rules.extract:
 	./scripts/extract_rules.sh

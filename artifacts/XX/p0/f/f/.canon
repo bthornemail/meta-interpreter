@@ -1,1 +1,1 @@
-{"kind":"ttc.leaf.canon.v1","basis":"state_zero_constant","class":"XX","point":"p0","lane":"f","leaf":"f"}
+FS ADDR XX/p0/f/f GS PREIMAGE schema=ttc.busybox.addr.v1 tick=11 input=0xff state=0x88 class=XX point=p0 lane=f leaf=f US ADDRESS_BITS "11 00 1111 1111" RS
