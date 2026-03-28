@@ -62,6 +62,40 @@ ttc_hex2() {
   printf '%02x' $(( $1 & 255 ))
 }
 
+ttc_braille8_byte() {
+  (
+    b=$(( $1 & 255 ))
+    cp=$((0x2800 + b))
+    # Emit actual U+2800..U+28FF glyph
+    awk -v cp="$cp" 'BEGIN { printf "%c", cp }'
+  )
+}
+
+ttc_braille_pack4_addr() {
+  (
+    c="$1"; p="$2"; l="$3"; f="$4"
+    printf '%s%s%s%s' \
+      "$(ttc_braille8_byte "$c")" \
+      "$(ttc_braille8_byte "$p")" \
+      "$(ttc_braille8_byte "$l")" \
+      "$(ttc_braille8_byte "$f")"
+  )
+}
+
+ttc_braille_pack8() {
+  (
+    printf '%s%s%s%s%s%s%s%s' \
+      "$(ttc_braille8_byte "$1")" \
+      "$(ttc_braille8_byte "$2")" \
+      "$(ttc_braille8_byte "$3")" \
+      "$(ttc_braille8_byte "$4")" \
+      "$(ttc_braille8_byte "$5")" \
+      "$(ttc_braille8_byte "$6")" \
+      "$(ttc_braille8_byte "$7")" \
+      "$(ttc_braille8_byte "$8")"
+  )
+}
+
 ttc_write_leaf_contract() {
   (
     dir="$1"
@@ -106,6 +140,9 @@ ttc_write_leaf_contract() {
     right_hex="$(ttc_hex2 "$b8") $(ttc_hex2 "$b9") $(ttc_hex2 "$b10") $(ttc_hex2 "$b11") $(ttc_hex2 "$b12") $(ttc_hex2 "$b13") $(ttc_hex2 "$b14") $(ttc_hex2 "$b15")"
     row_addr="$(printf '%08x' $((tick * 16)))"
     braille_range="$(ttc_braille_range "$class")"
+    addr4="$(ttc_braille_pack4_addr "$class_idx" "$point_idx" "$lane_dec" "$leaf_dec")"
+    left8="$(ttc_braille_pack8 "$b0" "$b1" "$b2" "$b3" "$b4" "$b5" "$b6" "$b7")"
+    right8="$(ttc_braille_pack8 "$b8" "$b9" "$b10" "$b11" "$b12" "$b13" "$b14" "$b15")"
 
     mode_left="affine"
     mode_right="affine"
@@ -115,17 +152,31 @@ ttc_write_leaf_contract() {
       XX) mode_left="projective"; mode_right="projective" ;;
     esac
 
-    # artifacts leaf surfaces (FS-framed deterministic parse surface)
+    # 6-dot control tokens (U+2800..U+283F)
+    FS='⠁'
+    GS='⠂'
+    US='⠄'
+    RS='⠈'
+
+    # blocks framing tokens
+    ROW_OPEN='⠐'
+    ADDR_OPEN='⠑'
+    ADDR_CLOSE='⠒'
+    PAYLOAD_OPEN='⠓'
+    PAYLOAD_CLOSE='⠔'
+    ROW_CLOSE='⠕'
+
+    # artifacts leaf surfaces (FS/GS/US/RS, no words)
     cat > "$dir/.canon" <<EOF_CANON
-FS ADDR ${class}/${point}/${lane}/${leaf} GS PREIMAGE schema=${schema} tick=${tick} input=0x$(ttc_hex2 "$b0") state=0x$(ttc_hex2 "$b1") class=${class} point=${point} lane=${lane} leaf=${leaf} US ADDRESS_BITS "${address_bits}" RS
+${FS}${addr4}${GS}${left8}${US}${right8}${RS}
 EOF_CANON
 
     cat > "$dir/.block" <<EOF_BLOCK
-FS ADDR ${class}/${point}/${lane}/${leaf} GS DECLARE inclusion=declared mode_left=${mode_left} mode_right=${mode_right} source=${source} US FRAME ${braille_range} RS
+${FS}${addr4}${GS}${left8}${US}${right8}${RS}
 EOF_BLOCK
 
     cat > "$dir/.artifact" <<EOF_ART
-FS ADDR ${class}/${point}/${lane}/${leaf} GS LEFT ${left_hex} US RIGHT ${right_hex} RS
+${FS}${addr4}${GS}${left8}${US}${right8}${RS}
 EOF_ART
 
     if [ -n "$board" ]; then
@@ -134,16 +185,16 @@ EOF_ART
       board_payload="$(ttc_bits8 "$state")"
     fi
     cat > "$dir/.bitboard" <<EOF_BB
-FS ADDR ${class}/${point}/${lane}/${leaf} GS BITBOARD ${board_payload} US FRAME16 ${left_hex} ${right_hex} RS
+${FS}${addr4}${GS}${left8}${US}${right8}${RS}
 EOF_BB
 
     cat > "$dir/.golden" <<EOF_G
-FS ADDR ${class}/${point}/${lane}/${leaf} GS MUST_ACCEPT ${left_hex} US ${right_hex} RS
+${FS}${addr4}${GS}${left8}${US}${right8}${RS}
 EOF_G
 
     neg0="$(ttc_hex2 $((b0 ^ 1)))"
     cat > "$dir/.negative" <<EOF_N
-FS ADDR ${class}/${point}/${lane}/${leaf} GS MUST_REJECT ${neg0} $(ttc_hex2 "$b1") $(ttc_hex2 "$b2") $(ttc_hex2 "$b3") $(ttc_hex2 "$b4") $(ttc_hex2 "$b5") $(ttc_hex2 "$b6") $(ttc_hex2 "$b7") US ${right_hex} RS
+${FS}${addr4}${GS}$(ttc_braille_pack8 $((b0 ^ 1)) "$b1" "$b2" "$b3" "$b4" "$b5" "$b6" "$b7")${US}${right8}${RS}
 EOF_N
 
     # blocks mirror surfaces (Braille-framed human/control surface)
@@ -152,27 +203,27 @@ EOF_N
     mkdir -p "$block_dir"
 
     cat > "$block_dir/.canon" <<EOF_BCANON
-${braille_range}  ${row_addr}  ${left_hex}  ${right_hex}
+${ROW_OPEN}${ADDR_OPEN}${addr4}${ADDR_CLOSE}${PAYLOAD_OPEN}${left8}${US}${right8}${PAYLOAD_CLOSE}${ROW_CLOSE}
 EOF_BCANON
 
     cat > "$block_dir/.block" <<EOF_BBLOCK
-${braille_range}  DECLARE class=${class} point=${point} mode_left=${mode_left} mode_right=${mode_right}
+${ROW_OPEN}${ADDR_OPEN}${addr4}${ADDR_CLOSE}${PAYLOAD_OPEN}${left8}${US}${right8}${PAYLOAD_CLOSE}${ROW_CLOSE}
 EOF_BBLOCK
 
     cat > "$block_dir/.artifact" <<EOF_BART
-${braille_range}  ${left_hex}  ${right_hex}  |artifact_ref:${dir}|
+${ROW_OPEN}${ADDR_OPEN}${addr4}${ADDR_CLOSE}${PAYLOAD_OPEN}${left8}${US}${right8}${PAYLOAD_CLOSE}${ROW_CLOSE}
 EOF_BART
 
     cat > "$block_dir/.bitboard" <<EOF_BBIT
-${braille_range}  BITBOARD ${board_payload}
+${ROW_OPEN}${ADDR_OPEN}${addr4}${ADDR_CLOSE}${PAYLOAD_OPEN}${left8}${US}${right8}${PAYLOAD_CLOSE}${ROW_CLOSE}
 EOF_BBIT
 
     cat > "$block_dir/.golden" <<EOF_BG
-${braille_range}  MUST_ACCEPT ${left_hex}  ${right_hex}
+${ROW_OPEN}${ADDR_OPEN}${addr4}${ADDR_CLOSE}${PAYLOAD_OPEN}${left8}${US}${right8}${PAYLOAD_CLOSE}${ROW_CLOSE}
 EOF_BG
 
     cat > "$block_dir/.negative" <<EOF_BN
-${braille_range}  MUST_REJECT ${neg0} $(ttc_hex2 "$b1") $(ttc_hex2 "$b2") $(ttc_hex2 "$b3") $(ttc_hex2 "$b4") $(ttc_hex2 "$b5") $(ttc_hex2 "$b6") $(ttc_hex2 "$b7")  ${right_hex}
+${ROW_OPEN}${ADDR_OPEN}${addr4}${ADDR_CLOSE}${PAYLOAD_OPEN}$(ttc_braille_pack8 $((b0 ^ 1)) "$b1" "$b2" "$b3" "$b4" "$b5" "$b6" "$b7")${US}${right8}${PAYLOAD_CLOSE}${ROW_CLOSE}
 EOF_BN
   )
 }
