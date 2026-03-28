@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+. "$ROOT_DIR/scripts/leaf_contract.sh"
+
 OUT_ROOT="artifacts"
 BINARY_MODE="false"
 
@@ -91,6 +93,9 @@ while IFS=$'\t' read -r tick byte class point winner lane lane_hex leaf leaf_hex
   "parent": "$prev"
 }
 EOF
+
+  ttc_write_leaf_contract "$dir" "ttc.artifact.addr.v1" "$class" "$point" "$lane_hex" "$leaf_hex" \
+    "$class_bits_bin $point_bits_bin $lane_bits_bin $leaf_bits_bin" "$tick" "$byte" "$byte" "$prev" "scripts/materialize_factoradic_5040.sh"
 
   prev="$dir"
 done < "$TMP"

@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+. "$ROOT_DIR/scripts/leaf_contract.sh"
+
 BOARD_FILE=""
 OUT_ROOT="artifacts"
 CLEAR_TARGETS="false"
@@ -98,7 +100,8 @@ cut -f1 "$TMP_TSV" | sort -u > "$TMP_DIRS"
 
 if [[ "$CLEAR_TARGETS" == "true" ]]; then
   while IFS= read -r d; do
-    rm -f "$d/trace.log" "$d/state.bin" "$d/board.txt" "$d/aztec.txt" "$d/meta.json"
+    rm -f "$d/trace.log" "$d/state.bin" "$d/board.txt" "$d/aztec.txt" "$d/meta.json" \
+      "$d/.canon" "$d/.block" "$d/.artifact" "$d/.bitboard" "$d/.golden" "$d/.negative"
   done < "$TMP_DIRS"
 fi
 
@@ -128,6 +131,8 @@ while IFS=$'\t' read -r dir class class_idx point point_idx lane_hex lane_val le
   "state": $state
 }
 EOF
+
+  ttc_write_leaf_contract "$dir" "ttc.artifact.addr.v1" "$class" "$point" "$lane_hex" "$leaf_hex" "$addr_bits" "$tick" "$input" "$state" "$parent" "scripts/materialize_trie_artifacts.sh" "$board"
 
 done < "$TMP_TSV"
 

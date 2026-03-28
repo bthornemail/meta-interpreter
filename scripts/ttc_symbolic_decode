@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+FORMAT="line"
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  cat symbolic.txt | scripts/ttc_symbolic_decode [--format line|ndjson]
+
+Input accepted:
+  - symbolic.line.v1 key=value lines
+  - symbolic.events.ndjson lines
+
+Output:
+  reconstructed core event records for runtime-compatible replay pipelines
+USAGE
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --format) FORMAT="$2"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    *) echo "unknown arg: $1" >&2; usage; exit 2 ;;
+  esac
+done
+
+if [[ "$FORMAT" != "line" && "$FORMAT" != "ndjson" ]]; then
+  echo "invalid --format: $FORMAT" >&2
+  exit 2
+fi
+
+gawk -v out_format="$FORMAT" '
+function get_kv(line, k,    m, pat) {
+  pat = k "=([^ ]+)"
+  if (match(line, pat, m)) return m[1]
+  return ""
+}
+function get_qv(line, k,    m, pat) {
+  pat = k "=\"([^\"]*)\""
+  if (match(line, pat, m)) return m[1]
+  return ""
+}
+function jstr(line, key,    m, pat) {
+  pat = "\"" key "\":\"([^\"]*)\""
+  if (match(line, pat, m)) return m[1]
+  return ""
+}
+function jint(line, key,    m, pat) {
+  pat = "\"" key "\":([0-9]+)"
+  if (match(line, pat, m)) return m[1] + 0
+  return -1
+}
+function bits(n, w,   i, s) {
+  s = ""
+  for (i = w - 1; i >= 0; i--) s = s and(rshift(n,i),1)
+  return s
+}
+{
+  line = $0
+  tick = input = state = winner = lane = leaf = -1
+  cls = point = addr = symbol = control_role = ""
+  vs_applied = "false"; vs_cp = ""; vs_mode = ""; vs_supp_cp = ""
+
+  if (line ~ /^\{/) {
+    tick = jint(line, "tick")
+    input = jint(line, "input")
+    state = jint(line, "state")
+    winner = jint(line, "winner")
+    lane = jint(line, "lane")
+    leaf = jint(line, "leaf")
+    cls = jstr(line, "class")
+    point = jstr(line, "point")
+    addr = jstr(line, "address_bits")
+    symbol = jstr(line, "symbol")
+    control_role = jstr(line, "control_role")
+    vs_applied = (line ~ /"vs_applied":true/ ? "true" : "false")
+    vs_cp = jstr(line, "vs_cp")
+    vs_mode = jstr(line, "vs_mode")
+    vs_supp_cp = jstr(line, "vs_supp_cp")
+  } else {
+    tick_s = get_kv(line, "tick")
+    in_s = get_kv(line, "input")
+    st_s = get_kv(line, "state")
+    win_s = get_kv(line, "winner")
+    lane_s = get_kv(line, "lane")
+    leaf_s = get_kv(line, "leaf")
+    cls = get_kv(line, "class")
+    point = get_kv(line, "point")
+    addr = get_qv(line, "address_bits")
+    symbol = get_qv(line, "symbol")
+    control_role = get_kv(line, "control_role")
+    vap = get_kv(line, "vs_applied")
+    vcp = get_kv(line, "vs_cp")
+    vmode = get_kv(line, "vs_mode")
+    vsupp = get_kv(line, "vs_supp_cp")
+
+    if (tick_s != "") tick = tick_s + 0
+    if (in_s != "") { gsub(/^0x/, "", in_s); input = strtonum("0x" in_s) }
+    if (st_s != "") { gsub(/^0x/, "", st_s); state = strtonum("0x" st_s) }
+    if (win_s != "") winner = win_s + 0
+    if (lane_s != "") lane = lane_s + 0
+    if (leaf_s != "") leaf = leaf_s + 0
+    if (vap != "") vs_applied = vap
+    if (vcp != "" && vcp != "-") vs_cp = vcp
+    if (vmode != "") vs_mode = vmode
+    if (vsupp != "" && vsupp != "-") vs_supp_cp = vsupp
+  }
+
+  if (tick < 0 || input < 0 || state < 0 || winner < 0 || cls == "" || point == "" || lane < 0 || leaf < 0) next
+
+  point_idx = substr(point, 2) + 0
+  if (addr == "") addr = bits((cls=="xx"?0:(cls=="xX"?1:(cls=="Xx"?2:3))),2) " " bits(point_idx,2) " " bits(lane,4) " " bits(leaf,4)
+
+  if (out_format == "ndjson") {
+    printf("{\"kind\":\"ttc.core.event.v1\",\"tick\":%d,\"input\":%d,\"state\":%d,\"winner\":%d,\"class\":\"%s\",\"point\":\"%s\",\"lane\":%d,\"leaf\":%d,\"address_bits\":\"%s\",\"control_role\":\"%s\",\"annotation_symbol\":\"%s\",\"vs_applied\":%s,\"vs_cp\":\"%s\",\"vs_mode\":\"%s\",\"vs_supp_cp\":\"%s\"}\n",
+      tick, input, state, winner, cls, point, lane, leaf, addr, control_role, symbol, vs_applied, vs_cp, vs_mode, vs_supp_cp)
+  } else {
+    printf("tick=%d input=0x%02X state=0x%02X winner=%d class=%s point=%s lane=%d leaf=%d address_bits=\"%s\" control_role=%s annotation_symbol=\"%s\" vs_applied=%s vs_cp=%s vs_mode=%s vs_supp_cp=%s\n",
+      tick, input, state, winner, cls, point, lane, leaf, addr, control_role, symbol, vs_applied, (vs_cp==""?"-":vs_cp), vs_mode, (vs_supp_cp==""?"-":vs_supp_cp))
+  }
+}
+'

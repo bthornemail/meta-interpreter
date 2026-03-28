@@ -7,6 +7,7 @@ cd "$ROOT_DIR"
 OUT_DIR="artifacts/xX/p0/0/0/adapters"
 BINARY_MODE="false"
 PREFIX="ttc_adapters"
+SYMBOLIC_EVENTS=""
 
 usage() {
   cat <<'USAGE'
@@ -18,6 +19,7 @@ Options:
   --out-dir DIR   Output directory (default: artifacts/xX/p0/0/0/adapters)
   --prefix NAME   Output filename prefix (default: ttc_adapters)
   --binary        Read raw bytes from stdin
+  --symbolic-events FILE  Read ttc.symbolic.event.v1 NDJSON instead of raw bytes
 USAGE
 }
 
@@ -26,6 +28,7 @@ while [[ $# -gt 0 ]]; do
     --out-dir) OUT_DIR="$2"; shift 2 ;;
     --prefix) PREFIX="$2"; shift 2 ;;
     --binary) BINARY_MODE="true"; shift ;;
+    --symbolic-events) SYMBOLIC_EVENTS="$2"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "unknown arg: $1" >&2; usage; exit 2 ;;
   esac
@@ -34,7 +37,42 @@ done
 mkdir -p "$OUT_DIR"
 
 TMP_TSV="$(mktemp)"
-if [[ "$BINARY_MODE" == "true" ]]; then
+if [[ -n "$SYMBOLIC_EVENTS" ]]; then
+  gawk '
+  function jstr(line, key,    m, pat) {
+    pat = "\"" key "\":\"([^\"]*)\""
+    if (match(line, pat, m)) return m[1]
+    return ""
+  }
+  function jint(line, key,    m, pat) {
+    pat = "\"" key "\":([0-9]+)"
+    if (match(line, pat, m)) return m[1] + 0
+    return -1
+  }
+  BEGIN {
+    split("1 2 3 4 5 6 7 8 9 10 12 14 15 16 18 20 21 24 28 30 35 36 40 42 45 48 56 60 63 70 72 80 84 90 105 112 120 126 140 144 168 180 210 240 252 280 315 336 360 420 504 560 630 720 840 1008 1260 1680 2520 5040", divs, " ")
+  }
+  {
+    tick = jint($0, "tick")
+    byte = jint($0, "input")
+    cls = jstr($0, "class")
+    point = jstr($0, "point")
+    winner = jint($0, "winner")
+    lane = jint($0, "lane")
+    leaf = jint($0, "leaf")
+    vs_applied = ($0 ~ /"vs_applied":true/ ? "true" : "false")
+    vs_cp = jstr($0, "vs_cp")
+    vs_mode = jstr($0, "vs_mode")
+    vs_supp_cp = jstr($0, "vs_supp_cp")
+    if (tick < 0 || byte < 0 || cls == "" || point == "" || winner < 0 || lane < 0 || leaf < 0) next
+    lane_hex = sprintf("%02x", lane)
+    leaf_hex = sprintf("%04x", leaf)
+    lane_divisor = divs[lane + 1] + 0
+    path = sprintf("artifacts/%s/%s/%s/%s", cls, point, lane_hex, leaf_hex)
+    printf("%d\t%d\t%s\t%s\t%d\t%d\t%s\t%d\t%s\t%d\t%s\t%s\t%s\t%s\t%s\n",
+      tick, byte, cls, point, winner, lane, lane_hex, leaf, leaf_hex, lane_divisor, path, vs_applied, vs_cp, vs_mode, vs_supp_cp)
+  }' "$SYMBOLIC_EVENTS" > "$TMP_TSV"
+elif [[ "$BINARY_MODE" == "true" ]]; then
   od -An -v -t u1 | tr -s '[:space:]' ' ' | sed 's/^ //' | gawk -f scripts/artifact_path.awk > "$TMP_TSV"
 else
   cat | gawk -f scripts/artifact_path.awk > "$TMP_TSV"
@@ -202,6 +240,10 @@ BEGIN {
 }
 {
   tick=$1; byte=$2; cls=$3; point=$4; winner=$5; lane=$6; lane_hex=$7; leaf=$8; leaf_hex=$9; lane_div=$10
+  vs_applied=($12 == "" ? "false" : $12)
+  vs_cp=$13
+  vs_mode=$14
+  vs_supp_cp=$15
   subj=sprintf("ttc:e_t%s_b%s", tick, byte)
   cls_iri=sprintf("ttc:%s", cls)
   uri=sprintf("urn:ttc:artifact:%s:%s:%s:%s:t%s:b%s", cls, point, lane_hex, leaf_hex, tick, byte)
@@ -217,6 +259,12 @@ BEGIN {
   print "  ttc:winner \"" winner "\"^^xsd:integer ;"
   print "  ttc:laneDivisor \"" lane_div "\"^^xsd:integer ;"
   print "  ttc:unicodeBraille \"U+" cp_hex "\" ;"
+  if (vs_applied == "true") {
+    print "  ttc:vsApplied \"true\"^^xsd:boolean ;"
+    print "  ttc:vsCP \"" vs_cp "\" ;"
+    print "  ttc:vsMode \"" vs_mode "\" ;"
+    if (vs_supp_cp != "") print "  ttc:vsSuppCP \"" vs_supp_cp "\" ;"
+  }
   print "  ttc:uri \"" uri "\" ."
   print ""
 }
@@ -232,11 +280,15 @@ gawk -F '\t' '
 BEGIN { print "["; first=1 }
 {
   tick=$1; byte=$2; cls=$3; point=$4; winner=$5; lane=$6; lane_hex=$7; leaf=$8; leaf_hex=$9; lane_div=$10
+  vs_applied=($12 == "" ? "false" : $12)
+  vs_cp=$13
+  vs_mode=$14
+  vs_supp_cp=$15
   cp=0x2800 + byte
   cp_hex=toupper(sprintf("%04x", cp))
   glyph=sprintf("%c", cp)
   if (!first) print ","
-  printf "  {\"kind\":\"ttc.unicode.event.v1\",\"tick\":%d,\"byte\":%d,\"class\":\"%s\",\"point\":\"%s\",\"winner\":%d,\"lane\":%d,\"lane_hex\":\"%s\",\"leaf\":%d,\"leaf_hex\":\"%s\",\"lane_divisor\":%d,\"braille_cp\":\"U+%s\",\"braille_glyph\":\"%s\"}", tick, byte, cls, point, winner, lane, lane_hex, leaf, leaf_hex, lane_div, cp_hex, glyph
+  printf "  {\"kind\":\"ttc.unicode.event.v1\",\"tick\":%d,\"byte\":%d,\"class\":\"%s\",\"point\":\"%s\",\"winner\":%d,\"lane\":%d,\"lane_hex\":\"%s\",\"leaf\":%d,\"leaf_hex\":\"%s\",\"lane_divisor\":%d,\"braille_cp\":\"U+%s\",\"braille_glyph\":\"%s\",\"vs_applied\":%s,\"vs_cp\":\"%s\",\"vs_mode\":\"%s\",\"vs_supp_cp\":\"%s\"}", tick, byte, cls, point, winner, lane, lane_hex, leaf, leaf_hex, lane_div, cp_hex, glyph, vs_applied, vs_cp, vs_mode, vs_supp_cp
   first=0
 }
 END { print "\n]" }
@@ -249,6 +301,10 @@ BEGIN {
 }
 {
   tick=$1; byte=$2; cls=$3; point=$4; winner=$5; lane=$6; lane_hex=$7; leaf=$8; leaf_hex=$9; lane_div=$10
+  vs_applied=($12 == "" ? "false" : $12)
+  vs_cp=$13
+  vs_mode=$14
+  vs_supp_cp=$15
   cp=0x2800 + byte
   cp_hex=toupper(sprintf("%04x", cp))
   uri=sprintf("urn:ttc:artifact:%s:%s:%s:%s:t%s:b%s", cls, point, lane_hex, leaf_hex, tick, byte)
@@ -262,6 +318,12 @@ BEGIN {
   print "    <ttc:leafHex>" leaf_hex "</ttc:leafHex>"
   print "    <ttc:laneDivisor>" lane_div "</ttc:laneDivisor>"
   print "    <ttc:brailleCP>U+" cp_hex "</ttc:brailleCP>"
+  if (vs_applied == "true") {
+    print "    <ttc:vsApplied>true</ttc:vsApplied>"
+    print "    <ttc:vsCP>" vs_cp "</ttc:vsCP>"
+    print "    <ttc:vsMode>" vs_mode "</ttc:vsMode>"
+    if (vs_supp_cp != "") print "    <ttc:vsSuppCP>" vs_supp_cp "</ttc:vsSuppCP>"
+  }
   print "    <ttc:uri>" uri "</ttc:uri>"
   print "  </ttc:Event>"
 }

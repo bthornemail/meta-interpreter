@@ -95,4 +95,83 @@ if [[ "$rdf_events" -ne "$unicode_events" || "$rdf_events" -ne "$uri_events" || 
   exit 1
 fi
 
+tmp_rdf="$(mktemp)"
+tmp_uri="$(mktemp)"
+
+gawk '
+function trimq(s) { gsub(/^"/, "", s); gsub(/"$/, "", s); return s }
+function finalize() {
+  if (!in_event) return
+  if (tick == "" || cls == "" || point == "" || lane == "" || leaf == "" || uri == "") {
+    print "invalid_rdf_event" > "/dev/stderr"
+    exit 2
+  }
+  n = split(uri, p, ":")
+  if (n < 9 || p[1] != "urn" || p[2] != "ttc" || p[3] != "artifact") {
+    print "invalid_rdf_uri " uri > "/dev/stderr"
+    exit 2
+  }
+  u_cls = p[4]; u_point = p[5]; u_lane = p[6]; u_leaf = p[7]
+  u_tick = p[8]; sub(/^t/, "", u_tick)
+  if (u_cls != cls || u_point != point || u_lane != lane || u_leaf != leaf || u_tick != tick) {
+    print "rdf_uri_mismatch tick=" tick " cls=" cls " point=" point " lane=" lane " leaf=" leaf " uri=" uri > "/dev/stderr"
+    exit 2
+  }
+  print tick "\t" cls "\t" point "\t" lane "\t" leaf "\t" uri
+  in_event = 0
+}
+BEGIN { in_event = 0 }
+/^ttc:e_t[0-9]+_b[0-9]+ a ttc:ArtifactEvent ;$/ {
+  finalize()
+  in_event = 1
+  tick = cls = point = lane = leaf = uri = ""
+}
+in_event && /ttc:hasClass ttc:[^ ]+ ;$/ {
+  s = $2; sub(/^ttc:/, "", s)
+  cls = s
+}
+in_event && /ttc:point "[^"]+" ;$/ {
+  s = $2; point = trimq(s)
+}
+in_event && /ttc:laneHex "[^"]+" ;$/ {
+  s = $2; lane = trimq(s)
+}
+in_event && /ttc:leafHex "[^"]+" ;$/ {
+  s = $2; leaf = trimq(s)
+}
+in_event && /ttc:tick "[0-9]+"\^\^xsd:integer ;$/ {
+  s = $2
+  gsub(/[^0-9]/, "", s)
+  tick = s
+}
+in_event && /ttc:uri "urn:ttc:artifact:[^"]+" \.$/ {
+  s = $2; uri = trimq(s)
+  finalize()
+}
+END { finalize() }
+' "$RDF_FILE" | sort -n > "$tmp_rdf"
+
+gawk '
+/^urn:ttc:artifact:/ {
+  uri = $0
+  n = split(uri, p, ":")
+  if (n < 9) {
+    print "invalid_uri_line " uri > "/dev/stderr"
+    exit 2
+  }
+  cls = p[4]; point = p[5]; lane = p[6]; leaf = p[7]
+  tick = p[8]; sub(/^t/, "", tick)
+  print tick "\t" cls "\t" point "\t" lane "\t" leaf "\t" uri
+}
+' "$URI_FILE" | sort -n > "$tmp_uri"
+
+if ! diff -u "$tmp_rdf" "$tmp_uri" >/dev/null; then
+  echo "triangulation mismatch: RDF event identity does not align with URI identity" >&2
+  diff -u "$tmp_rdf" "$tmp_uri" || true
+  rm -f "$tmp_rdf" "$tmp_uri"
+  exit 1
+fi
+
+rm -f "$tmp_rdf" "$tmp_uri"
+
 echo "adapters validation passed (events=$rdf_events)"

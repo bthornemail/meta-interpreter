@@ -24,7 +24,7 @@ CAN_DEC_BIN := $(BIN_DIR)/ttc_decode
 WIT_BIN := $(BIN_DIR)/ttc_witness
 CAN_RUNTIME_BIN := $(BIN_DIR)/ttc_canonical_runtime
 
-.PHONY: build pipe clean codec codec-test canonical canonical-smoke busybox-smoke busybox-uri-smoke factoradic-smoke factoradic-fifo-demo braille-mnemonic adapters-smoke adapters-check rules.extract rules.validate rules.digest rules.run rules.check
+.PHONY: build pipe clean codec codec-test canonical canonical-smoke busybox-smoke busybox-uri-smoke symbolic-smoke symbolic-check factoradic-smoke factoradic-fifo-demo braille-mnemonic adapters-smoke adapters-check rules.extract rules.validate rules.digest rules.run rules.check
 
 build: $(ENC_BIN) $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) $(CAN_RUNTIME_BIN)
 
@@ -76,6 +76,18 @@ busybox-uri-smoke: | $(ARTIFACT_DIR)
 	gawk -v MODE=rdf -f ./scripts/ttc_uri.awk < $(TRIE_SAMPLE_DIR)/busybox_trace_uri.txt > $(TRIE_SAMPLE_DIR)/busybox_uri.ttl
 	@echo "wrote $(TRIE_SAMPLE_DIR)/busybox_uri.tsv and $(TRIE_SAMPLE_DIR)/busybox_uri.ttl"
 
+symbolic-smoke: | $(ARTIFACT_DIR)
+	printf '27 28 29 30 31 38 63 0 120 88 95 255 42\n' | ./scripts/ttc_busybox.sh > $(TRIE_SAMPLE_DIR)/symbolic_core_in.txt
+	./scripts/ttc_symbolic_encode --format line --vs-overlay on --out-root $(ARTIFACT_DIR) < $(TRIE_SAMPLE_DIR)/symbolic_core_in.txt > $(TRIE_SAMPLE_DIR)/symbolic.line
+	./scripts/ttc_symbolic_encode --format ndjson --vs-overlay on --write-overlay --out-root $(ARTIFACT_DIR) < $(TRIE_SAMPLE_DIR)/symbolic_core_in.txt > $(TRIE_SAMPLE_DIR)/symbolic.events.ndjson
+	./scripts/ttc_symbolic_decode --format line < $(TRIE_SAMPLE_DIR)/symbolic.line > $(TRIE_SAMPLE_DIR)/symbolic_core_out.txt
+	./scripts/export_adapters.sh --symbolic-events $(TRIE_SAMPLE_DIR)/symbolic.events.ndjson --out-dir $(TRIE_SAMPLE_DIR)/adapters_symbolic
+	@echo "wrote symbolic artifacts under $(TRIE_SAMPLE_DIR)"
+
+symbolic-check: adapters-check symbolic-smoke
+	./scripts/validate_symbolic.sh
+	@echo "symbolic check passed"
+
 factoradic-smoke: | $(ARTIFACT_DIR)
 	printf '120 88 95 1 2 3 255 0 42\n' | ./scripts/materialize_factoradic_5040.sh
 
@@ -103,7 +115,8 @@ clean:
 	rm -f $(ENC_BIN)
 	rm -f $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) $(CAN_RUNTIME_BIN)
 	rm -f $(ARTIFACT_DIR)/*.txt $(ARTIFACT_DIR)/*.json $(ARTIFACT_DIR)/*.pgm $(ARTIFACT_DIR)/*.ndjson $(ARTIFACT_DIR)/*.bin
-	find $(ARTIFACT_DIR)/xx $(ARTIFACT_DIR)/xX $(ARTIFACT_DIR)/Xx $(ARTIFACT_DIR)/XX -type f \( -name "trace.log" -o -name "state.bin" -o -name "board.txt" -o -name "aztec.txt" -o -name "meta.json" \) 2>/dev/null | xargs -r rm -f
+	find $(ARTIFACT_DIR)/xx $(ARTIFACT_DIR)/xX $(ARTIFACT_DIR)/Xx $(ARTIFACT_DIR)/XX -type f \( -name "trace.log" -o -name "state.bin" -o -name "board.txt" -o -name "aztec.txt" -o -name "meta.json" -o -name ".canon" -o -name ".block" -o -name ".artifact" -o -name ".bitboard" -o -name ".golden" -o -name ".negative" -o -name ".vs_overlay" \) 2>/dev/null | xargs -r rm -f
+	find blocks/xx blocks/xX blocks/Xx blocks/XX -type f \( -name ".canon" -o -name ".artifact" -o -name ".registry" -o -name ".include.*" \) 2>/dev/null | xargs -r rm -f
 
 rules.extract:
 	./scripts/extract_rules.sh

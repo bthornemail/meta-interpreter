@@ -80,6 +80,20 @@ This emits per-tick canonical lines with:
 By default it also writes directly to trie leaf paths:
 - `artifacts/{xx|xX|Xx|XX}/{p0|p1|p2}/{lane}/{leaf}/trace.log`
 - `.../meta.json`
+- declaration surfaces at each leaf:
+  - `.canon`
+  - `.block`
+  - `.artifact`
+  - `.bitboard`
+  - `.golden`
+  - `.negative`
+
+And a deterministic blocks mirror leaf for registry inclusion control:
+- `blocks/{xx|xX|Xx|XX}/{p0|p1|p2}/{lane}/{leaf}/`
+  - `.canon`
+  - `.artifact`
+  - `.registry`
+  - `.include.*` (dotfiles determine block inclusion)
 
 URI/RDF adapter from busybox lines:
 
@@ -87,6 +101,36 @@ URI/RDF adapter from busybox lines:
 make busybox-uri-smoke
 gawk -f scripts/ttc_uri.awk < artifacts/xX/p0/0/0/busybox_trace_uri.txt
 gawk -v MODE=rdf -f scripts/ttc_uri.awk < artifacts/xX/p0/0/0/busybox_trace_uri.txt
+```
+
+## Symbolic Encoder Layer
+
+Runtime stays canonical; symbolic layer is a separate projection/roundtrip pair:
+
+```bash
+make symbolic-smoke
+cat events.txt | ./scripts/ttc_symbolic_encode --format line
+cat events.txt | ./scripts/ttc_symbolic_encode --format ndjson
+cat symbolic.line | ./scripts/ttc_symbolic_decode --format line
+cat events.txt | ./scripts/ttc_symbolic_encode --format ndjson --vs-overlay on --write-overlay --out-root artifacts
+```
+
+Symbolic controls in v1:
+- `FS`, `GS`, `RS`, `US`, `ESC`, `NULL`, `SID`, `OID`
+- `NULL` is centroid/pause marker in symbolic output; runtime reset law is unchanged.
+- SID/OID gating is symbolic-only:
+  - `OID` is `oid_pending` unless `sid_count_in_epoch >= 2`
+  - never mutates canonical runtime transition.
+- VS overlay (annotation-only, non-authoritative):
+  - emitted fields: `vs_applied`, `vs_cp`, `vs_mode`, `vs_supp_cp`
+  - FE00/FE01 alignment overlay for mapped fullwidth punctuation forms
+  - optional leaf declaration dotfile: `.vs_overlay`
+  - never used to derive canonical address or URI identity.
+
+Validation:
+
+```bash
+make symbolic-check
 ```
 
 Manual usage:
@@ -143,3 +187,6 @@ Default output directory:
 
 Validation gate:
 - `scripts/validate_adapters.sh` (called by `make adapters-check`)
+- includes triangulation checks:
+  - RDF event identity matches URI identity (`class/point/lane/leaf/tick`)
+  - fails closed on structural drift across semantic layers

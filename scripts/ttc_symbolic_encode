@@ -1,0 +1,232 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+FORMAT="line"
+VS_OVERLAY="on"
+WRITE_OVERLAY="false"
+OUT_ROOT="artifacts"
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  cat events.txt | scripts/ttc_symbolic_encode [--format line|ndjson] [--vs-overlay on|off] [--write-overlay] [--out-root DIR]
+
+Input event fields expected (line-oriented key=value):
+  tick,input,state,winner (required)
+  class,point,lane,leaf,address_bits (optional; derived if missing)
+
+Output:
+  symbolic.line.v1 (line) or symbolic.events.ndjson (ndjson)
+USAGE
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --format) FORMAT="$2"; shift 2 ;;
+    --vs-overlay) VS_OVERLAY="$2"; shift 2 ;;
+    --write-overlay) WRITE_OVERLAY="true"; shift ;;
+    --out-root) OUT_ROOT="$2"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    *) echo "unknown arg: $1" >&2; usage; exit 2 ;;
+  esac
+done
+
+if [[ "$FORMAT" != "line" && "$FORMAT" != "ndjson" ]]; then
+  echo "invalid --format: $FORMAT" >&2
+  exit 2
+fi
+if [[ "$VS_OVERLAY" != "on" && "$VS_OVERLAY" != "off" ]]; then
+  echo "invalid --vs-overlay: $VS_OVERLAY" >&2
+  exit 2
+fi
+
+gawk -v out_format="$FORMAT" -v vs_overlay="$VS_OVERLAY" -v write_overlay="$WRITE_OVERLAY" -v out_root="$OUT_ROOT" '
+function get_kv(line, k,    m, pat) {
+  pat = k "=([^ ]+)"
+  if (match(line, pat, m)) return m[1]
+  return ""
+}
+function get_qv(line, k,    m, pat) {
+  pat = k "=\"([^\"]*)\""
+  if (match(line, pat, m)) return m[1]
+  return ""
+}
+function bits(n, w,   i, b, s) {
+  s = ""
+  for (i = w - 1; i >= 0; i--) {
+    b = and(rshift(n, i), 1)
+    s = s b
+  }
+  return s
+}
+function class_name(idx) {
+  if (idx == 0) return "xx"
+  if (idx == 1) return "xX"
+  if (idx == 2) return "Xx"
+  return "XX"
+}
+function fano_winner(t,    basis7, chiral, p0, p2) {
+  basis7 = t % 7
+  chiral = int(t / 7) % 2
+
+  if (basis7 == 0) { p0 = 0; p2 = 3 }
+  else if (basis7 == 1) { p0 = 0; p2 = 5 }
+  else if (basis7 == 2) { p0 = 0; p2 = 6 }
+  else if (basis7 == 3) { p0 = 1; p2 = 4 }
+  else if (basis7 == 4) { p0 = 1; p2 = 6 }
+  else if (basis7 == 5) { p0 = 2; p2 = 6 }
+  else { p0 = 3; p2 = 5 }
+
+  return chiral ? p2 : p0
+}
+function control_role(b) {
+  if (b == 0x00) return "NULL"
+  if (b == 0x1B) return "ESC"
+  if (b == 0x1C) return "FS"
+  if (b == 0x1D) return "GS"
+  if (b == 0x1E) return "RS"
+  if (b == 0x1F) return "US"
+  if (b == 0x26) return "SID"
+  if (b == 0x3F) return "OID"
+  return "DATA"
+}
+function esc_json(s,   t) {
+  t = s
+  gsub(/\\/, "\\\\", t)
+  gsub(/"/, "\\\"", t)
+  return t
+}
+function compute_vs(byte, cls_idx, lane,   mode_bit, base_cp) {
+  vs_applied = "false"
+  vs_cp = ""
+  vs_mode = "none"
+  vs_supp_cp = ""
+
+  if (vs_overlay != "on") return
+
+  # FE00/FE01 overlay map for fullwidth punctuation variants
+  if (byte == 33) base_cp = "U+FF01"      # !
+  else if (byte == 44) base_cp = "U+FF0C" # ,
+  else if (byte == 46) base_cp = "U+FF0E" # .
+  else if (byte == 58) base_cp = "U+FF1A" # :
+  else if (byte == 59) base_cp = "U+FF1B" # ;
+  else if (byte == 63) base_cp = "U+FF1F" # ?
+  else if (byte == 48) base_cp = "U+FF10" # 0
+  else base_cp = ""
+
+  if (base_cp == "") return
+
+  vs_applied = "true"
+  mode_bit = and(cls_idx, 1)
+  if (mode_bit == 0) {
+    vs_cp = "U+FE00"
+    vs_mode = "corner"
+  } else {
+    vs_cp = "U+FE01"
+    vs_mode = "center"
+  }
+
+  # optional supplementary selector reference metadata
+  vs_supp_cp = sprintf("U+E01%02X", and(lane, 0xEF))
+}
+BEGIN {
+  sid_count = 0
+  frame_state = "deterministic"
+}
+{
+  line = $0
+  tick_s = get_kv(line, "tick")
+  in_s = get_kv(line, "input")
+  st_s = get_kv(line, "state")
+  win_s = get_kv(line, "winner")
+
+  if (tick_s == "" || in_s == "" || st_s == "") next
+
+  tick = tick_s + 0
+
+  gsub(/^0x/, "", in_s)
+  input = strtonum("0x" in_s)
+
+  gsub(/^0x/, "", st_s)
+  state = strtonum("0x" st_s)
+
+  if (tick > 0 && (tick % 5040) == 0) {
+    sid_count = 0
+    frame_state = "deterministic"
+  }
+
+  if (win_s == "") winner = fano_winner(tick)
+  else winner = win_s + 0
+
+  cls = get_kv(line, "class")
+  if (cls == "") {
+    c0 = and(rshift(input, 5), 1)
+    c1 = and(tick, 1)
+    cls_idx = or(lshift(c1, 1), c0)
+    cls = class_name(cls_idx)
+  } else {
+    cls_idx = (cls == "xx" ? 0 : (cls == "xX" ? 1 : (cls == "Xx" ? 2 : 3)))
+  }
+
+  point = get_kv(line, "point")
+  if (point == "") {
+    point_idx = winner % 3
+    point = sprintf("p%d", point_idx)
+  } else {
+    point_idx = substr(point, 2) + 0
+  }
+
+  lane_s = get_kv(line, "lane")
+  if (lane_s == "") lane = and(or(lshift(winner,2), rshift(input,4)), 15)
+  else lane = lane_s + 0
+
+  leaf_s = get_kv(line, "leaf")
+  if (leaf_s == "") leaf = and(input, 15)
+  else leaf = leaf_s + 0
+
+  addr = get_qv(line, "address_bits")
+  if (addr == "") {
+    addr = bits(cls_idx,2) " " bits(point_idx,2) " " bits(lane,4) " " bits(leaf,4)
+  }
+
+  role = control_role(input)
+  braille_cp = sprintf("U+%04X", 0x2800 + state)
+  symbol = (role == "DATA" ? sprintf("%c", 0x2800 + state) : "<" role ">")
+  oid_state = "n/a"
+
+  if (role == "NULL") {
+    sid_count = 0
+    frame_state = "deterministic"
+  } else if (role == "SID") {
+    sid_count++
+  } else if (role == "OID") {
+    if (sid_count >= 2) {
+      oid_state = "consolidated"
+      frame_state = "projection"
+    } else {
+      oid_state = "oid_pending"
+    }
+  }
+
+  compute_vs(input, cls_idx, lane)
+
+  source_id = sprintf("%s/%s/%x/%x@%d", cls, point, lane, leaf, tick)
+  path = sprintf("%s/%s/%s/%x/%x", out_root, cls, point, lane, leaf)
+
+  if (write_overlay == "true" && vs_applied == "true") {
+    cmd = "mkdir -p \"" path "\""
+    system(cmd)
+    overlay_json = sprintf("{\"kind\":\"ttc.vs.overlay.v1\",\"tick\":%d,\"input\":%d,\"class\":\"%s\",\"point\":\"%s\",\"lane\":%d,\"leaf\":%d,\"vs_cp\":\"%s\",\"vs_mode\":\"%s\",\"vs_supp_cp\":\"%s\",\"source_identity\":\"%s\"}", tick, input, cls, point, lane, leaf, vs_cp, vs_mode, vs_supp_cp, source_id)
+    print overlay_json >> (path "/.vs_overlay")
+    close(path "/.vs_overlay")
+  }
+
+  if (out_format == "ndjson") {
+    printf("{\"kind\":\"ttc.symbolic.event.v1\",\"tick\":%d,\"input\":%d,\"state\":%d,\"winner\":%d,\"class\":\"%s\",\"point\":\"%s\",\"lane\":%d,\"leaf\":%d,\"address_bits\":\"%s\",\"symbol\":\"%s\",\"control_role\":\"%s\",\"braille_cp\":\"%s\",\"frame_state\":\"%s\",\"sid_count\":%d,\"oid_state\":\"%s\",\"vs_applied\":%s,\"vs_cp\":\"%s\",\"vs_mode\":\"%s\",\"vs_supp_cp\":\"%s\",\"source_identity\":\"%s\"}\n",
+      tick, input, state, winner, cls, point, lane, leaf, esc_json(addr), esc_json(symbol), role, braille_cp, frame_state, sid_count, oid_state, vs_applied, vs_cp, vs_mode, vs_supp_cp, source_id)
+  } else {
+    printf("kind=ttc.symbolic.event.v1 tick=%d input=0x%02X state=0x%02X winner=%d class=%s point=%s lane=%d leaf=%d address_bits=\"%s\" symbol=\"%s\" control_role=%s braille_cp=%s frame_state=%s sid_count=%d oid_state=%s vs_applied=%s vs_cp=%s vs_mode=%s vs_supp_cp=%s source_identity=%s\n",
+      tick, input, state, winner, cls, point, lane, leaf, addr, symbol, role, braille_cp, frame_state, sid_count, oid_state, vs_applied, (vs_cp==""?"-":vs_cp), vs_mode, (vs_supp_cp==""?"-":vs_supp_cp), source_id)
+  }
+}
+'

@@ -39,6 +39,10 @@ done
 
 PREV_PATH="${OUT_ROOT}/xx/p0/0/0"
 
+. "$(
+  cd "$(dirname "$0")" && pwd
+)/leaf_contract.sh"
+
 bitstr() {
   n="$1"
   width="$2"
@@ -138,6 +142,7 @@ process_byte() {
     cat > "$path/meta.json" <<EOF
 {"schema":"ttc.busybox.addr.v1","tick":$TICK,"input":$input,"state":$STATE,"basis7":$basis7,"basis8":$basis8,"winner":$winner,"class":"$class","class_bits":$class_idx,"point":"$point","point_index":$point_idx,"lane":"$lane_hex","lane_value":$lane,"leaf":"$leaf_hex","leaf_value":$leaf,"address_bits":"$address_bits","parent":"$PREV_PATH","path":"$path"}
 EOF
+    ttc_write_leaf_contract "$path" "ttc.busybox.addr.v1" "$class" "$point" "$lane_hex" "$leaf_hex" "$address_bits" "$TICK" "$input" "$STATE" "$PREV_PATH" "scripts/ttc_busybox.sh"
   fi
 
   printf 'tick=%d input=0x%02X state=0x%02X basis7=%d basis8=%d winner=%d class=%s point=%s lane=%d leaf=%d replay_seq=%s incidence_seq=%s config_seq=%s address_bits="%s" parent=%s path=%s\n' \
