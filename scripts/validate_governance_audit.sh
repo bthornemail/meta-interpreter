@@ -16,6 +16,11 @@ from pathlib import Path
 summary = Path("artifacts/governance/summary.txt").read_text(encoding="utf-8")
 assert "active_failures=" in summary
 assert "historical_warnings=" in summary
+assert "ontology_violations:" in summary
+assert "projection -> runtime:" in summary
+assert "runtime -> projection:" in summary
+assert "step_digest -> identity:" in summary
+assert "step_digest -> grammar:" in summary
 
 for name in ("active_audit.ndjson", "archive_audit.ndjson"):
     path = Path("artifacts/governance") / name

@@ -15,22 +15,32 @@ static uint32_t ttc_choose_u32(uint32_t n, uint32_t k) {
 }
 
 void ttc_incidence_from_tick(uint64_t tick, uint8_t winner, ttc_incidence *out) {
+    uint64_t step_digest;
+    step_digest = (tick ^ ((uint64_t)winner << 8u) ^ ((uint64_t)(tick % 7u) << 16u) ^ ((uint64_t)((tick / 7u) % 2u) << 24u));
+    ttc_incidence_from_step_digest(tick, step_digest, winner, out);
+}
+
+void ttc_incidence_from_step_digest(uint64_t tick, uint64_t step_digest, uint8_t winner, ttc_incidence *out) {
     uint32_t layer;
     uint32_t left;
     uint32_t middle;
     uint32_t right;
     if (!out) return;
-    layer = (uint32_t)(tick % 16u);
-    left = (uint32_t)(winner % (layer + 1u));
-    middle = (uint32_t)((tick / 7u) % (layer + 1u - left));
+    layer = (uint32_t)(step_digest % 16u);
+    left = (uint32_t)((step_digest >> 0u) % (uint64_t)(layer + 1u));
+    middle = (uint32_t)((step_digest >> 4u) % (uint64_t)(layer + 1u - left));
     right = layer - left - middle;
 
     out->tick = tick;
+    out->step_digest = step_digest;
     out->arity = 3u;
     out->line_index = (uint8_t)(tick % 7u);
     out->chiral = (uint8_t)((tick / 7u) % 2u);
     out->branch = (uint8_t)(winner % 3u);
     out->layer = (uint8_t)layer;
+    out->x = (uint8_t)left;
+    out->y = (uint8_t)middle;
+    out->z = (uint8_t)right;
     out->lane_mod = (uint8_t)((left + 2u * middle + 3u * right) % 15u);
     out->binomial_left = (uint16_t)ttc_choose_u32(layer, left);
     out->binomial_right = (uint16_t)ttc_choose_u32(layer, right);

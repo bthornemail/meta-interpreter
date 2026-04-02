@@ -30,6 +30,7 @@ typedef struct {
     uint8_t input;
     uint64_t prev_state;
     uint64_t curr_state;
+    uint64_t step_digest;
     uint8_t state8;
     uint8_t basis7;
     uint8_t basis8;
@@ -51,6 +52,7 @@ typedef struct {
 void ttc_runtime_config_default(ttc_runtime_config *config);
 void ttc_runtime_init(ttc_runtime *rt, const ttc_runtime_config *config);
 void ttc_runtime_reset(ttc_runtime *rt, const ttc_runtime_config *config);
+uint64_t ttc_step_digest(ttc_rule_version rule_version, uint64_t tick, uint64_t prev_state, uint8_t input, uint64_t curr_state, uint8_t basis7, uint8_t basis8, uint8_t winner);
 int ttc_runtime_step(ttc_runtime *rt, uint8_t input, ttc_event *out);
 void ttc_project_board_for_state(ttc_rule_version rule_version, uint64_t state, uint64_t tick, uint8_t board[TTC_BOARD_SLOTS]);
 void ttc_project_board_for_runtime(const ttc_runtime *rt, uint8_t board[TTC_BOARD_SLOTS]);

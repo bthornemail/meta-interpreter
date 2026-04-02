@@ -65,6 +65,17 @@ static int ttc_factoradic_digit(int hexwt, int radix) {
     return hexwt % radix;
 }
 
+static uint64_t ttc_witness_step_digest_legacy(uint8_t byte, uint64_t tick, uint8_t winner, int chiral) {
+    uint64_t d0;
+    uint64_t d1;
+    uint64_t d2;
+
+    d0 = (uint64_t)byte ^ ((uint64_t)byte << 8u) ^ tick ^ ((uint64_t)winner << 24u);
+    d1 = (d0 << 1u) ^ (d0 << 3u) ^ (d0 >> 2u);
+    d2 = d1 ^ ((uint64_t)(tick % 7u) << 16u) ^ ((uint64_t)(tick & 7u) << 20u) ^ ((uint64_t)(chiral & 1) << 28u);
+    return d2;
+}
+
 int ttc_witness_a13_encode(const uint8_t *in, size_t in_len, uint8_t **out, size_t *out_len) {
     size_t cap;
     size_t n = 0;
@@ -236,7 +247,7 @@ int ttc_witness_encode_step(uint8_t byte, uint64_t tick, ttc_witness_step *out) 
     out->hexwt = ttc_braille_hexwt(byte);
     out->chiral = (int)((tick / 7u) % 2u);
     winner = ttc_fano_winner(tick, out->chiral);
-    ttc_incidence_from_tick(tick, (uint8_t)winner, &incidence);
+    ttc_incidence_from_step_digest(tick, ttc_witness_step_digest_legacy(byte, tick, (uint8_t)winner, out->chiral), (uint8_t)winner, &incidence);
     ttc_grammar_interpret_byte(byte, 0u, &grammar);
     return ttc_witness_encode_step_structured(byte, &incidence, &grammar, out);
 }

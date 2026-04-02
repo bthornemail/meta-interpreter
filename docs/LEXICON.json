@@ -4,6 +4,9 @@
   "substrate_order": [
     "substrate"
   ],
+  "boundary_order": [
+    "runtime_incidence_boundary"
+  ],
   "layer_order": [
     "runtime",
     "timing",
@@ -19,6 +22,7 @@
   ],
   "keywords": {
     "bytes": "substrate",
+    "step_digest": "runtime_incidence_boundary",
 
     "runtime": "runtime",
     "state": "runtime",
@@ -38,6 +42,8 @@
     "A14": "timing",
 
     "incidence": "incidence",
+    "step seed": "incidence",
+    "incidence seed": "incidence",
     "Pascal": "incidence",
     "Pascal triangle": "incidence",
     "Pascal matrix": "incidence",
@@ -135,6 +141,7 @@
     "package": "artifact",
     "payload": "artifact",
     "hash": "artifact",
+    "artifact_hash": "artifact",
     "fingerprint": "artifact",
     "identity": "artifact",
     "verification": "artifact",
@@ -157,9 +164,12 @@
     "grid (projection)",
     "matrix (transport)",
     "JSON Canvas (projection)",
-    "FIFO (transport)"
+    "FIFO (transport)",
+    "step_digest (boundary)",
+    "artifact_hash (artifact)"
   ],
   "required_mappings": {
+    "step_digest": "runtime_incidence_boundary",
     "Braille": "witness",
     "hexagram": "witness",
     "Pascal": "incidence",
@@ -171,6 +181,7 @@
     "JSON Canvas": "projection",
     "Aztec": "barcode",
     "artifact": "artifact",
+    "artifact_hash": "artifact",
     "bytes": "substrate",
     "FIFO": "transport",
     "pipe": "transport",

@@ -2,3 +2,15 @@ active_failures=0
 historical_warnings=13
 warn:missing_required_clarification=6
 warn:reserved_name_misuse=7
+ontology_violations:
+  Aztec -> structure: 0
+  artifact -> structure: 0
+  bytes -> artifact: 0
+  bytes -> projection: 0
+  bytes -> transport: 0
+  matrix -> identity: 0
+  projection -> runtime: 0
+  runtime -> projection: 0
+  step_digest -> grammar: 0
+  step_digest -> identity: 0
+  transport -> semantics: 0

@@ -68,15 +68,17 @@ static int cmd_runtime(int argc, char **argv) {
         if (ttc_runtime_step(&rt, (uint8_t)ch, &ev) != 0) {
             return 1;
         }
-        ttc_incidence_from_tick(ev.tick, ev.winner, &incidence);
+        ttc_incidence_from_step_digest(ev.tick, ev.step_digest, ev.winner, &incidence);
         ttc_grammar_interpret_byte(ev.input, escape_depth, &grammar);
         escape_depth = grammar.escape_depth;
         if (ttc_address_from_structure(&incidence, &grammar, ev.winner, &address) != 0) {
             return 1;
         }
-        printf("{\"rule_version\":%d,\"tick\":%llu,\"input\":%u,\"state8\":%u,\"curr_state\":%llu,\"incidence_coeff\":%u,\"grammar_role\":%u,\"escape_depth\":%u,\"address_slot\":%u,\"address_lane\":%u,\"address_channel\":%u}\n",
+        printf("{\"rule_version\":%d,\"tick\":%llu,\"input\":%u,\"state8\":%u,\"curr_state\":%llu,\"step_digest\":%llu,\"incidence_layer\":%u,\"incidence_x\":%u,\"incidence_y\":%u,\"incidence_z\":%u,\"incidence_coeff\":%u,\"grammar_role\":%u,\"escape_depth\":%u,\"address_slot\":%u,\"address_lane\":%u,\"address_channel\":%u}\n",
                (int)ev.rule_version, (unsigned long long)ev.tick, ev.input, ev.state8,
-               (unsigned long long)ev.curr_state, incidence.trinomial_coeff, (unsigned)grammar.role, (unsigned)grammar.escape_depth,
+               (unsigned long long)ev.curr_state, (unsigned long long)ev.step_digest,
+               (unsigned)incidence.layer, (unsigned)incidence.x, (unsigned)incidence.y, (unsigned)incidence.z,
+               incidence.trinomial_coeff, (unsigned)grammar.role, (unsigned)grammar.escape_depth,
                (unsigned)address.slot, (unsigned)address.lane, (unsigned)address.channel);
     }
     return 0;

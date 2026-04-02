@@ -46,6 +46,123 @@ AZTEC_ALLOWED_CONTEXT = re.compile(
 AZTEC_WORD = re.compile(r"\baztec\b", re.IGNORECASE)
 HISTORICAL_REF = re.compile(r"((?:research|archive)/[A-Za-z0-9_./ -]+\.[A-Za-z0-9]+)(?::\d+(?:-\d+)?)?")
 
+ONTOLOGY_RULES = [
+    {
+        "relation": "step_digest -> identity",
+        "term": "step_digest",
+        "expected": "invalid",
+        "patterns": [
+            r"\bstep_digest\b.*\bdefines?\s+identity\b",
+            r"\bstep_digest\b.*\bis\s+identity\b",
+            r"\bstep_digest\b.*\bis\s+artifact_hash\b",
+            r"\bstep_digest\b.*\bproves?\s+identity\b",
+        ],
+    },
+    {
+        "relation": "step_digest -> grammar",
+        "term": "step_digest",
+        "expected": "invalid",
+        "patterns": [
+            r"\bstep_digest\b.*\bdefines?\s+grammar\b",
+            r"\bstep_digest\b.*\bis\s+grammar\b",
+            r"\bstep_digest\b.*\bbelongs?\s+to\b.*\bgrammar\b",
+        ],
+    },
+    {
+        "relation": "runtime -> projection",
+        "term": "runtime",
+        "expected": "invalid",
+        "patterns": [
+            r"\bruntime\b.*\bdepends?\s+on\b.*\bprojection\b",
+            r"\bruntime\b.*\buses?\b.*\bvisuali[sz]ation\b",
+            r"\bstate\b.*\bderived\s+from\b.*\b(?:rendered\s+)?grid\b",
+            r"\bexecution\b.*\buses?\b.*\bvisuali[sz]ation\b",
+        ],
+    },
+    {
+        "relation": "projection -> runtime",
+        "term": "projection",
+        "expected": "invalid",
+        "patterns": [
+            r"\bprojection\b.*\baffects?\s+runtime\b",
+            r"\bprojection\b.*\bdetermines?\s+state\b",
+            r"\brender(?:ed|ing)?\b.*\bcontrols?\s+execution\b",
+            r"\bgrid\b.*\bdecides?\s+next\s+state\b",
+            r"\bvisuali[sz]ation\b.*\bcontrols?\s+execution\b",
+        ],
+    },
+    {
+        "relation": "transport -> semantics",
+        "term": "transport",
+        "expected": "invalid",
+        "patterns": [
+            r"\btransport\b.*\bdefines?\s+semantics\b",
+            r"\btransport\b.*\bdefines?\s+meaning\b",
+            r"\bencoding\b.*\bdetermines?\s+semantics\b",
+            r"\bcarrier\b.*\bdefines?\s+structure\b",
+            r"\bbyte\s+stream\b.*\bdetermines?\s+semantics\b",
+        ],
+    },
+    {
+        "relation": "matrix -> identity",
+        "term": "matrix",
+        "expected": "invalid",
+        "patterns": [
+            r"\bmatrix\b.*\bdefines?\s+identity\b",
+            r"\bmatrix\b.*\bis\s+identity\b",
+            r"\bgrid\b.*\bfingerprint\b.*\bcanonical\b",
+            r"\blayout\b.*\bdefines?\s+artifact\b",
+            r"\bmatrix\s+hash\b",
+        ],
+    },
+    {
+        "relation": "artifact -> structure",
+        "term": "artifact",
+        "expected": "invalid",
+        "patterns": [
+            r"\bartifact\b.*\bdefines?\s+structure\b",
+            r"\bpackage\b.*\bdetermines?\s+layout\b",
+            r"\bhash\b.*\bdetermines?\s+arrangement\b",
+            r"\bartifact\b.*\bdefines?\s+layout\b",
+        ],
+    },
+    {
+        "relation": "Aztec -> structure",
+        "term": "Aztec",
+        "expected": "invalid",
+        "patterns": [
+            r"\baztec\b.*\bdefines?\s+structure\b",
+            r"\baztec\b.*\bencoding\b.*\bdetermines?\s+meaning\b",
+            r"\baztec\b.*\bis\s+canonical\s+form\b",
+            r"\baztec\b.*\bdefines?\s+meaning\b",
+        ],
+    },
+    {
+        "relation": "bytes -> transport",
+        "term": "bytes",
+        "expected": "substrate",
+        "patterns": [
+            r"\bbytes?\s+(?:is|are|=)\s+transport\b",
+        ],
+    },
+    {
+        "relation": "bytes -> projection",
+        "term": "bytes",
+        "expected": "substrate",
+        "patterns": [
+            r"\bbytes?\s+(?:is|are|=)\s+projection\b",
+        ],
+    },
+    {
+        "relation": "bytes -> artifact",
+        "term": "bytes",
+        "expected": "substrate",
+        "patterns": [
+            r"\bbytes?\s+(?:is|are|=)\s+artifact\b",
+        ],
+    },
+]
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Repo-wide lexicon/ontology governance audit")
@@ -166,6 +283,21 @@ def add_record(records, rel_path, line_no, term, expected, conflict_class, sever
     records.append(record)
 
 
+def build_ontology_patterns():
+    compiled = []
+    for rule in ONTOLOGY_RULES:
+        for pattern in rule["patterns"]:
+            compiled.append(
+                {
+                    "pattern": re.compile(pattern, re.IGNORECASE),
+                    "term": rule["term"],
+                    "expected": rule["expected"],
+                    "relation": rule["relation"],
+                }
+            )
+    return compiled
+
+
 def scan_file(path: Path, root: Path, group: str, severity: str, lexicon: dict, allowlist, cited_refs):
     rel = normalize_rel(root, path)
     if governance_meta(rel):
@@ -176,68 +308,7 @@ def scan_file(path: Path, root: Path, group: str, severity: str, lexicon: dict, 
     lines = text.splitlines()
 
     forbidden = lexicon.get("forbidden_collisions", [])
-    ontology_patterns = [
-        {
-            "pattern": re.compile(r"\bbytes?\s+(?:is|are|=)\s+transport\b", re.IGNORECASE),
-            "term": "bytes",
-            "expected": "substrate",
-            "relation": "bytes -> transport",
-        },
-        {
-            "pattern": re.compile(r"\bbytes?\s+(?:is|are|=)\s+projection\b", re.IGNORECASE),
-            "term": "bytes",
-            "expected": "substrate",
-            "relation": "bytes -> projection",
-        },
-        {
-            "pattern": re.compile(r"\bbytes?\s+(?:is|are|=)\s+artifact\b", re.IGNORECASE),
-            "term": "bytes",
-            "expected": "substrate",
-            "relation": "bytes -> artifact",
-        },
-        {
-            "pattern": re.compile(r"\bprojection\b.*\bdefines?\s+meaning\b", re.IGNORECASE),
-            "term": "projection",
-            "expected": "projection",
-            "relation": "projection -> meaning",
-        },
-        {
-            "pattern": re.compile(r"\btransport\b.*\bdefines?\s+semantics\b", re.IGNORECASE),
-            "term": "transport",
-            "expected": "transport",
-            "relation": "transport -> semantics",
-        },
-        {
-            "pattern": re.compile(r"\bmatrix\b.*\bdefines?\s+identity\b", re.IGNORECASE),
-            "term": "matrix",
-            "expected": "matrix",
-            "relation": "matrix -> identity",
-        },
-        {
-            "pattern": re.compile(r"\bartifact\b.*\bdefines?\s+structure\b", re.IGNORECASE),
-            "term": "artifact",
-            "expected": "artifact",
-            "relation": "artifact -> structure",
-        },
-        {
-            "pattern": re.compile(r"\bruntime\b.*\bdepends?\s+on\b.*\bprojection\b", re.IGNORECASE),
-            "term": "runtime",
-            "expected": "runtime",
-            "relation": "runtime -> projection",
-        },
-        {
-            "pattern": re.compile(r"\bprojection\b.*\baffects?\s+runtime\b", re.IGNORECASE),
-            "term": "projection",
-            "expected": "projection",
-            "relation": "projection -> runtime",
-        },
-        {
-            "pattern": re.compile(r"\baztec\b.*\bdefines?\s+structure\b", re.IGNORECASE),
-            "term": "Aztec",
-            "expected": lexicon["keywords"].get("Aztec"),
-            "relation": "Aztec -> structure",
-        },
-    ]
+    ontology_patterns = build_ontology_patterns()
 
     for idx, line in enumerate(lines, start=1):
         cited_by = None
@@ -290,9 +361,13 @@ def write_ndjson(path: Path, records):
 
 def write_summary(path: Path, active_records, historical_records):
     by_class = {}
+    relation_counts = {rule["relation"]: 0 for rule in ONTOLOGY_RULES}
     for rec in active_records + historical_records:
         key = (rec["severity"], rec["conflict_class"])
         by_class[key] = by_class.get(key, 0) + 1
+        relation = rec.get("relation")
+        if relation in relation_counts:
+            relation_counts[relation] += 1
 
     lines = [
         f"active_failures={len(active_records)}",
@@ -300,6 +375,9 @@ def write_summary(path: Path, active_records, historical_records):
     ]
     for key in sorted(by_class):
         lines.append(f"{key[0]}:{key[1]}={by_class[key]}")
+    lines.append("ontology_violations:")
+    for relation in sorted(relation_counts):
+        lines.append(f"  {relation}: {relation_counts[relation]}")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 

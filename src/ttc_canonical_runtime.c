@@ -31,6 +31,7 @@ typedef struct {
 
 typedef struct {
     uint64_t tick;
+    uint64_t step_digest;
     uint8_t input;
     uint8_t state;
     uint8_t basis7;
@@ -190,6 +191,7 @@ static void snapshot_fill(Snapshot *s, const ttc_event *ev) {
     const BlockRule *br_rule;
     s->tick = ev->tick;
     s->input = ev->input;
+    s->step_digest = ev->step_digest;
     s->state = ev->state8;
     s->basis7 = ev->basis7;
     s->basis8 = ev->basis8;
@@ -216,9 +218,9 @@ static void snapshot_fill(Snapshot *s, const ttc_event *ev) {
 
 static void emit_board_line(const Snapshot *s) {
     unsigned i;
-    printf("rule=v%d tick=%llu input=0x%02X input_block=%s state=0x%02X basis7=%u basis8=%u law=0x%X edit=0x%X boundary=%u winner=%u braille=U+%04X braille_block=%s braille_scale=%s board=",
+    printf("rule=v%d tick=%llu step_digest=%llu input=0x%02X input_block=%s state=0x%02X basis7=%u basis8=%u law=0x%X edit=0x%X boundary=%u winner=%u braille=U+%04X braille_block=%s braille_scale=%s board=",
            (int)s->rule_version,
-           (unsigned long long)s->tick, s->input, s->input_block, s->state, s->basis7, s->basis8,
+           (unsigned long long)s->tick, (unsigned long long)s->step_digest, s->input, s->input_block, s->state, s->basis7, s->basis8,
            s->law, s->edit, s->boundary, s->winner, s->braille, s->braille_block, s->braille_scale);
     for (i = 0; i < TTC_BOARD_SLOTS; i++) putchar(s->board[i] ? '1' : '0');
     putchar('\n');
@@ -226,8 +228,8 @@ static void emit_board_line(const Snapshot *s) {
 
 static void emit_json_step(const Snapshot *s, int comma) {
     unsigned i;
-    printf("  {\"rule_version\":%d,\"tick\":%llu,\"input\":%u,\"input_block\":\"%s\",\"state\":%u,\"basis7\":%u,\"basis8\":%u,\"law\":%u,\"edit\":%u,\"boundary\":%u,\"winner\":%u,\"braille\":%u,\"braille_block\":\"%s\",\"braille_scale\":\"%s\",\"board\":\"",
-           (int)s->rule_version, (unsigned long long)s->tick, s->input, s->input_block, s->state, s->basis7, s->basis8,
+    printf("  {\"rule_version\":%d,\"tick\":%llu,\"step_digest\":%llu,\"input\":%u,\"input_block\":\"%s\",\"state\":%u,\"basis7\":%u,\"basis8\":%u,\"law\":%u,\"edit\":%u,\"boundary\":%u,\"winner\":%u,\"braille\":%u,\"braille_block\":\"%s\",\"braille_scale\":\"%s\",\"board\":\"",
+           (int)s->rule_version, (unsigned long long)s->tick, (unsigned long long)s->step_digest, s->input, s->input_block, s->state, s->basis7, s->basis8,
            s->law, s->edit, s->boundary, s->winner, s->braille, s->braille_block, s->braille_scale);
     for (i = 0; i < TTC_BOARD_SLOTS; i++) putchar(s->board[i] ? '1' : '0');
     printf("\"}%s\n", comma ? "," : "");

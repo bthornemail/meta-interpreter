@@ -43,6 +43,10 @@ Normative system structure is frozen in:
 Governance audit policy and exemptions are driven by:
 - [GOVERNANCE_ALLOWLIST.json](/home/main/Programs/meta-interpreter/docs/GOVERNANCE_ALLOWLIST.json)
 
+All documentation and code comments are subject to lexical, structural, and relational validation against the lexicon, ontology, and governance audit.
+
+`step_digest` is the deterministic reduction of runtime event material used to seed incidence and structural expansion. It is not grammar and it is not artifact identity.
+
 ## Unified Framework
 
 The framework exposes three explicit surfaces under one namespace:

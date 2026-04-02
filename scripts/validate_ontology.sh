@@ -14,8 +14,12 @@ fi
 required_patterns=(
   "^# TTC Ontology v1"
   "All constructs reduce to canonical bytes"
+  "All derived structures originate from runtime steps"
+  "All higher-order structure is a function of step_digest"
   "produces\\(runtime, event\\)"
   "derives\\(event, timing\\)"
+  "derives\\(event, step_digest\\)"
+  "drives\\(step_digest, incidence\\)"
   "expands\\(event, incidence\\)"
   "interprets\\(incidence, grammar\\)"
   "assigns\\(grammar, address\\)"
@@ -24,6 +28,8 @@ required_patterns=(
   "renders\\(matrix, projection\\)"
   "carries\\(bytes, transport\\)"
   "identifies\\(bytes, artifact\\)"
+  "step_digest does not define identity"
+  "step_digest does not define grammar"
   "runtime is the only authority"
 )
 

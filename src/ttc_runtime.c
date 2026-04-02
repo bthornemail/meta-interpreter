@@ -72,6 +72,22 @@ static uint64_t ttc_fold7_v2(uint64_t state) {
     return state;
 }
 
+uint64_t ttc_step_digest(ttc_rule_version rule_version, uint64_t tick, uint64_t prev_state, uint8_t input, uint64_t curr_state, uint8_t basis7, uint8_t basis8, uint8_t winner) {
+    uint64_t d0;
+    uint64_t d1;
+    uint64_t d2;
+
+    d0 = prev_state ^ curr_state ^ (uint64_t)input ^ rotl64(tick, 17u);
+    d1 = rotl64(d0, 1u) ^ rotl64(d0, 3u) ^ rotr64(d0, 2u);
+    d2 = d1
+       ^ ((uint64_t)basis7 << 8u)
+       ^ ((uint64_t)basis8 << 16u)
+       ^ ((uint64_t)winner << 24u)
+       ^ ((uint64_t)rule_version << 32u);
+
+    return ttc_delta_v2(d2);
+}
+
 static void ttc_project_board_v1(uint64_t state, uint64_t tick, uint8_t board[TTC_BOARD_SLOTS]) {
     uint8_t state8 = (uint8_t)(state & 0xFFu);
     uint8_t offset = (uint8_t)((8u * (tick % 7u) + (state8 & 0x07u)) % TTC_BOARD_SLOTS);
@@ -183,17 +199,18 @@ int ttc_runtime_step(ttc_runtime *rt, uint8_t input, ttc_event *out) {
     out->input = input;
     out->prev_state = prev_state;
     out->curr_state = curr_state;
+    if (rt->config.rule_version == TTC_RULE_V2_DELTA64) {
+        out->winner = (uint8_t)((curr_state >> (tick % 64u)) & 1u);
+    } else {
+        out->winner = (uint8_t)(((tick / 7u) % 2u) ? TTC_FANO_LINES[basis7][2] : TTC_FANO_LINES[basis7][0]);
+    }
+    out->step_digest = ttc_step_digest(rt->config.rule_version, tick, prev_state, input, curr_state, basis7, basis8, out->winner);
     out->state8 = state8;
     out->basis7 = basis7;
     out->basis8 = basis8;
     out->law = (uint8_t)(state8 & 0x03u);
     out->edit = (uint8_t)(state8 & 0x0Cu);
     out->boundary = (uint8_t)((state8 & 0x80u) ? 1u : 0u);
-    if (rt->config.rule_version == TTC_RULE_V2_DELTA64) {
-        out->winner = (uint8_t)((curr_state >> (tick % 64u)) & 1u);
-    } else {
-        out->winner = (uint8_t)(((tick / 7u) % 2u) ? TTC_FANO_LINES[basis7][2] : TTC_FANO_LINES[basis7][0]);
-    }
     out->braille = (uint16_t)(0x2800u + state8);
     ttc_project_board_for_state(rt->config.rule_version, curr_state, tick, out->board);
 

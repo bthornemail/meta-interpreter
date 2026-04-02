@@ -9,10 +9,29 @@ If a term appears in another layer, it must be explicitly marked as a projection
 
 Exception:
 `bytes` belongs to the substrate category, not to an ordinary layer.
+`step_digest` belongs to the runtime-to-incidence boundary category, not to an ordinary layer.
 
 ## Layer Map
 
 `runtime -> timing -> incidence -> grammar -> address -> witness -> matrix -> projection -> transport -> barcode -> artifact`
+
+## Boundary
+
+Keywords:
+- step_digest
+
+Definition:
+Deterministic bitwise reduction of a runtime step used to seed incidence and structural expansion.
+
+Rule:
+`step_digest` is the canonicalization boundary between runtime event material and incidence.
+`step_digest` is not grammar.
+`step_digest` is not artifact identity.
+`step_digest` does not define semantics directly.
+`step_digest` feeds incidence.
+`step_digest` is replayable and deterministic.
+`step_digest` drives structural derivation.
+`step_digest` selects a point in incidence space by determining a simplex layer and coordinates within that layer.
 
 ## Substrate
 
@@ -60,6 +79,8 @@ Selection/orientation derived from runtime.
 
 Keywords:
 - incidence
+- step seed
+- incidence seed
 - Pascal
 - Pascal triangle
 - Pascal matrix
@@ -294,6 +315,10 @@ Canonical package with identity and verification.
 Identity:
 artifact = canonical identity + payload
 
+Clarifications:
+- `artifact_hash` proves identity
+- `step_digest` seeds structure
+
 ## Critical Disambiguations
 
 - Braille (witness) != Braille (projection)
@@ -321,11 +346,14 @@ artifact = canonical identity + payload
 - `matrix (transport)`
 - `JSON Canvas (projection)`
 - `FIFO (transport)`
+- `step_digest (boundary)`
+- `artifact_hash (artifact)`
 
 ## Canonical Sentence
 
 runtime generates state
 timing selects orientation
+step_digest seeds incidence
 incidence expands structure (Pascal/simplex)
 grammar interprets structure
 address names structure
@@ -340,3 +368,4 @@ For structured data and process composition:
 - FIFO/pipe/socket carry byte streams
 - NDJSON and JSON carry structured projections
 - JSON Canvas carries layout projections
+- step_digest is the deterministic reduction of runtime event material used to seed incidence and structural expansion

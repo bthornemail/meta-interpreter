@@ -75,6 +75,7 @@ if not path.exists():
 
 data = json.loads(path.read_text(encoding="utf-8"))
 required = {
+    "step_digest": "runtime_incidence_boundary",
     "Braille": "witness",
     "hexagram": "witness",
     "Pascal": "incidence",
@@ -86,6 +87,7 @@ required = {
     "JSON Canvas": "projection",
     "Aztec": "barcode",
     "artifact": "artifact",
+    "artifact_hash": "artifact",
     "bytes": "substrate",
     "FIFO": "transport",
     "pipe": "transport",
@@ -107,6 +109,9 @@ if not isinstance(layers, list) or not layers:
 substrates = data.get("substrate_order")
 if not isinstance(substrates, list) or not substrates:
     raise SystemExit("lexicon violation: docs/LEXICON.json missing substrate_order")
+boundaries = data.get("boundary_order")
+if not isinstance(boundaries, list) or not boundaries:
+    raise SystemExit("lexicon violation: docs/LEXICON.json missing boundary_order")
 
 for term, expected in required.items():
     actual = keywords.get(term)
@@ -114,7 +119,7 @@ for term, expected in required.items():
         raise SystemExit(f"lexicon violation: keyword {term!r} must map to {expected!r}, got {actual!r}")
 
 for term, layer in keywords.items():
-    if layer not in layers and layer not in substrates:
+    if layer not in layers and layer not in substrates and layer not in boundaries:
         raise SystemExit(f"lexicon violation: keyword {term!r} maps to unknown category {layer!r}")
 
 for phrase in ("Aztec transport", "artifact encoding", "matrix rendering", "witness grid", "Braille transport", "JSON is canonical", "NDJSON is canonical", "Canvas defines meaning"):
