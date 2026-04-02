@@ -13,20 +13,34 @@ RULES_OUT ?= $(TRIE_SAMPLE_DIR)/rules_run.ndjson
 
 ASM := $(SRC_DIR)/ttc_asm.awk
 VM := $(SRC_DIR)/ttc_vm.awk
-ENC_SRC := $(SRC_DIR)/ttc_fano_aztec.c
+
+RUNTIME_SRC := $(SRC_DIR)/ttc_runtime.c
+INCIDENCE_SRC := $(SRC_DIR)/ttc_incidence.c
+GRAMMAR_SRC := $(SRC_DIR)/ttc_grammar.c
+WITNESS_SRC := $(SRC_DIR)/ttc_witness.c
+AZTEC_SRC := $(SRC_DIR)/ttc_aztec.c
+
+RUNTIME_OBJ := $(BIN_DIR)/ttc_runtime.o
+INCIDENCE_OBJ := $(BIN_DIR)/ttc_incidence.o
+GRAMMAR_OBJ := $(BIN_DIR)/ttc_grammar.o
+WITNESS_OBJ := $(BIN_DIR)/ttc_witness_lib.o
+AZTEC_OBJ := $(BIN_DIR)/ttc_aztec.o
+
+RUNTIME_LIB := $(BIN_DIR)/libttc_runtime.a
+WITNESS_LIB := $(BIN_DIR)/libttc_witness.a
+AZTEC_LIB := $(BIN_DIR)/libttc_aztec.a
+FRAMEWORK_LIB := $(BIN_DIR)/libttc_framework.a
+
 ENC_BIN := $(BIN_DIR)/ttc_fano_aztec
-CAN_ENC_SRC := $(SRC_DIR)/ttc_encode.c
-CAN_DEC_SRC := $(SRC_DIR)/ttc_decode.c
-WIT_SRC := $(SRC_DIR)/ttc_witness.c
-CAN_RUNTIME_SRC := $(SRC_DIR)/ttc_canonical_runtime.c
 CAN_ENC_BIN := $(BIN_DIR)/ttc_encode
 CAN_DEC_BIN := $(BIN_DIR)/ttc_decode
 WIT_BIN := $(BIN_DIR)/ttc_witness
 CAN_RUNTIME_BIN := $(BIN_DIR)/ttc_canonical_runtime
+FRAMEWORK_BIN := $(BIN_DIR)/ttc_framework
 
-.PHONY: build pipe clean codec codec-test canonical canonical-smoke busybox-smoke busybox-uri-smoke symbolic-smoke symbolic-check factoradic-smoke factoradic-fifo-demo braille-mnemonic adapters-smoke adapters-check rules.extract rules.validate rules.digest rules.run rules.check
+.PHONY: build pipe clean codec codec-test canonical canonical-smoke busybox-smoke busybox-uri-smoke symbolic-smoke symbolic-check factoradic-smoke factoradic-fifo-demo braille-mnemonic adapters-smoke adapters-check rules.extract rules.validate rules.digest rules.run rules.check framework-check aztec-transport-check
 
-build: $(ENC_BIN) $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) $(CAN_RUNTIME_BIN)
+build: $(RUNTIME_LIB) $(WITNESS_LIB) $(AZTEC_LIB) $(FRAMEWORK_LIB) $(ENC_BIN) $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) $(CAN_RUNTIME_BIN) $(FRAMEWORK_BIN)
 
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
@@ -34,20 +48,50 @@ $(BIN_DIR):
 $(ARTIFACT_DIR):
 	mkdir -p $(ARTIFACT_DIR)
 
-$(ENC_BIN): $(ENC_SRC) | $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $<
+$(RUNTIME_OBJ): $(RUNTIME_SRC) $(SRC_DIR)/ttc_runtime.h | $(BIN_DIR)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(CAN_ENC_BIN): $(CAN_ENC_SRC) | $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $<
+$(INCIDENCE_OBJ): $(INCIDENCE_SRC) $(SRC_DIR)/ttc_incidence.h | $(BIN_DIR)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(CAN_DEC_BIN): $(CAN_DEC_SRC) | $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $<
+$(GRAMMAR_OBJ): $(GRAMMAR_SRC) $(SRC_DIR)/ttc_grammar.h | $(BIN_DIR)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(WIT_BIN): $(WIT_SRC) | $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $<
+$(WITNESS_OBJ): $(WITNESS_SRC) $(SRC_DIR)/ttc_witness.h | $(BIN_DIR)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(CAN_RUNTIME_BIN): $(CAN_RUNTIME_SRC) | $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $<
+$(AZTEC_OBJ): $(AZTEC_SRC) $(SRC_DIR)/ttc_aztec.h | $(BIN_DIR)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(RUNTIME_LIB): $(RUNTIME_OBJ)
+	ar rcs $@ $<
+
+$(WITNESS_LIB): $(INCIDENCE_OBJ) $(GRAMMAR_OBJ) $(WITNESS_OBJ)
+	ar rcs $@ $^
+
+$(AZTEC_LIB): $(AZTEC_OBJ)
+	ar rcs $@ $<
+
+$(FRAMEWORK_LIB): $(RUNTIME_OBJ) $(INCIDENCE_OBJ) $(GRAMMAR_OBJ) $(WITNESS_OBJ) $(AZTEC_OBJ)
+	ar rcs $@ $^
+
+$(ENC_BIN): $(SRC_DIR)/ttc_fano_aztec.c $(FRAMEWORK_LIB) $(SRC_DIR)/ttc_witness.h | $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $(SRC_DIR)/ttc_fano_aztec.c $(FRAMEWORK_LIB)
+
+$(CAN_ENC_BIN): $(SRC_DIR)/ttc_encode.c $(FRAMEWORK_LIB) $(SRC_DIR)/ttc_witness.h | $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $(SRC_DIR)/ttc_encode.c $(FRAMEWORK_LIB)
+
+$(CAN_DEC_BIN): $(SRC_DIR)/ttc_decode.c $(FRAMEWORK_LIB) $(SRC_DIR)/ttc_witness.h | $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $(SRC_DIR)/ttc_decode.c $(FRAMEWORK_LIB)
+
+$(WIT_BIN): $(SRC_DIR)/ttc_witness_cli.c $(FRAMEWORK_LIB) $(SRC_DIR)/ttc_witness.h | $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $(SRC_DIR)/ttc_witness_cli.c $(FRAMEWORK_LIB)
+
+$(CAN_RUNTIME_BIN): $(SRC_DIR)/ttc_canonical_runtime.c $(FRAMEWORK_LIB) $(SRC_DIR)/ttc_runtime.h | $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $(SRC_DIR)/ttc_canonical_runtime.c $(FRAMEWORK_LIB)
+
+$(FRAMEWORK_BIN): $(SRC_DIR)/ttc_framework_cli.c $(FRAMEWORK_LIB) $(SRC_DIR)/ttc_framework.h | $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $(SRC_DIR)/ttc_framework_cli.c $(FRAMEWORK_LIB)
 
 codec: $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) | $(ARTIFACT_DIR)
 	mkdir -p $(TRIE_SAMPLE_DIR)
@@ -65,6 +109,12 @@ canonical: $(CAN_RUNTIME_BIN)
 
 canonical-smoke: $(CAN_RUNTIME_BIN) | $(ARTIFACT_DIR)
 	./scripts/smoke_canonical_runtime.sh
+
+framework-check: $(FRAMEWORK_BIN) $(CAN_RUNTIME_BIN) $(CAN_ENC_BIN) $(CAN_DEC_BIN)
+	./scripts/validate_framework.sh
+
+aztec-transport-check: $(FRAMEWORK_BIN)
+	./scripts/validate_aztec_transport.sh
 
 busybox-smoke: | $(ARTIFACT_DIR)
 	printf '120 88 95 1 2 3 255 0 42\n' | ./scripts/ttc_busybox.sh > $(TRIE_SAMPLE_DIR)/busybox_trace.txt
@@ -112,8 +162,8 @@ pipe: $(ENC_BIN) | $(ARTIFACT_DIR)
 	@echo "wrote $(OUT) (mode=$(MODE))"
 
 clean:
-	rm -f $(ENC_BIN)
-	rm -f $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) $(CAN_RUNTIME_BIN)
+	rm -f $(ENC_BIN) $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) $(CAN_RUNTIME_BIN) $(FRAMEWORK_BIN)
+	rm -f $(RUNTIME_OBJ) $(INCIDENCE_OBJ) $(GRAMMAR_OBJ) $(WITNESS_OBJ) $(AZTEC_OBJ) $(RUNTIME_LIB) $(WITNESS_LIB) $(AZTEC_LIB) $(FRAMEWORK_LIB)
 	rm -f $(ARTIFACT_DIR)/*.txt $(ARTIFACT_DIR)/*.json $(ARTIFACT_DIR)/*.pgm $(ARTIFACT_DIR)/*.ndjson $(ARTIFACT_DIR)/*.bin
 	find $(ARTIFACT_DIR)/xx $(ARTIFACT_DIR)/xX $(ARTIFACT_DIR)/Xx $(ARTIFACT_DIR)/XX -type f \( -name "trace.log" -o -name "state.bin" -o -name "board.txt" -o -name "aztec.txt" -o -name "meta.json" -o -name ".canon" -o -name ".block" -o -name ".artifact" -o -name ".bitboard" -o -name ".golden" -o -name ".negative" -o -name ".vs_overlay" \) 2>/dev/null | xargs -r rm -f
 	find blocks/xx blocks/xX blocks/Xx blocks/XX -type f \( -name ".canon" -o -name ".block" -o -name ".artifact" -o -name ".bitboard" -o -name ".golden" -o -name ".negative" \) 2>/dev/null | xargs -r rm -f

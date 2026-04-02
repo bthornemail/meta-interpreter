@@ -1,10 +1,10 @@
 # Hyperverse TTC
 
-Public package for the TTC dual-time toolchain.
+Public package for the TTC unified framework.
 
 ## Layout
 
-- `src/` runtime sources
+- `src/` framework sources
 - `docs/` canonical public spec
 - `research/` non-normative derivation material
 - `artifacts/` canonical trie outputs: `{xx|xX|Xx|XX}/{p0|p1|p2}/{lane}/{leaf}/`
@@ -17,6 +17,33 @@ Public package for the TTC dual-time toolchain.
 ```bash
 make build
 ```
+
+Primary framework artifacts:
+
+- `bin/libttc_framework.a`
+- `bin/libttc_runtime.a`
+- `bin/libttc_witness.a`
+- `bin/libttc_aztec.a`
+- `bin/ttc_framework`
+
+Primary umbrella header:
+
+```c
+#include "ttc_framework.h"
+```
+
+## Unified Framework
+
+The framework exposes three explicit surfaces under one namespace:
+
+- `runtime`: canonical replay law, versioned by rule set
+- `witness`: slot codec and semantic projection
+- `aztec`: deterministic module-grid transport
+
+Rule defaults:
+
+- `TTC_RULE_V1_CURRENT` remains the default authoritative runtime law
+- `TTC_RULE_V2_DELTA64` is available only through explicit rule selection
 
 ## Run End-to-End
 
@@ -33,9 +60,9 @@ make pipe MODE=raw OUT=artifacts/aztec.pgm
 make pipe MODE=json OUT=artifacts/aztec.json
 ```
 
-## Canonical Encode/Decode Split
+## Witness Slot Encode/Decode
 
-Canonical path (artifact -> A13 stream -> 60-slot coordinates -> Aztec geometry):
+Witness path (artifact -> A13 stream -> 60-slot witness coordinates -> witness geometry):
 
 ```bash
 make codec
@@ -47,12 +74,20 @@ Roundtrip check (artifact -> slots -> artifact):
 make codec-test
 ```
 
-Direct tools:
+Legacy-compatible wrappers:
 
 ```bash
 cat artifact.bin | ./bin/ttc_encode -m slots > /tmp/coords.txt
 cat /tmp/coords.txt | ./bin/ttc_decode > /tmp/recovered.bin
 cat /tmp/coords.txt | ./bin/ttc_witness -m ascii > /tmp/witness.txt
+```
+
+Unified CLI equivalents:
+
+```bash
+cat artifact.bin | ./bin/ttc_framework witness-slot-encode > /tmp/coords.txt
+cat /tmp/coords.txt | ./bin/ttc_framework witness-slot-decode > /tmp/recovered.bin
+cat /tmp/coords.txt | ./bin/ttc_framework witness-render > /tmp/witness.txt
 ```
 
 ## Canonical Runtime
@@ -142,6 +177,30 @@ cat input.bin | ./bin/ttc_canonical_runtime encode > board.txt
 cat input.bin | ./bin/ttc_canonical_runtime encode --blocks blocks > board.txt
 cat board.txt | ./scripts/materialize_trie_artifacts.sh --board-file board.txt --out-root artifacts --clear-targets
 cat board.txt | ./bin/ttc_canonical_runtime decode --blocks blocks > recovered.txt
+```
+
+Rule-version examples:
+
+```bash
+cat input.bin | ./bin/ttc_canonical_runtime encode --rule current
+cat input.bin | ./bin/ttc_canonical_runtime encode --rule delta64 --seed 0x1234
+cat input.bin | ./bin/ttc_framework runtime --rule delta64 --seed 0x1234
+```
+
+## Aztec Transport
+
+The framework now includes a deterministic Aztec transport subsystem distinct from the witness layer.
+
+Validation:
+
+```bash
+make aztec-transport-check
+```
+
+CLI example:
+
+```bash
+cat artifact.bin | ./bin/ttc_framework aztec-encode --ascii
 ```
 
 ## Factoradic 5040 Trie
