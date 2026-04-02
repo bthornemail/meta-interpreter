@@ -39,6 +39,7 @@ Normative terminology is frozen in:
 
 Normative system structure is frozen in:
 - [ONTOLOGY.md](/home/main/Programs/meta-interpreter/docs/ONTOLOGY.md)
+- [ONTOLOGY.json](/home/main/Programs/meta-interpreter/docs/ONTOLOGY.json)
 
 Normative observable forms are frozen in:
 - [SURFACES.md](/home/main/Programs/meta-interpreter/docs/SURFACES.md)
@@ -46,8 +47,10 @@ Normative observable forms are frozen in:
 
 Governance audit policy and exemptions are driven by:
 - [GOVERNANCE_ALLOWLIST.json](/home/main/Programs/meta-interpreter/docs/GOVERNANCE_ALLOWLIST.json)
+- [GOVERNANCE_RULES.json](/home/main/Programs/meta-interpreter/docs/GOVERNANCE_RULES.json)
 
 All documentation and code comments are subject to lexical, structural, and relational validation against the lexicon, ontology, and governance audit.
+The audit engine is not an authority source; it executes machine-readable governance data from the lexicon, ontology, surfaces, and rule registries.
 
 `step_digest` is the deterministic reduction of runtime event material used to seed incidence and structural expansion. It is not grammar and it is not artifact identity.
 

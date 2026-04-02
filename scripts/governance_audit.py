@@ -14,10 +14,12 @@ GOVERNANCE_META = {
     "docs/LEXICON.md",
     "docs/LEXICON.json",
     "docs/ONTOLOGY.md",
+    "docs/ONTOLOGY.json",
     "docs/SURFACES.md",
     "docs/SURFACES.json",
     "docs/ttc_authoritative_lexicon_v1.md",
     "docs/GOVERNANCE_ALLOWLIST.json",
+    "docs/GOVERNANCE_RULES.json",
     "scripts/validate_lexicon.sh",
     "scripts/validate_ontology.sh",
     "scripts/validate_surfaces.sh",
@@ -49,162 +51,6 @@ AZTEC_ALLOWED_CONTEXT = re.compile(
 AZTEC_WORD = re.compile(r"\baztec\b", re.IGNORECASE)
 HISTORICAL_REF = re.compile(r"((?:research|archive)/[A-Za-z0-9_./ -]+\.[A-Za-z0-9]+)(?::\d+(?:-\d+)?)?")
 
-ONTOLOGY_RULES = [
-    {
-        "relation": "step_digest -> identity",
-        "term": "step_digest",
-        "expected": "invalid",
-        "patterns": [
-            r"\bstep_digest\b.*\bdefines?\s+identity\b",
-            r"\bstep_digest\b.*\bis\s+identity\b",
-            r"\bstep_digest\b.*\bis\s+artifact_hash\b",
-            r"\bstep_digest\b.*\bproves?\s+identity\b",
-        ],
-    },
-    {
-        "relation": "step_digest -> grammar",
-        "term": "step_digest",
-        "expected": "invalid",
-        "patterns": [
-            r"\bstep_digest\b.*\bdefines?\s+grammar\b",
-            r"\bstep_digest\b.*\bis\s+grammar\b",
-            r"\bstep_digest\b.*\bbelongs?\s+to\b.*\bgrammar\b",
-        ],
-    },
-    {
-        "relation": "runtime -> projection",
-        "term": "runtime",
-        "expected": "invalid",
-        "patterns": [
-            r"\bruntime\b.*\bdepends?\s+on\b.*\bprojection\b",
-            r"\bruntime\b.*\buses?\b.*\bvisuali[sz]ation\b",
-            r"\bstate\b.*\bderived\s+from\b.*\b(?:rendered\s+)?grid\b",
-            r"\bexecution\b.*\buses?\b.*\bvisuali[sz]ation\b",
-        ],
-    },
-    {
-        "relation": "projection -> runtime",
-        "term": "projection",
-        "expected": "invalid",
-        "patterns": [
-            r"\bprojection\b.*\baffects?\s+runtime\b",
-            r"\bprojection\b.*\bdetermines?\s+state\b",
-            r"\brender(?:ed|ing)?\b.*\bcontrols?\s+execution\b",
-            r"\bgrid\b.*\bdecides?\s+next\s+state\b",
-            r"\bvisuali[sz]ation\b.*\bcontrols?\s+execution\b",
-        ],
-    },
-    {
-        "relation": "transport -> semantics",
-        "term": "transport",
-        "expected": "invalid",
-        "patterns": [
-            r"\btransport\b.*\bdefines?\s+semantics\b",
-            r"\btransport\b.*\bdefines?\s+meaning\b",
-            r"\bencoding\b.*\bdetermines?\s+semantics\b",
-            r"\bcarrier\b.*\bdefines?\s+structure\b",
-            r"\bbyte\s+stream\b.*\bdetermines?\s+semantics\b",
-        ],
-    },
-    {
-        "relation": "matrix -> identity",
-        "term": "matrix",
-        "expected": "invalid",
-        "patterns": [
-            r"\bmatrix\b.*\bdefines?\s+identity\b",
-            r"\bmatrix\b.*\bis\s+identity\b",
-            r"\bgrid\b.*\bfingerprint\b.*\bcanonical\b",
-            r"\blayout\b.*\bdefines?\s+artifact\b",
-            r"\bmatrix\s+hash\b",
-        ],
-    },
-    {
-        "relation": "artifact -> structure",
-        "term": "artifact",
-        "expected": "invalid",
-        "patterns": [
-            r"\bartifact\b.*\bdefines?\s+structure\b",
-            r"\bpackage\b.*\bdetermines?\s+layout\b",
-            r"\bhash\b.*\bdetermines?\s+arrangement\b",
-            r"\bartifact\b.*\bdefines?\s+layout\b",
-        ],
-    },
-    {
-        "relation": "Aztec -> structure",
-        "term": "Aztec",
-        "expected": "invalid",
-        "patterns": [
-            r"\baztec\b.*\bdefines?\s+structure\b",
-            r"\baztec\b.*\bencoding\b.*\bdetermines?\s+meaning\b",
-            r"\baztec\b.*\bis\s+canonical\s+form\b",
-            r"\baztec\b.*\bdefines?\s+meaning\b",
-        ],
-    },
-    {
-        "relation": "bytes -> transport",
-        "term": "bytes",
-        "expected": "substrate",
-        "patterns": [
-            r"\bbytes?\s+(?:is|are|=)\s+transport\b",
-        ],
-    },
-    {
-        "relation": "bytes -> projection",
-        "term": "bytes",
-        "expected": "substrate",
-        "patterns": [
-            r"\bbytes?\s+(?:is|are|=)\s+projection\b",
-        ],
-    },
-    {
-        "relation": "bytes -> artifact",
-        "term": "bytes",
-        "expected": "substrate",
-        "patterns": [
-            r"\bbytes?\s+(?:is|are|=)\s+artifact\b",
-        ],
-    },
-]
-
-SURFACE_RULES = [
-    {
-        "relation": "PGM -> canonical",
-        "term": "PGM",
-        "expected": "projection",
-        "patterns": [
-            r"\bPGM\b.*\bis\s+canonical\b",
-            r"\bPGM\b.*\bdefines?\s+canonical\s+state\b",
-        ],
-    },
-    {
-        "relation": "JSON Canvas -> structure",
-        "term": "JSON Canvas",
-        "expected": "projection",
-        "patterns": [
-            r"\bJSON\s+Canvas\b.*\bdefines?\s+structure\b",
-            r"\bCanvas\b.*\bdefines?\s+structure\b",
-        ],
-    },
-    {
-        "relation": "matrix -> identity",
-        "term": "matrix",
-        "expected": "matrix",
-        "patterns": [
-            r"\bmatrix\b.*\bis\s+identity\b",
-            r"\bmatrix\b.*\bdefines?\s+identity\b",
-        ],
-    },
-    {
-        "relation": "step_digest -> artifact_hash",
-        "term": "step_digest",
-        "expected": "runtime_incidence_boundary",
-        "patterns": [
-            r"\bstep_digest\b.*\bis\s+artifact[_ ]hash\b",
-            r"\bstep_digest\b.*\bdefines?\s+artifact[_ ]hash\b",
-        ],
-    },
-]
-
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Repo-wide lexicon/ontology governance audit")
@@ -220,6 +66,16 @@ def parse_args() -> argparse.Namespace:
 def load_json(path: Path):
     with path.open("r", encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def load_ontology_relation_inventory(root: Path):
+    data = load_json(root / "docs/ONTOLOGY.json")
+    relations = [f"{src} -> {dst}" for src, _, dst in data.get("forbidden_relations", [])]
+    return relations
+
+
+def load_governance_rules(root: Path):
+    return load_json(root / "docs/GOVERNANCE_RULES.json")
 
 
 def normalize_rel(root: Path, path: Path) -> str:
@@ -325,37 +181,22 @@ def add_record(records, rel_path, line_no, term, expected, conflict_class, sever
     records.append(record)
 
 
-def build_ontology_patterns():
+def build_rule_patterns(rule_map):
     compiled = []
-    for rule in ONTOLOGY_RULES:
+    for relation, rule in rule_map.items():
         for pattern in rule["patterns"]:
             compiled.append(
                 {
                     "pattern": re.compile(pattern, re.IGNORECASE),
                     "term": rule["term"],
                     "expected": rule["expected"],
-                    "relation": rule["relation"],
+                    "relation": relation,
                 }
             )
     return compiled
 
 
-def build_surface_patterns():
-    compiled = []
-    for rule in SURFACE_RULES:
-        for pattern in rule["patterns"]:
-            compiled.append(
-                {
-                    "pattern": re.compile(pattern, re.IGNORECASE),
-                    "term": rule["term"],
-                    "expected": rule["expected"],
-                    "relation": rule["relation"],
-                }
-            )
-    return compiled
-
-
-def scan_file(path: Path, root: Path, group: str, severity: str, lexicon: dict, allowlist, cited_refs):
+def scan_file(path: Path, root: Path, group: str, severity: str, lexicon: dict, allowlist, cited_refs, governance_rules):
     rel = normalize_rel(root, path)
     if governance_meta(rel):
         return []
@@ -364,9 +205,10 @@ def scan_file(path: Path, root: Path, group: str, severity: str, lexicon: dict, 
     text = read_text(path)
     lines = text.splitlines()
 
-    forbidden = lexicon.get("forbidden_collisions", [])
-    ontology_patterns = build_ontology_patterns()
-    surface_patterns = build_surface_patterns()
+    forbidden = governance_rules.get("forbidden_collision_patterns", [])
+    ontology_patterns = build_rule_patterns(governance_rules.get("ontology_violation_patterns", {}))
+    surface_patterns = build_rule_patterns(governance_rules.get("surface_misuse_patterns", {}))
+    clarification_rules = governance_rules.get("required_clarification_patterns", [])
 
     for idx, line in enumerate(lines, start=1):
         cited_by = None
@@ -407,15 +249,14 @@ def scan_file(path: Path, root: Path, group: str, severity: str, lexicon: dict, 
                     relation=rule["relation"],
                 )
 
-        if "Braille" in line:
-            if re.search(r"projection|render|screen|svg|pgm|ascii|grid|visual", line, re.IGNORECASE):
-                if "Braille (projection)" not in line and "projection-only" not in line and not allowed(allowlist, rel, "missing_required_clarification", line):
-                    add_record(records, rel, idx, "Braille", lexicon["keywords"].get("Braille"), "missing_required_clarification", severity, line, cited_by)
-
-        if "hexagram" in line:
-            if re.search(r"projection|render|screen|svg|pgm|ascii|grid|visual", line, re.IGNORECASE):
-                if "hexagram (witness)" not in line and not allowed(allowlist, rel, "missing_required_clarification", line):
-                    add_record(records, rel, idx, "hexagram", lexicon["keywords"].get("hexagram"), "missing_required_clarification", severity, line, cited_by)
+        for rule in clarification_rules:
+            term = rule["term"]
+            if term not in line:
+                continue
+            trigger_hit = any(re.search(pattern, line, re.IGNORECASE) for pattern in rule.get("trigger_patterns", []))
+            marker_hit = any(marker in line for marker in rule.get("required_markers", []))
+            if trigger_hit and not marker_hit and not allowed(allowlist, rel, "missing_required_clarification", line):
+                add_record(records, rel, idx, term, rule["expected"], "missing_required_clarification", severity, line, cited_by)
 
         if AZTEC_WORD.search(line):
             if not AZTEC_ALLOWED_CONTEXT.search(line) and not allowed(allowlist, rel, "reserved_name_misuse", line):
@@ -432,10 +273,10 @@ def write_ndjson(path: Path, records):
             fh.write("\n")
 
 
-def write_summary(path: Path, active_records, historical_records):
+def write_summary(path: Path, active_records, historical_records, ontology_relation_inventory, governance_rules):
     by_class = {}
-    relation_counts = {rule["relation"]: 0 for rule in ONTOLOGY_RULES}
-    surface_counts = {rule["relation"]: 0 for rule in SURFACE_RULES}
+    relation_counts = {relation: 0 for relation in ontology_relation_inventory}
+    surface_counts = {relation: 0 for relation in governance_rules.get("surface_misuse_patterns", {})}
     for rec in active_records + historical_records:
         key = (rec["severity"], rec["conflict_class"])
         by_class[key] = by_class.get(key, 0) + 1
@@ -469,6 +310,8 @@ def main() -> int:
     out_dir = (root / args.out_dir).resolve()
     allowlist = load_allowlist((root / args.allowlist).resolve())
     lexicon = load_json(root / "docs/LEXICON.json")
+    ontology_relation_inventory = load_ontology_relation_inventory(root)
+    governance_rules = load_governance_rules(root)
 
     active_files = iter_files(root, active_roots)
     historical_files = iter_files(root, historical_roots)
@@ -476,15 +319,15 @@ def main() -> int:
 
     active_records = []
     for path in active_files:
-        active_records.extend(scan_file(path, root, "active", "fail", lexicon, allowlist, cited_refs))
+        active_records.extend(scan_file(path, root, "active", "fail", lexicon, allowlist, cited_refs, governance_rules))
 
     historical_records = []
     for path in historical_files:
-        historical_records.extend(scan_file(path, root, "historical", "warn", lexicon, allowlist, cited_refs))
+        historical_records.extend(scan_file(path, root, "historical", "warn", lexicon, allowlist, cited_refs, governance_rules))
 
     write_ndjson(out_dir / "active_audit.ndjson", active_records)
     write_ndjson(out_dir / "archive_audit.ndjson", historical_records)
-    write_summary(out_dir / "summary.txt", active_records, historical_records)
+    write_summary(out_dir / "summary.txt", active_records, historical_records, ontology_relation_inventory, governance_rules)
 
     print(
         f"governance audit: active_failures={len(active_records)} historical_warnings={len(historical_records)}",

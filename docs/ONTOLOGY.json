@@ -1,0 +1,71 @@
+{
+  "version": "v1",
+  "axiom": "All constructs reduce to canonical bytes.",
+  "types": [
+    "bytes",
+    "event",
+    "step_digest",
+    "incidence",
+    "grammar",
+    "address",
+    "witness",
+    "matrix",
+    "projection",
+    "transport",
+    "artifact"
+  ],
+  "boundary_types": [
+    "step_digest"
+  ],
+  "relations": [
+    ["runtime", "produces", "event"],
+    ["event", "derives", "timing"],
+    ["event", "derives", "step_digest"],
+    ["step_digest", "drives", "incidence"],
+    ["event", "expands", "incidence"],
+    ["incidence", "interprets", "grammar"],
+    ["grammar", "assigns", "address"],
+    ["address", "constructs", "witness"],
+    ["witness", "arranges", "matrix"],
+    ["matrix", "renders", "projection"],
+    ["bytes", "carries", "transport"],
+    ["bytes", "identifies", "artifact"]
+  ],
+  "canonical_flow": [
+    ["runtime", "event"],
+    ["event", "step_digest"],
+    ["step_digest", "incidence"],
+    ["incidence", "grammar"],
+    ["grammar", "address"],
+    ["address", "witness"],
+    ["witness", "matrix"],
+    ["matrix", "projection"]
+  ],
+  "parallel_flows": [
+    ["bytes", "transport"],
+    ["bytes", "artifact"]
+  ],
+  "invariants": [
+    "runtime does not depend on projection",
+    "projection does not affect runtime",
+    "transport does not define semantics",
+    "matrix does not define identity",
+    "artifact does not define structure",
+    "step_digest does not define identity",
+    "step_digest does not define grammar",
+    "runtime is the only authority"
+  ],
+  "forbidden_relations": [
+    ["projection", "affects", "runtime"],
+    ["runtime", "depends_on", "projection"],
+    ["transport", "defines", "semantics"],
+    ["matrix", "defines", "identity"],
+    ["artifact", "defines", "structure"],
+    ["Aztec", "defines", "structure"],
+    ["step_digest", "defines", "grammar"],
+    ["step_digest", "defines", "identity"],
+    ["bytes", "is", "transport"],
+    ["bytes", "is", "projection"],
+    ["bytes", "is", "artifact"]
+  ]
+}

@@ -5,9 +5,15 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 doc="docs/ONTOLOGY.md"
+json_doc="docs/ONTOLOGY.json"
 
 if [[ ! -f "$doc" ]]; then
   echo "ontology violation: $doc missing" >&2
+  exit 1
+fi
+
+if [[ ! -f "$json_doc" ]]; then
+  echo "ontology violation: $json_doc missing" >&2
   exit 1
 fi
 
@@ -39,5 +45,69 @@ for pattern in "${required_patterns[@]}"; do
     exit 1
   fi
 done
+
+if ! python3 - <<'PY'
+import json
+from pathlib import Path
+
+path = Path("docs/ONTOLOGY.json")
+data = json.loads(path.read_text(encoding="utf-8"))
+
+required_types = {
+    "bytes",
+    "event",
+    "step_digest",
+    "incidence",
+    "grammar",
+    "address",
+    "witness",
+    "matrix",
+    "projection",
+    "transport",
+    "artifact",
+}
+
+types = set(data.get("types", []))
+if not required_types.issubset(types):
+    missing = sorted(required_types - types)
+    raise SystemExit(f"ontology violation: missing types {missing}")
+
+relations = {tuple(item) for item in data.get("relations", [])}
+required_relations = {
+    ("runtime", "produces", "event"),
+    ("event", "derives", "timing"),
+    ("event", "derives", "step_digest"),
+    ("step_digest", "drives", "incidence"),
+    ("event", "expands", "incidence"),
+    ("incidence", "interprets", "grammar"),
+    ("grammar", "assigns", "address"),
+    ("address", "constructs", "witness"),
+    ("witness", "arranges", "matrix"),
+    ("matrix", "renders", "projection"),
+    ("bytes", "carries", "transport"),
+    ("bytes", "identifies", "artifact"),
+}
+if not required_relations.issubset(relations):
+    missing = sorted(required_relations - relations)
+    raise SystemExit(f"ontology violation: missing relations {missing}")
+
+forbidden = {tuple(item) for item in data.get("forbidden_relations", [])}
+required_forbidden = {
+    ("projection", "affects", "runtime"),
+    ("runtime", "depends_on", "projection"),
+    ("transport", "defines", "semantics"),
+    ("matrix", "defines", "identity"),
+    ("artifact", "defines", "structure"),
+    ("Aztec", "defines", "structure"),
+    ("step_digest", "defines", "grammar"),
+    ("step_digest", "defines", "identity"),
+}
+if not required_forbidden.issubset(forbidden):
+    missing = sorted(required_forbidden - forbidden)
+    raise SystemExit(f"ontology violation: missing forbidden relations {missing}")
+PY
+then
+  exit 1
+fi
 
 echo "ontology validation passed"

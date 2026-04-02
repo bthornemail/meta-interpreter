@@ -1,0 +1,190 @@
+{
+  "version": "v1",
+  "forbidden_collision_patterns": [
+    "Aztec transport",
+    "artifact encoding",
+    "matrix rendering",
+    "witness grid",
+    "Braille transport",
+    "JSON is canonical",
+    "NDJSON is canonical",
+    "Canvas defines meaning"
+  ],
+  "required_clarification_patterns": [
+    {
+      "term": "Braille",
+      "expected": "witness",
+      "trigger_patterns": [
+        "projection",
+        "render",
+        "screen",
+        "svg",
+        "pgm",
+        "ascii",
+        "grid",
+        "visual"
+      ],
+      "required_markers": [
+        "Braille (projection)",
+        "projection-only"
+      ]
+    },
+    {
+      "term": "hexagram",
+      "expected": "witness",
+      "trigger_patterns": [
+        "projection",
+        "render",
+        "screen",
+        "svg",
+        "pgm",
+        "ascii",
+        "grid",
+        "visual"
+      ],
+      "required_markers": [
+        "hexagram (witness)"
+      ]
+    }
+  ],
+  "ontology_violation_patterns": {
+    "step_digest -> identity": {
+      "term": "step_digest",
+      "expected": "invalid",
+      "patterns": [
+        "\\bstep_digest\\b.*\\bdefines?\\s+identity\\b",
+        "\\bstep_digest\\b.*\\bis\\s+identity\\b",
+        "\\bstep_digest\\b.*\\bis\\s+artifact_hash\\b",
+        "\\bstep_digest\\b.*\\bproves?\\s+identity\\b"
+      ]
+    },
+    "step_digest -> grammar": {
+      "term": "step_digest",
+      "expected": "invalid",
+      "patterns": [
+        "\\bstep_digest\\b.*\\bdefines?\\s+grammar\\b",
+        "\\bstep_digest\\b.*\\bis\\s+grammar\\b",
+        "\\bstep_digest\\b.*\\bbelongs?\\s+to\\b.*\\bgrammar\\b",
+        "\\bgrammar\\b.*\\bderived\\s+from\\b.*\\bstep_digest\\b"
+      ]
+    },
+    "runtime -> projection": {
+      "term": "runtime",
+      "expected": "invalid",
+      "patterns": [
+        "\\bruntime\\b.*\\bdepends?\\s+on\\b.*\\bprojection\\b",
+        "\\bruntime\\b.*\\buses?\\b.*\\bvisuali[sz]ation\\b",
+        "\\bstate\\b.*\\bderived\\s+from\\b.*\\b(?:rendered\\s+)?grid\\b",
+        "\\bexecution\\b.*\\buses?\\b.*\\bvisuali[sz]ation\\b"
+      ]
+    },
+    "projection -> runtime": {
+      "term": "projection",
+      "expected": "invalid",
+      "patterns": [
+        "\\bprojection\\b.*\\baffects?\\s+runtime\\b",
+        "\\bprojection\\b.*\\bdetermines?\\s+state\\b",
+        "\\brender(?:ed|ing)?\\b.*\\bcontrols?\\s+execution\\b",
+        "\\bgrid\\b.*\\bdecides?\\s+next\\s+state\\b",
+        "\\bvisuali[sz]ation\\b.*\\bcontrols?\\s+execution\\b"
+      ]
+    },
+    "transport -> semantics": {
+      "term": "transport",
+      "expected": "invalid",
+      "patterns": [
+        "\\btransport\\b.*\\bdefines?\\s+semantics\\b",
+        "\\btransport\\b.*\\bdefines?\\s+meaning\\b",
+        "\\bencoding\\b.*\\bdetermines?\\s+semantics\\b",
+        "\\bcarrier\\b.*\\bdefines?\\s+structure\\b",
+        "\\bbyte\\s+stream\\b.*\\bdetermines?\\s+semantics\\b"
+      ]
+    },
+    "matrix -> identity": {
+      "term": "matrix",
+      "expected": "invalid",
+      "patterns": [
+        "\\bmatrix\\b.*\\bdefines?\\s+identity\\b",
+        "\\bmatrix\\b.*\\bis\\s+identity\\b",
+        "\\bgrid\\b.*\\bfingerprint\\b.*\\bcanonical\\b",
+        "\\blayout\\b.*\\bdefines?\\s+artifact\\b",
+        "\\bmatrix\\s+hash\\b"
+      ]
+    },
+    "artifact -> structure": {
+      "term": "artifact",
+      "expected": "invalid",
+      "patterns": [
+        "\\bartifact\\b.*\\bdefines?\\s+structure\\b",
+        "\\bpackage\\b.*\\bdetermines?\\s+layout\\b",
+        "\\bhash\\b.*\\bdetermines?\\s+arrangement\\b",
+        "\\bartifact\\b.*\\bdefines?\\s+layout\\b"
+      ]
+    },
+    "Aztec -> structure": {
+      "term": "Aztec",
+      "expected": "invalid",
+      "patterns": [
+        "\\baztec\\b.*\\bdefines?\\s+structure\\b",
+        "\\baztec\\b.*\\bencoding\\b.*\\bdetermines?\\s+meaning\\b",
+        "\\baztec\\b.*\\bis\\s+canonical\\s+form\\b",
+        "\\baztec\\b.*\\bdefines?\\s+meaning\\b"
+      ]
+    },
+    "bytes -> transport": {
+      "term": "bytes",
+      "expected": "substrate",
+      "patterns": [
+        "\\bbytes?\\s+(?:is|are|=)\\s+transport\\b"
+      ]
+    },
+    "bytes -> projection": {
+      "term": "bytes",
+      "expected": "substrate",
+      "patterns": [
+        "\\bbytes?\\s+(?:is|are|=)\\s+projection\\b"
+      ]
+    },
+    "bytes -> artifact": {
+      "term": "bytes",
+      "expected": "substrate",
+      "patterns": [
+        "\\bbytes?\\s+(?:is|are|=)\\s+artifact\\b"
+      ]
+    }
+  },
+  "surface_misuse_patterns": {
+    "PGM -> canonical": {
+      "term": "PGM",
+      "expected": "projection",
+      "patterns": [
+        "\\bPGM\\b.*\\bis\\s+canonical\\b",
+        "\\bPGM\\b.*\\bdefines?\\s+canonical\\s+state\\b"
+      ]
+    },
+    "JSON Canvas -> structure": {
+      "term": "JSON Canvas",
+      "expected": "projection",
+      "patterns": [
+        "\\bJSON\\s+Canvas\\b.*\\bdefines?\\s+structure\\b",
+        "\\bCanvas\\b.*\\bdefines?\\s+structure\\b"
+      ]
+    },
+    "matrix -> identity": {
+      "term": "matrix",
+      "expected": "matrix",
+      "patterns": [
+        "\\bmatrix\\b.*\\bis\\s+identity\\b",
+        "\\bmatrix\\b.*\\bdefines?\\s+identity\\b"
+      ]
+    },
+    "step_digest -> artifact_hash": {
+      "term": "step_digest",
+      "expected": "runtime_incidence_boundary",
+      "patterns": [
+        "\\bstep_digest\\b.*\\bis\\s+artifact[_ ]hash\\b",
+        "\\bstep_digest\\b.*\\bdefines?\\s+artifact[_ ]hash\\b"
+      ]
+    }
+  }
+}

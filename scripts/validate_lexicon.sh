@@ -39,6 +39,7 @@ for pattern in "${forbidden_patterns[@]}"; do
     -g '!docs/LEXICON.md' \
     -g '!docs/LEXICON.json' \
     -g '!docs/GOVERNANCE_ALLOWLIST.json' \
+    -g '!docs/GOVERNANCE_RULES.json' \
     -g '!scripts/validate_lexicon.sh' \
     -g '!scripts/governance_audit.py' \
     -g '!scripts/validate_governance_audit.sh' >/tmp/ttc_lexicon_hits.txt 2>/dev/null; then
