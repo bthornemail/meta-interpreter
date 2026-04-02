@@ -40,12 +40,18 @@ Normative terminology is frozen in:
 Normative system structure is frozen in:
 - [ONTOLOGY.md](/home/main/Programs/meta-interpreter/docs/ONTOLOGY.md)
 
+Normative observable forms are frozen in:
+- [SURFACES.md](/home/main/Programs/meta-interpreter/docs/SURFACES.md)
+- [SURFACES.json](/home/main/Programs/meta-interpreter/docs/SURFACES.json)
+
 Governance audit policy and exemptions are driven by:
 - [GOVERNANCE_ALLOWLIST.json](/home/main/Programs/meta-interpreter/docs/GOVERNANCE_ALLOWLIST.json)
 
 All documentation and code comments are subject to lexical, structural, and relational validation against the lexicon, ontology, and governance audit.
 
 `step_digest` is the deterministic reduction of runtime event material used to seed incidence and structural expansion. It is not grammar and it is not artifact identity.
+
+Surfaces expose derived representations of the system; they do not define its canonical state.
 
 ## Unified Framework
 

@@ -14,10 +14,13 @@ GOVERNANCE_META = {
     "docs/LEXICON.md",
     "docs/LEXICON.json",
     "docs/ONTOLOGY.md",
+    "docs/SURFACES.md",
+    "docs/SURFACES.json",
     "docs/ttc_authoritative_lexicon_v1.md",
     "docs/GOVERNANCE_ALLOWLIST.json",
     "scripts/validate_lexicon.sh",
     "scripts/validate_ontology.sh",
+    "scripts/validate_surfaces.sh",
     "scripts/governance_audit.py",
     "scripts/validate_governance_audit.sh",
 }
@@ -163,6 +166,45 @@ ONTOLOGY_RULES = [
     },
 ]
 
+SURFACE_RULES = [
+    {
+        "relation": "PGM -> canonical",
+        "term": "PGM",
+        "expected": "projection",
+        "patterns": [
+            r"\bPGM\b.*\bis\s+canonical\b",
+            r"\bPGM\b.*\bdefines?\s+canonical\s+state\b",
+        ],
+    },
+    {
+        "relation": "JSON Canvas -> structure",
+        "term": "JSON Canvas",
+        "expected": "projection",
+        "patterns": [
+            r"\bJSON\s+Canvas\b.*\bdefines?\s+structure\b",
+            r"\bCanvas\b.*\bdefines?\s+structure\b",
+        ],
+    },
+    {
+        "relation": "matrix -> identity",
+        "term": "matrix",
+        "expected": "matrix",
+        "patterns": [
+            r"\bmatrix\b.*\bis\s+identity\b",
+            r"\bmatrix\b.*\bdefines?\s+identity\b",
+        ],
+    },
+    {
+        "relation": "step_digest -> artifact_hash",
+        "term": "step_digest",
+        "expected": "runtime_incidence_boundary",
+        "patterns": [
+            r"\bstep_digest\b.*\bis\s+artifact[_ ]hash\b",
+            r"\bstep_digest\b.*\bdefines?\s+artifact[_ ]hash\b",
+        ],
+    },
+]
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Repo-wide lexicon/ontology governance audit")
@@ -298,6 +340,21 @@ def build_ontology_patterns():
     return compiled
 
 
+def build_surface_patterns():
+    compiled = []
+    for rule in SURFACE_RULES:
+        for pattern in rule["patterns"]:
+            compiled.append(
+                {
+                    "pattern": re.compile(pattern, re.IGNORECASE),
+                    "term": rule["term"],
+                    "expected": rule["expected"],
+                    "relation": rule["relation"],
+                }
+            )
+    return compiled
+
+
 def scan_file(path: Path, root: Path, group: str, severity: str, lexicon: dict, allowlist, cited_refs):
     rel = normalize_rel(root, path)
     if governance_meta(rel):
@@ -309,6 +366,7 @@ def scan_file(path: Path, root: Path, group: str, severity: str, lexicon: dict, 
 
     forbidden = lexicon.get("forbidden_collisions", [])
     ontology_patterns = build_ontology_patterns()
+    surface_patterns = build_surface_patterns()
 
     for idx, line in enumerate(lines, start=1):
         cited_by = None
@@ -328,6 +386,21 @@ def scan_file(path: Path, root: Path, group: str, severity: str, lexicon: dict, 
                     rule["term"],
                     rule["expected"],
                     "ontology_violation",
+                    severity,
+                    line,
+                    cited_by,
+                    relation=rule["relation"],
+                )
+
+        for rule in surface_patterns:
+            if rule["pattern"].search(line) and not allowed(allowlist, rel, "surface_misuse", line):
+                add_record(
+                    records,
+                    rel,
+                    idx,
+                    rule["term"],
+                    rule["expected"],
+                    "surface_misuse",
                     severity,
                     line,
                     cited_by,
@@ -362,12 +435,15 @@ def write_ndjson(path: Path, records):
 def write_summary(path: Path, active_records, historical_records):
     by_class = {}
     relation_counts = {rule["relation"]: 0 for rule in ONTOLOGY_RULES}
+    surface_counts = {rule["relation"]: 0 for rule in SURFACE_RULES}
     for rec in active_records + historical_records:
         key = (rec["severity"], rec["conflict_class"])
         by_class[key] = by_class.get(key, 0) + 1
         relation = rec.get("relation")
         if relation in relation_counts:
             relation_counts[relation] += 1
+        if relation in surface_counts:
+            surface_counts[relation] += 1
 
     lines = [
         f"active_failures={len(active_records)}",
@@ -378,6 +454,9 @@ def write_summary(path: Path, active_records, historical_records):
     lines.append("ontology_violations:")
     for relation in sorted(relation_counts):
         lines.append(f"  {relation}: {relation_counts[relation]}")
+    lines.append("surface_misuse:")
+    for relation in sorted(surface_counts):
+        lines.append(f"  {relation}: {surface_counts[relation]}")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 

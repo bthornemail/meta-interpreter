@@ -1,0 +1,156 @@
+{
+  "version": "v1",
+  "surface_order": [
+    "substrate",
+    "runtime",
+    "incidence",
+    "structural",
+    "witness",
+    "matrix",
+    "projection",
+    "transport",
+    "barcode",
+    "artifact"
+  ],
+  "surfaces": {
+    "bytes": {
+      "category": "substrate",
+      "canonical": true,
+      "reversible": true,
+      "authoritative": true
+    },
+    "event stream": {
+      "category": "runtime",
+      "canonical": true,
+      "reversible": true,
+      "authoritative": true
+    },
+    "step_digest": {
+      "category": "incidence",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "runtime_incidence_boundary"
+      ]
+    },
+    "incidence": {
+      "category": "incidence",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false
+    },
+    "grammar": {
+      "category": "structural",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false
+    },
+    "address": {
+      "category": "structural",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false
+    },
+    "witness": {
+      "category": "witness",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "semantic"
+      ]
+    },
+    "matrix": {
+      "category": "matrix",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false
+    },
+    "ASCII": {
+      "category": "projection",
+      "canonical": false,
+      "reversible": false,
+      "authoritative": false
+    },
+    "PGM": {
+      "category": "projection",
+      "canonical": false,
+      "reversible": false,
+      "authoritative": false
+    },
+    "SVG": {
+      "category": "projection",
+      "canonical": false,
+      "reversible": false,
+      "authoritative": false
+    },
+    "JSON Canvas": {
+      "category": "projection",
+      "canonical": false,
+      "reversible": false,
+      "authoritative": false
+    },
+    "FIFO": {
+      "category": "transport",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false
+    },
+    "pipe": {
+      "category": "transport",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false
+    },
+    "socket": {
+      "category": "transport",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false
+    },
+    "Aztec": {
+      "category": "barcode",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "standards_only"
+      ]
+    },
+    "QR": {
+      "category": "barcode",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "standards_only"
+      ]
+    },
+    "artifact": {
+      "category": "artifact",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": true,
+      "notes": [
+        "identity_only"
+      ]
+    }
+  },
+  "forbidden_relations": [
+    "projection -> runtime",
+    "runtime -> projection",
+    "transport -> semantics",
+    "matrix -> identity",
+    "artifact -> structure",
+    "Aztec -> structure",
+    "step_digest -> grammar",
+    "step_digest -> identity"
+  ],
+  "forbidden_surface_claims": [
+    "PGM is canonical",
+    "JSON Canvas defines structure",
+    "matrix is identity",
+    "step_digest is artifact hash"
+  ]
+}

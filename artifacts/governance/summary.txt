@@ -14,3 +14,8 @@ ontology_violations:
   step_digest -> grammar: 0
   step_digest -> identity: 0
   transport -> semantics: 0
+surface_misuse:
+  JSON Canvas -> structure: 0
+  PGM -> canonical: 0
+  matrix -> identity: 0
+  step_digest -> artifact_hash: 0
