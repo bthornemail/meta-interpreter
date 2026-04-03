@@ -90,6 +90,7 @@ All higher-order structure is a function of step_digest.
 step_digest is local.
 artifact_hash is global.
 Pascal/simplex coefficients are derived from the selected incidence point, not from projection or transport.
+Check ordering is determined only by tick and authoritative step_digest, never by projection, transport, or artifact identity.
 
 ## 5. Type Constraints
 
@@ -101,6 +102,9 @@ matrix does not define identity
 artifact does not define structure
 step_digest does not define identity
 step_digest does not define grammar
+projection must not influence check ordering
+transport must not influence check ordering
+artifact_hash must not influence check ordering
 ```
 
 ## 6. Structural Geometry

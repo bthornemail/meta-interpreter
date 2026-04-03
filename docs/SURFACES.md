@@ -199,6 +199,9 @@ No projection defines structure.
 No transport defines semantics.
 No matrix defines identity.
 No artifact defines structure.
+Projection must not influence check ordering.
+Transport must not influence check ordering.
+Artifact hash must not influence check ordering.
 ```
 
 ## Surface Flow
@@ -241,4 +244,8 @@ bytes -> artifact
 
 ```text
 Surfaces expose derived representations of the system; they do not define its canonical state.
+```
+
+```text
+Check ordering is determined only by tick and authoritative step_digest, never by projection, transport, or artifact identity.
 ```

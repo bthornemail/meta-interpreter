@@ -38,4 +38,20 @@ first_addr="$(./bin/ttc_framework runtime < "$tmp_dir/input.bin" | sed -n '1p')"
 second_addr="$(./bin/ttc_framework runtime < "$tmp_dir/input.bin" | sed -n '1p')"
 test "$first_addr" = "$second_addr"
 
+./bin/ttc_framework runtime < "$tmp_dir/input.bin" > "$tmp_dir/runtime_baseline.ndjson"
+
+./bin/ttc_framework matrix-encode --ascii < "$tmp_dir/input.bin" > "$tmp_dir/matrix_ascii.txt"
+./bin/ttc_framework runtime < "$tmp_dir/input.bin" > "$tmp_dir/runtime_after_projection.ndjson"
+cmp "$tmp_dir/runtime_baseline.ndjson" "$tmp_dir/runtime_after_projection.ndjson"
+
+./bin/ttc_framework matrix-encode --pbm < "$tmp_dir/input.bin" > "$tmp_dir/matrix_surface.pbm"
+./bin/ttc_framework runtime < "$tmp_dir/input.bin" > "$tmp_dir/runtime_after_transport.ndjson"
+cmp "$tmp_dir/runtime_baseline.ndjson" "$tmp_dir/runtime_after_transport.ndjson"
+
+./bin/ttc_encode -m slots < "$tmp_dir/input.bin" > "$tmp_dir/artifact_slots.txt"
+./bin/ttc_decode < "$tmp_dir/artifact_slots.txt" > "$tmp_dir/artifact_roundtrip.bin"
+cmp "$tmp_dir/input.bin" "$tmp_dir/artifact_roundtrip.bin"
+./bin/ttc_framework runtime < "$tmp_dir/input.bin" > "$tmp_dir/runtime_after_artifact.ndjson"
+cmp "$tmp_dir/runtime_baseline.ndjson" "$tmp_dir/runtime_after_artifact.ndjson"
+
 echo "framework validation passed"

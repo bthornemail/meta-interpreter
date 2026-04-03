@@ -85,6 +85,20 @@ This writes:
 
 Active surfaces hard-fail. `archive/` and `research/` are warn-only in v1.
 
+## Static Projection Demo
+
+Open the frozen projection demo at:
+
+- `demo/ttc_projection_demo.html`
+
+It is a projection-only surface using embedded `data-ttc-*` metadata plus canvas rendering. It does not compute runtime state.
+
+Open the NDJSON adapter demo at:
+
+- `demo/ttc_projection_stream.html`
+
+It consumes runtime NDJSON, updates the same frozen `data-ttc-*` contract, and reuses the projection renderer without computing runtime state.
+
 ## Run End-to-End
 
 ```bash

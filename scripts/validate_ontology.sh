@@ -36,6 +36,10 @@ required_patterns=(
   "identifies\\(bytes, artifact\\)"
   "step_digest does not define identity"
   "step_digest does not define grammar"
+  "projection must not influence check ordering"
+  "transport must not influence check ordering"
+  "artifact_hash must not influence check ordering"
+  "Check ordering is determined only by tick and authoritative step_digest, never by projection, transport, or artifact identity"
   "runtime is the only authority"
 )
 

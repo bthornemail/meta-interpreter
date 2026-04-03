@@ -20,6 +20,9 @@ required_patterns=(
   "No transport defines semantics"
   "No matrix defines identity"
   "No artifact defines structure"
+  "Projection must not influence check ordering"
+  "Transport must not influence check ordering"
+  "Artifact hash must not influence check ordering"
   "event stream"
   "step_digest"
   "TTC matrix"
@@ -27,6 +30,7 @@ required_patterns=(
   "Aztec refers only to standards-compliant barcode framing"
   "artifact = identity plus payload"
   "Surfaces expose derived representations of the system; they do not define its canonical state"
+  "Check ordering is determined only by tick and authoritative step_digest, never by projection, transport, or artifact identity"
 )
 
 for pattern in "${required_patterns[@]}"; do
