@@ -41,6 +41,11 @@ event stream
 - reversible: yes
 - authority: canonical replay emission
 
+Includes:
+- triplet
+- order
+- seq56
+
 ## 3. Incidence Surface
 
 ```text

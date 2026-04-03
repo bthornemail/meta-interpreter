@@ -74,9 +74,12 @@ static int cmd_runtime(int argc, char **argv) {
         if (ttc_address_from_structure(&incidence, &grammar, ev.winner, &address) != 0) {
             return 1;
         }
-        printf("{\"rule_version\":%d,\"tick\":%llu,\"input\":%u,\"state8\":%u,\"curr_state\":%llu,\"step_digest\":%llu,\"incidence_layer\":%u,\"incidence_x\":%u,\"incidence_y\":%u,\"incidence_z\":%u,\"incidence_coeff\":%u,\"grammar_role\":%u,\"escape_depth\":%u,\"address_slot\":%u,\"address_lane\":%u,\"address_channel\":%u}\n",
+        printf("{\"rule_version\":%d,\"tick\":%llu,\"input\":%u,\"state8\":%u,\"curr_state\":%llu,\"step_digest\":%llu,\"triplet\":[%u,%u,%u],\"order\":[%u,%u,%u],\"seq56\":%u,\"incidence_layer\":%u,\"incidence_x\":%u,\"incidence_y\":%u,\"incidence_z\":%u,\"incidence_coeff\":%u,\"grammar_role\":%u,\"escape_depth\":%u,\"address_slot\":%u,\"address_lane\":%u,\"address_channel\":%u}\n",
                (int)ev.rule_version, (unsigned long long)ev.tick, ev.input, ev.state8,
                (unsigned long long)ev.curr_state, (unsigned long long)ev.step_digest,
+               (unsigned)ev.triplet[0], (unsigned)ev.triplet[1], (unsigned)ev.triplet[2],
+               (unsigned)ev.order[0], (unsigned)ev.order[1], (unsigned)ev.order[2],
+               (unsigned)ev.seq56,
                (unsigned)incidence.layer, (unsigned)incidence.x, (unsigned)incidence.y, (unsigned)incidence.z,
                incidence.trinomial_coeff, (unsigned)grammar.role, (unsigned)grammar.escape_depth,
                (unsigned)address.slot, (unsigned)address.lane, (unsigned)address.channel);

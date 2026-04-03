@@ -27,6 +27,9 @@ fi
 cmp "$tmp_dir/input.bin" "$tmp_dir/recovered.bin"
 
 ./bin/ttc_framework runtime < "$tmp_dir/input.bin" > "$tmp_dir/runtime_layers.ndjson"
+grep -q '"triplet":\[' "$tmp_dir/runtime_layers.ndjson"
+grep -q '"order":\[' "$tmp_dir/runtime_layers.ndjson"
+grep -q '"seq56":' "$tmp_dir/runtime_layers.ndjson"
 grep -q '"incidence_coeff":' "$tmp_dir/runtime_layers.ndjson"
 grep -q '"grammar_role":' "$tmp_dir/runtime_layers.ndjson"
 grep -q '"address_slot":' "$tmp_dir/runtime_layers.ndjson"

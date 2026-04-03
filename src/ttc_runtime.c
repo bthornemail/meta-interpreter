@@ -72,6 +72,37 @@ static uint64_t ttc_fold7_v2(uint64_t state) {
     return state;
 }
 
+void ttc_fano_triplet(uint64_t tick, uint8_t triplet[3]) {
+    uint8_t phase7;
+
+    if (!triplet) {
+        return;
+    }
+
+    phase7 = (uint8_t)(tick % 7u);
+    triplet[0] = TTC_FANO_LINES[phase7][0];
+    triplet[1] = TTC_FANO_LINES[phase7][1];
+    triplet[2] = TTC_FANO_LINES[phase7][2];
+}
+
+void ttc_check_order_from_digest(uint64_t step_digest, const uint8_t triplet[3], uint8_t order[3]) {
+    uint8_t rotation;
+    uint8_t i;
+
+    if (!triplet || !order) {
+        return;
+    }
+
+    rotation = (uint8_t)(step_digest % 3u);
+    for (i = 0; i < 3u; i++) {
+        order[i] = triplet[(rotation + i) % 3u];
+    }
+}
+
+uint8_t ttc_check_seq_index(uint64_t tick, uint64_t step_digest) {
+    return (uint8_t)(8u * (tick % 7u) + (step_digest % 8u));
+}
+
 uint64_t ttc_step_digest(ttc_rule_version rule_version, uint64_t tick, uint64_t prev_state, uint8_t input, uint64_t curr_state, uint8_t basis7, uint8_t basis8, uint8_t winner) {
     uint64_t d0;
     uint64_t d1;
@@ -205,6 +236,9 @@ int ttc_runtime_step(ttc_runtime *rt, uint8_t input, ttc_event *out) {
         out->winner = (uint8_t)(((tick / 7u) % 2u) ? TTC_FANO_LINES[basis7][2] : TTC_FANO_LINES[basis7][0]);
     }
     out->step_digest = ttc_step_digest(rt->config.rule_version, tick, prev_state, input, curr_state, basis7, basis8, out->winner);
+    ttc_fano_triplet(tick, out->triplet);
+    ttc_check_order_from_digest(out->step_digest, out->triplet, out->order);
+    out->seq56 = ttc_check_seq_index(tick, out->step_digest);
     out->state8 = state8;
     out->basis7 = basis7;
     out->basis8 = basis8;

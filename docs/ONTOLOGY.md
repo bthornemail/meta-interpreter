@@ -29,6 +29,8 @@ derives(event, timing)
 derives(event, step_digest)
 drives(step_digest, incidence)
 step_digest selects a point in incidence space by determining a simplex layer and coordinates within that layer.
+Fano selects the active incidence line.
+step_digest selects the deterministic local traversal of that line.
 expands(event, incidence)
 interprets(incidence, grammar)
 assigns(grammar, address)
