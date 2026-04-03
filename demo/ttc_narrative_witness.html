@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TTC Narrative Witness</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="./narrative_data/narrative_bound_bundle.js"></script>
+  </head>
+  <body class="min-h-screen bg-stone-950 text-stone-100">
+    <!--
+      Narrative witness page
+
+      This page is a projection-only witness surface.
+      Canonical chapter NDJSON remains authoritative.
+      Templates and witness hooks are advisory bindings only.
+
+      Primary controls intentionally follow:
+      Mode + Frame + Attention + Depth
+    -->
+    <main class="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-6 py-8">
+      <header class="space-y-3 border-b border-stone-800 pb-5">
+        <p class="text-xs uppercase tracking-[0.32em] text-cyan-400">Narrative Witness</p>
+        <h1 class="text-3xl font-semibold text-stone-50">Canonical Narrative, Advisory Witness, Downstream Projection</h1>
+        <p class="max-w-3xl text-sm leading-6 text-stone-400">
+          This surface binds canonical chapter transitions to reusable graph templates and witness hooks
+          without promoting interpretation to authority.
+        </p>
+      </header>
+
+      <section class="grid gap-3 rounded-2xl border border-stone-800 bg-stone-900/70 p-4 md:grid-cols-[1.2fr_1.2fr_1fr_auto]">
+        <label class="flex flex-col gap-2">
+          <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Mode</span>
+          <select id="mode-select" class="rounded-lg border border-stone-700 bg-stone-950 px-3 py-2 text-sm text-stone-100">
+            <option value="narrative">Narrative</option>
+            <option value="witness">Witness</option>
+          </select>
+        </label>
+
+        <label class="flex flex-col gap-2">
+          <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Frame</span>
+          <select id="frame-select" class="rounded-lg border border-stone-700 bg-stone-950 px-3 py-2 text-sm text-stone-100">
+            <option value="semantic_graph">semantic_graph</option>
+            <option value="world">world</option>
+            <option value="replay_timeline">replay_timeline</option>
+          </select>
+        </label>
+
+        <div class="flex flex-col gap-2">
+          <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Attention</span>
+          <div class="flex gap-2">
+            <button id="attention-narrow" class="rounded-lg border border-cyan-500/60 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-100">Narrow</button>
+            <button id="attention-expand" class="rounded-lg border border-stone-700 px-4 py-2 text-sm text-stone-200">Expand</button>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Depth</span>
+          <button id="depth-toggle" class="rounded-lg border border-amber-500/60 bg-amber-500/10 px-4 py-2 text-sm text-amber-100">More</button>
+        </div>
+      </section>
+
+      <section id="secondary-tools" class="hidden rounded-2xl border border-stone-800 bg-stone-900/60 p-4">
+        <div class="grid gap-4 md:grid-cols-2">
+          <label class="flex flex-col gap-2">
+            <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Chapter</span>
+            <select id="chapter-select" class="rounded-lg border border-stone-700 bg-stone-950 px-3 py-2 text-sm text-stone-100"></select>
+          </label>
+          <div class="grid gap-4 md:grid-cols-[1fr_auto]">
+            <label class="flex flex-col gap-2">
+              <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Step</span>
+              <input id="step-range" type="range" min="1" max="1" value="1" class="w-full accent-cyan-400" />
+            </label>
+            <div class="flex flex-col gap-2">
+              <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Export</span>
+              <button id="export-svg" class="rounded-lg border border-stone-700 bg-stone-950 px-4 py-2 text-sm text-stone-100">SVG</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid gap-6 xl:grid-cols-[1.25fr_1fr]">
+        <section class="space-y-4 rounded-2xl border border-stone-800 bg-stone-900/60 p-5">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-medium text-stone-50">Template Graph Witness</h2>
+              <p class="text-sm text-stone-400">The graph below is a structural witness derived from the selected chapter binding.</p>
+            </div>
+            <div id="chapter-badge" class="rounded-full bg-stone-950/80 px-3 py-1 text-xs text-stone-300"></div>
+          </div>
+          <div id="graph-host" class="overflow-hidden rounded-xl border border-stone-800 bg-stone-950/80 p-3"></div>
+        </section>
+
+        <section class="space-y-4 rounded-2xl border border-stone-800 bg-stone-900/60 p-5">
+          <div>
+            <h2 class="text-lg font-medium text-stone-50">Selected Step</h2>
+            <p class="text-sm text-stone-400">Witness role and projection hints remain advisory; they never mutate canonical state.</p>
+          </div>
+
+          <article class="rounded-xl border border-stone-800 bg-stone-950/60 p-4">
+            <dl class="grid gap-3 text-sm md:grid-cols-2">
+              <div>
+                <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-stone-500">Chapter</dt>
+                <dd id="field-chapter" class="font-mono text-stone-100"></dd>
+              </div>
+              <div>
+                <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-stone-500">Step</dt>
+                <dd id="field-step" class="font-mono text-stone-100"></dd>
+              </div>
+              <div>
+                <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-stone-500">Template</dt>
+                <dd id="field-template" class="font-mono text-stone-100"></dd>
+              </div>
+              <div>
+                <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-stone-500">Witness Role</dt>
+                <dd id="field-role" class="font-mono text-cyan-300"></dd>
+              </div>
+              <div>
+                <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-stone-500">Scene</dt>
+                <dd id="field-scene" class="font-mono text-stone-100"></dd>
+              </div>
+              <div>
+                <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-stone-500">Transition</dt>
+                <dd id="field-transition" class="font-mono text-stone-100"></dd>
+              </div>
+            </dl>
+          </article>
+
+          <section class="rounded-xl border border-stone-800 bg-stone-950/60 p-4">
+            <div class="mb-2 text-xs uppercase tracking-[0.24em] text-stone-500">Hooks and Receipts</div>
+            <ul id="hook-list" class="space-y-2 text-sm text-stone-300"></ul>
+          </section>
+
+          <section class="rounded-xl border border-stone-800 bg-stone-950/60 p-4">
+            <div class="mb-2 text-xs uppercase tracking-[0.24em] text-stone-500">Excerpt</div>
+            <p id="excerpt-text" class="whitespace-pre-wrap text-sm leading-6 text-stone-300"></p>
+          </section>
+        </section>
+      </section>
+    </main>
+    <script id="ttc-narrative-scene-snapshot" type="application/json">{}</script>
+
+    <script type="module">
+      import { buildNarrativeScene, renderNarrativeSceneSvg } from "./ttc_narrative_scene.js";
+
+      const data = window.NARRATIVE_WITNESS_DATA;
+      const params = new URLSearchParams(window.location.search);
+      const modeSelect = document.getElementById("mode-select");
+      const frameSelect = document.getElementById("frame-select");
+      const narrowBtn = document.getElementById("attention-narrow");
+      const expandBtn = document.getElementById("attention-expand");
+      const depthToggle = document.getElementById("depth-toggle");
+      const secondaryTools = document.getElementById("secondary-tools");
+      const chapterSelect = document.getElementById("chapter-select");
+      const stepRange = document.getElementById("step-range");
+      const exportSvg = document.getElementById("export-svg");
+      const graphHost = document.getElementById("graph-host");
+      const chapterBadge = document.getElementById("chapter-badge");
+      const fieldChapter = document.getElementById("field-chapter");
+      const fieldStep = document.getElementById("field-step");
+      const fieldTemplate = document.getElementById("field-template");
+      const fieldRole = document.getElementById("field-role");
+      const fieldScene = document.getElementById("field-scene");
+      const fieldTransition = document.getElementById("field-transition");
+      const hookList = document.getElementById("hook-list");
+      const excerptText = document.getElementById("excerpt-text");
+      const snapshotNode = document.getElementById("ttc-narrative-scene-snapshot");
+
+      let attention = params.get("attention") === "expand" ? "expand" : "narrow";
+      let expandedDepth = params.get("depth") === "more";
+      let currentScene = null;
+      let currentSvg = "";
+
+      function syncAttentionButtons() {
+        narrowBtn.className = attention === "narrow"
+          ? "rounded-lg border border-cyan-500/60 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-100"
+          : "rounded-lg border border-stone-700 px-4 py-2 text-sm text-stone-200";
+        expandBtn.className = attention === "expand"
+          ? "rounded-lg border border-cyan-500/60 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-100"
+          : "rounded-lg border border-stone-700 px-4 py-2 text-sm text-stone-200";
+      }
+
+      function syncDepthControls() {
+        secondaryTools.classList.toggle("hidden", !expandedDepth);
+        depthToggle.textContent = expandedDepth ? "Less" : "More";
+      }
+
+      function currentControls() {
+        return {
+          mode: modeSelect.value,
+          frame: frameSelect.value,
+          attention,
+          depth: expandedDepth ? "more" : "less",
+        };
+      }
+
+      function updateSnapshot(scene, svgMarkup) {
+        snapshotNode.textContent = JSON.stringify(
+          {
+            chapter_id: scene.chapter_id,
+            step: scene.step,
+            scene_id: scene.scene_id,
+            template_id: scene.template_id,
+            mode: scene.mode,
+            frame: scene.frame,
+            attention: scene.attention,
+            depth: scene.depth,
+            active_transition: scene.active_transition,
+            scene_json: JSON.stringify(scene),
+            svg_markup: svgMarkup,
+          },
+          null,
+          2,
+        );
+      }
+
+      function exportCurrentSvg() {
+        if (!currentSvg || !currentScene) {
+          return;
+        }
+        const blob = new Blob([currentSvg], { type: "image/svg+xml;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${currentScene.chapter_id}-step-${currentScene.step}.svg`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function render() {
+        const chapterEntry = data.chapters.find((entry) => entry.chapter.chapter_id === chapterSelect.value) || data.chapters[0];
+        const stepIndex = Math.max(0, Math.min(chapterEntry.steps.length - 1, Number(stepRange.value) - 1));
+        const stepRecord = chapterEntry.steps[stepIndex];
+        const scene = buildNarrativeScene(chapterEntry, stepRecord, currentControls());
+        const svgMarkup = renderNarrativeSceneSvg(scene);
+
+        chapterBadge.textContent = `${chapterEntry.chapter.phase} · ${chapterEntry.chapter.world_theme}`;
+        fieldChapter.textContent = chapterEntry.chapter.title;
+        fieldStep.textContent = `${scene.step} / ${chapterEntry.steps.length}`;
+        fieldTemplate.textContent = `${chapterEntry.chapter.template_name} (${scene.active_transition.template_transition_id})`;
+        fieldRole.textContent = scene.witness.role;
+        fieldScene.textContent = stepRecord.projection.heading || scene.scene_id;
+        fieldTransition.textContent = `${scene.active_transition.semantic_transition_id} → ${scene.active_transition.template_transition_id}`;
+        excerptText.textContent = scene.excerpt || "No excerpt.";
+        hookList.innerHTML = "";
+        const items = scene.witness.receipt_templates.length
+          ? scene.witness.receipt_templates
+          : ["No advisory witness receipts bound to this chapter."];
+        for (const text of items) {
+          const li = document.createElement("li");
+          li.className = "rounded-lg border border-stone-800 bg-stone-900/70 px-3 py-2";
+          li.textContent = text;
+          hookList.appendChild(li);
+        }
+        graphHost.innerHTML = svgMarkup;
+        currentScene = scene;
+        currentSvg = svgMarkup;
+        updateSnapshot(scene, svgMarkup);
+      }
+
+      function syncStepRange() {
+        const chapterEntry = data.chapters.find((entry) => entry.chapter.chapter_id === chapterSelect.value) || data.chapters[0];
+        stepRange.max = String(Math.max(chapterEntry.steps.length, 1));
+        stepRange.value = "1";
+      }
+
+      for (const chapterEntry of data.chapters) {
+        const option = document.createElement("option");
+        option.value = chapterEntry.chapter.chapter_id;
+        option.textContent = `${chapterEntry.chapter.order ?? ""} ${chapterEntry.chapter.title}`.trim();
+        chapterSelect.appendChild(option);
+      }
+
+      narrowBtn.addEventListener("click", () => {
+        attention = "narrow";
+        syncAttentionButtons();
+        render();
+      });
+      expandBtn.addEventListener("click", () => {
+        attention = "expand";
+        syncAttentionButtons();
+        render();
+      });
+      depthToggle.addEventListener("click", () => {
+        expandedDepth = !expandedDepth;
+        syncDepthControls();
+        render();
+      });
+      chapterSelect.addEventListener("change", () => {
+        syncStepRange();
+        render();
+      });
+      stepRange.addEventListener("input", render);
+      modeSelect.addEventListener("change", render);
+      frameSelect.addEventListener("change", render);
+      exportSvg.addEventListener("click", exportCurrentSvg);
+
+      chapterSelect.value = data.chapter_order[0];
+      if (params.get("chapter") && data.chapter_order.includes(params.get("chapter"))) {
+        chapterSelect.value = params.get("chapter");
+      }
+      if (params.get("mode")) {
+        modeSelect.value = params.get("mode");
+      }
+      if (params.get("frame")) {
+        frameSelect.value = params.get("frame");
+      }
+      syncStepRange();
+      if (params.get("step")) {
+        const step = Number(params.get("step"));
+        if (Number.isFinite(step) && step >= 1) {
+          stepRange.value = String(Math.min(step, Number(stepRange.max)));
+        }
+      }
+      syncAttentionButtons();
+      syncDepthControls();
+      render();
+    </script>
+  </body>
+</html>

@@ -145,6 +145,34 @@ Check the media lane with:
 make media-check
 ```
 
+## Narrative Witness Surface
+
+The narrative corpus can be bound into an advisory witness artifact without changing canonical chapter NDJSON.
+
+- witness page:
+  - `demo/ttc_narrative_witness.html`
+- binding spec:
+  - `docs/NARRATIVE_WITNESS_BINDING.md`
+- derived artifacts:
+  - `demo/narrative_data/narrative.bound.v0.ndjson`
+  - `demo/narrative_data/narrative_bound_bundle.js`
+
+The narrative witness page is a projection-only witness surface. Canonical narrative chapters remain authoritative.
+Its primary control grammar is intentionally bounded to:
+
+- `Mode`
+- `Frame`
+- `Attention`
+- `Depth`
+
+Secondary tools are hidden behind `More`, consistent with the strict attention-law boundary.
+
+Regenerate and verify the binding with:
+
+```bash
+make narrative-check
+```
+
 ## Matrix Seal Page
 
 Generate a self-contained matrix seal page from canonical payload bytes:

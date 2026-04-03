@@ -45,7 +45,7 @@ WIT_BIN := $(BIN_DIR)/ttc_witness
 CAN_RUNTIME_BIN := $(BIN_DIR)/ttc_canonical_runtime
 FRAMEWORK_BIN := $(BIN_DIR)/ttc_framework
 
-.PHONY: build pipe clean codec codec-test canonical canonical-smoke busybox-smoke busybox-uri-smoke symbolic-smoke symbolic-check factoradic-smoke factoradic-fifo-demo braille-mnemonic adapters-smoke adapters-check rules.extract rules.validate rules.digest rules.run rules.check framework-check lexicon-check ontology-check surfaces-check governance-audit governance-audit-check projection-check media-check seal-page aztec-transport-check aztec-std-placeholder
+.PHONY: build pipe clean codec codec-test canonical canonical-smoke busybox-smoke busybox-uri-smoke symbolic-smoke symbolic-check factoradic-smoke factoradic-fifo-demo braille-mnemonic adapters-smoke adapters-check rules.extract rules.validate rules.digest rules.run rules.check framework-check lexicon-check ontology-check surfaces-check governance-audit governance-audit-check projection-check media-check narrative-check seal-page aztec-transport-check aztec-std-placeholder
 
 build: $(RUNTIME_LIB) $(WITNESS_LIB) $(MATRIX_LIB) $(AZTEC_LIB) $(FRAMEWORK_LIB) $(ENC_BIN) $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) $(CAN_RUNTIME_BIN) $(FRAMEWORK_BIN)
 
@@ -152,6 +152,9 @@ projection-check: build
 
 media-check: build
 	python3 ./scripts/validate_media_render.py
+
+narrative-check:
+	python3 ./scripts/validate_narrative_binding.py
 
 seal-page: build
 	@if [ -z "$(INPUT)" ]; then \
