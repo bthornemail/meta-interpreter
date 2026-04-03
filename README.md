@@ -103,6 +103,7 @@ The projection demos are schema consumers, not schema definers.
 The shared renderer is a projection consumer only. It may read and update projection-local DOM state, but it must not define schema, runtime logic, or transport semantics.
 Projection equivalence can be checked continuously with `make projection-check`.
 That check validates projection equivalence only. It does not validate runtime law.
+See `docs/PROJECTION_UI.md` for the authoritative explanation of the browser projection surfaces, shared renderer, adapters, and why the UI is kept strictly downstream.
 
 Open the live SSE demo at:
 
