@@ -153,6 +153,7 @@ projection-check: build
 seal-page: build
 	@if [ -z "$(INPUT)" ]; then \
 		echo "usage: make seal-page INPUT=payload.bin OUTPUT=artifacts/seal/matrix_seal_page.html [RULE=current|delta64] [SEED=N] [NOTE='...']"; \
+		echo "example: make seal-page INPUT=demo/ttc_payload_sample.bin OUTPUT=artifacts/seal/matrix_seal_page.html"; \
 		exit 1; \
 	fi
 	python3 ./scripts/generate_matrix_seal_page.py \

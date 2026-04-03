@@ -132,6 +132,12 @@ Generate a self-contained matrix seal page from canonical payload bytes:
 make seal-page INPUT=artifact.bin OUTPUT=artifacts/seal/matrix_seal_page.html
 ```
 
+Working sample:
+
+```bash
+make seal-page INPUT=demo/ttc_payload_sample.bin OUTPUT=artifacts/seal/matrix_seal_page.html
+```
+
 Optional overrides:
 
 ```bash

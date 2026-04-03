@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TTC Matrix Seal Page</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #020617;
+        --panel: rgba(15, 23, 42, 0.88);
+        --panel-border: #1e293b;
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --accent: #22d3ee;
+        --accent-2: #34d399;
+        --warn: #f59e0b;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: radial-gradient(circle at top, #0f172a, var(--bg) 55%);
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      main {
+        max-width: 1340px;
+        margin: 0 auto;
+        padding: 32px 24px 56px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      header {
+        border-bottom: 1px solid var(--panel-border);
+        padding-bottom: 20px;
+      }
+      .eyebrow {
+        margin: 0 0 10px;
+        color: var(--accent);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.3em;
+      }
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(2rem, 3vw, 3rem);
+      }
+      .lede {
+        max-width: 72ch;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+      .layout {
+        display: grid;
+        gap: 20px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.02);
+      }
+      .card h2 {
+        margin: 0 0 10px;
+        font-size: 1.1rem;
+      }
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .identity-grid, .payload-grid, .meta-grid {
+        margin-top: 16px;
+        display: grid;
+        gap: 12px;
+      }
+      .identity-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+      .payload-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+      .meta-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+      .metric, .meta-card, .identity-note {
+        border: 1px solid var(--panel-border);
+        border-radius: 14px;
+        background: rgba(2, 6, 23, 0.72);
+        padding: 14px;
+      }
+      .label, .metric dt, .meta-card dt {
+        margin: 0 0 8px;
+        color: var(--muted);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.22em;
+      }
+      .metric dd, .meta-card dd {
+        margin: 0;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        word-break: break-word;
+      }
+      pre {
+        margin: 0;
+        padding: 16px;
+        overflow: auto;
+        border-radius: 14px;
+        border: 1px solid var(--panel-border);
+        background: rgba(2, 6, 23, 0.9);
+        color: #cbd5e1;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 12px;
+        line-height: 1.55;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+      .seal-grid {
+        display: grid;
+        gap: 20px;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      }
+      .placeholder {
+        border: 1px dashed #475569;
+        border-radius: 14px;
+        padding: 16px;
+        color: var(--warn);
+        background: rgba(30, 41, 59, 0.35);
+      }
+      .projection-grid {
+        display: grid;
+        gap: 20px;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      }
+      .step-surface {
+        border: 1px solid rgba(34, 211, 238, 0.45);
+        background: rgba(34, 211, 238, 0.08);
+        border-radius: 16px;
+        padding: 18px;
+      }
+      .step-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .step-title {
+        color: #67e8f9;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.24em;
+      }
+      .step-value, .badge {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      .step-value {
+        margin-top: 8px;
+        font-size: 1.15rem;
+      }
+      .badge {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(2, 6, 23, 0.72);
+        font-size: 12px;
+        color: #cbd5e1;
+      }
+      .canvas-shell {
+        border: 1px solid var(--panel-border);
+        border-radius: 16px;
+        background: rgba(2, 6, 23, 0.72);
+        padding: 12px;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+        border: 1px solid var(--panel-border);
+        background: #000;
+      }
+      footer {
+        color: var(--muted);
+        line-height: 1.65;
+        padding-top: 8px;
+      }
+      .empty-note {
+        margin-top: 16px;
+        color: var(--muted);
+      }
+      @media (max-width: 980px) {
+        .seal-grid, .projection-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+      This page is a generated seal surface.
+      Canonical authority remains the embedded artifact bytes and verified identity,
+      not the page markup or rendering.
+
+      data-ttc-* is derived projection metadata only.
+      It must never drive runtime or canonical decisions.
+    -->
+    <main data-ttc-root>
+      <header>
+        <p class="eyebrow">TTC Matrix Seal Page</p>
+        <h1>TTC Matrix Seal Page</h1>
+        <p class="lede">
+          This page is a generated seal surface. Canonical authority remains the embedded
+          artifact bytes and verified identity, not the page markup or rendering.
+        </p>
+      </header>
+
+      <section class="card">
+        <h2>Identity</h2>
+        <p>The seal page is generated from canonical bytes and artifact identity. It does not define runtime law, schema authority, or transport semantics.</p>
+        <div class="identity-grid">
+          <div class="metric"><dt>artifact hash (sha256)</dt><dd>a15b7b6699400c3663fb01473047b5cd2f8479a925262bce1316d958f786dc67</dd></div>
+          <div class="metric"><dt>rule version</dt><dd>1</dd></div>
+          <div class="metric"><dt>seal format version</dt><dd>matrix_seal_page.v1</dd></div>
+          <div class="metric"><dt>generator</dt><dd>generate_matrix_seal_page.py</dd></div>
+        </div>
+        
+        
+      </section>
+
+      <section class="card">
+        <h2>Canonical Payload</h2>
+        <p>The payload is shown as a readable witness form. These views do not replace the canonical byte substrate.</p>
+        <div class="payload-grid">
+          <div class="metric"><dt>input path</dt><dd>demo/ttc_payload_sample.bin</dd></div>
+          <div class="metric"><dt>payload length</dt><dd>10 byte(s)</dd></div>
+          <div class="metric"><dt>content-type hint</dt><dd>application/octet-stream</dd></div>
+          <div class="metric"><dt>payload base64</dt><dd>QUJDMTIzeHl6Cg==</dd></div>
+        </div>
+        <div class="layout" style="margin-top:16px;">
+          <div>
+            <div class="label">payload hex</div>
+            <pre>41424331323378797a0a</pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Seal Surface</h2>
+        <p>TTC matrix is the current honest seal surface. Standards Aztec remains reserved for future implementation.</p>
+        <div class="seal-grid" style="margin-top:16px;">
+          <div>
+            <div class="label">ttc matrix symbol (ascii)</div>
+            <pre>............#.#..#.....#.#.
+...#..#....##..##...#..##..
+#...##..##.####....####..#.
+####.#.....#.#.#...#.#.....
+...........................
+...........................
+...........................
+...........................
+...........................
+...........................
+...........................
+...........################
+############...#...........
+...........#.#.############
+############...#...........
+...........################
+###########################
+###########################
+###########################
+###########################
+###########################
+###########################
+###########################
+###########################
+###########################
+###########################
+###########################
+</pre>
+          </div>
+          <div class="placeholder">
+            <div class="label">future standards aztec</div>
+            <p style="margin:0; color:inherit;">
+              Reserved for a future standards-compliant Aztec layer with mode message,
+              Reed-Solomon ECC, and scanner interoperability.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Replay Preview</h2>
+        <p>The replay preview is a deterministic witness of runtime output, not a replacement for replay itself.</p>
+        <dl class="meta-grid"><div class="meta-card"><dt>tick</dt><dd>0</dd></div><div class="meta-card"><dt>step_digest</dt><dd>7862472510642391428</dd></div><div class="meta-card"><dt>triplet</dt><dd>[0, 1, 3]</dd></div><div class="meta-card"><dt>order</dt><dd>[0, 1, 3]</dd></div><div class="meta-card"><dt>seq56</dt><dd>4</dd></div><div class="meta-card"><dt>incidence_layer</dt><dd>4</dd></div><div class="meta-card"><dt>incidence_coords</dt><dd>(3, 0, 1)</dd></div><div class="meta-card"><dt>incidence_coeff</dt><dd>4</dd></div><div class="meta-card"><dt>grammar_role</dt><dd>0</dd></div><div class="meta-card"><dt>address_slot</dt><dd>29</dd></div><div class="meta-card"><dt>address_lane</dt><dd>14</dd></div><div class="meta-card"><dt>address_channel</dt><dd>2</dd></div></dl>
+        <div class="layout" style="margin-top:16px;">
+          <div>
+            <div class="label">sample runtime ndjson</div>
+            <pre>{&quot;rule_version&quot;:1,&quot;tick&quot;:0,&quot;input&quot;:65,&quot;state8&quot;:11,&quot;curr_state&quot;:11,&quot;step_digest&quot;:7862472510642391428,&quot;triplet&quot;:[0,1,3],&quot;order&quot;:[0,1,3],&quot;seq56&quot;:4,&quot;incidence_layer&quot;:4,&quot;incidence_x&quot;:3,&quot;incidence_y&quot;:0,&quot;incidence_z&quot;:1,&quot;incidence_coeff&quot;:4,&quot;grammar_role&quot;:0,&quot;escape_depth&quot;:0,&quot;address_slot&quot;:29,&quot;address_lane&quot;:14,&quot;address_channel&quot;:2}
+{&quot;rule_version&quot;:1,&quot;tick&quot;:1,&quot;input&quot;:66,&quot;state8&quot;:3,&quot;curr_state&quot;:3,&quot;step_digest&quot;:13627080033685169393,&quot;triplet&quot;:[0,2,5],&quot;order&quot;:[5,0,2],&quot;seq56&quot;:9,&quot;incidence_layer&quot;:1,&quot;incidence_x&quot;:1,&quot;incidence_y&quot;:0,&quot;incidence_z&quot;:0,&quot;incidence_coeff&quot;:1,&quot;grammar_role&quot;:0,&quot;escape_depth&quot;:0,&quot;address_slot&quot;:29,&quot;address_lane&quot;:14,&quot;address_channel&quot;:2}
+{&quot;rule_version&quot;:1,&quot;tick&quot;:2,&quot;input&quot;:67,&quot;state8&quot;:13,&quot;curr_state&quot;:13,&quot;step_digest&quot;:14780001538266487789,&quot;triplet&quot;:[0,4,6],&quot;order&quot;:[4,6,0],&quot;seq56&quot;:21,&quot;incidence_layer&quot;:13,&quot;incidence_x&quot;:7,&quot;incidence_y&quot;:4,&quot;incidence_z&quot;:2,&quot;incidence_coeff&quot;:25740,&quot;grammar_role&quot;:0,&quot;escape_depth&quot;:0,&quot;address_slot&quot;:14,&quot;address_lane&quot;:14,&quot;address_channel&quot;:2}
+{&quot;rule_version&quot;:1,&quot;tick&quot;:3,&quot;input&quot;:49,&quot;state8&quot;:7,&quot;curr_state&quot;:7,&quot;step_digest&quot;:12474158528964832754,&quot;triplet&quot;:[1,2,4],&quot;order&quot;:[4,1,2],&quot;seq56&quot;:26,&quot;incidence_layer&quot;:2,&quot;incidence_x&quot;:2,&quot;incidence_y&quot;:0,&quot;incidence_z&quot;:0,&quot;incidence_coeff&quot;:1,&quot;grammar_role&quot;:0,&quot;escape_depth&quot;:0,&quot;address_slot&quot;:59,&quot;address_lane&quot;:14,&quot;address_channel&quot;:2}
+{&quot;rule_version&quot;:1,&quot;tick&quot;:4,&quot;input&quot;:50,&quot;state8&quot;:11,&quot;curr_state&quot;:11,&quot;step_digest&quot;:18238766051973446502,&quot;triplet&quot;:[1,5,6],&quot;order&quot;:[1,5,6],&quot;seq56&quot;:38,&quot;incidence_layer&quot;:6,&quot;incidence_x&quot;:5,&quot;incidence_y&quot;:0,&quot;incidence_z&quot;:1,&quot;incidence_coeff&quot;:6,&quot;grammar_role&quot;:0,&quot;escape_depth&quot;:0,&quot;address_slot&quot;:44,&quot;address_lane&quot;:14,&quot;address_channel&quot;:2}
+{&quot;rule_version&quot;:1,&quot;tick&quot;:5,&quot;input&quot;:51,&quot;state8&quot;:5,&quot;curr_state&quot;:5,&quot;step_digest&quot;:14780001537981075946,&quot;triplet&quot;:[2,3,6],&quot;order&quot;:[3,6,2],&quot;seq56&quot;:42,&quot;incidence_layer&quot;:10,&quot;incidence_x&quot;:0,&quot;incidence_y&quot;:9,&quot;incidence_z&quot;:1,&quot;incidence_coeff&quot;:10,&quot;grammar_role&quot;:0,&quot;escape_depth&quot;:0,&quot;address_slot&quot;:59,&quot;address_lane&quot;:14,&quot;address_channel&quot;:3}
+{&quot;rule_version&quot;:1,&quot;tick&quot;:6,&quot;input&quot;:120,&quot;state8&quot;:13,&quot;curr_state&quot;:13,&quot;step_digest&quot;:2097864987133377882,&quot;triplet&quot;:[3,4,5],&quot;order&quot;:[3,4,5],&quot;seq56&quot;:50,&quot;incidence_layer&quot;:10,&quot;incidence_x&quot;:2,&quot;incidence_y&quot;:8,&quot;incidence_z&quot;:0,&quot;incidence_coeff&quot;:45,&quot;grammar_role&quot;:0,&quot;escape_depth&quot;:0,&quot;address_slot&quot;:29,&quot;address_lane&quot;:14,&quot;address_channel&quot;:2}
+{&quot;rule_version&quot;:1,&quot;tick&quot;:7,&quot;input&quot;:121,&quot;state8&quot;:15,&quot;curr_state&quot;:15,&quot;step_digest&quot;:12474158528586719798,&quot;triplet&quot;:[0,1,3],&quot;order&quot;:[3,0,1],&quot;seq56&quot;:6,&quot;incidence_layer&quot;:6,&quot;incidence_x&quot;:1,&quot;incidence_y&quot;:5,&quot;incidence_z&quot;:0,&quot;incidence_coeff&quot;:6,&quot;grammar_role&quot;:0,&quot;escape_depth&quot;:0,&quot;address_slot&quot;:29,&quot;address_lane&quot;:14,&quot;address_channel&quot;:2}
+{&quot;rule_version&quot;:1,&quot;tick&quot;:8,&quot;input&quot;:122,&quot;state8&quot;:7,&quot;curr_state&quot;:7,&quot;step_digest&quot;:4403707997308324370,&quot;triplet&quot;:[0,2,5],&quot;order&quot;:[5,0,2],&quot;seq56&quot;:10,&quot;incidence_layer&quot;:2,&quot;incidence_x&quot;:2,&quot;incidence_y&quot;:0,&quot;incidence_z&quot;:0,&quot;incidence_coeff&quot;:1,&quot;grammar_role&quot;:0,&quot;escape_depth&quot;:0,&quot;address_slot&quot;:59,&quot;address_lane&quot;:14,&quot;address_channel&quot;:0}
+{&quot;rule_version&quot;:1,&quot;tick&quot;:9,&quot;input&quot;:10,&quot;state8&quot;:3,&quot;curr_state&quot;:3,&quot;step_digest&quot;:18238766052225739301,&quot;triplet&quot;:[0,4,6],&quot;order&quot;:[6,0,4],&quot;seq56&quot;:21,&quot;incidence_layer&quot;:5,&quot;incidence_x&quot;:5,&quot;incidence_y&quot;:0,&quot;incidence_z&quot;:0,&quot;incidence_coeff&quot;:1,&quot;grammar_role&quot;:0,&quot;escape_depth&quot;:0,&quot;address_slot&quot;:14,&quot;address_lane&quot;:14,&quot;address_channel&quot;:2}</pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Projection Viewer</h2>
+        <p>The browser viewer remains projection-only. It reuses the frozen <code>data-ttc-*</code> contract and does not compute runtime state.</p>
+        <div class="projection-grid" style="margin-top:16px;">
+          <article
+            id="seal-step"
+            class="step-surface"
+            data-ttc-surface="step"
+            data-ttc-step="0"
+            data-ttc-digest="7862472510642391428"
+            data-ttc-triplet="0,1,3"
+            data-ttc-order="0,1,3"
+            data-ttc-seq56="4"
+            data-ttc-incidence-layer="4"
+            data-ttc-incidence-coords="3,0,1"
+            data-ttc-incidence-coeff="4"
+          >
+            <div class="step-top">
+              <div>
+                <div class="step-title">Sealed Step Preview</div>
+                <div id="panel-step" class="step-value">0</div>
+              </div>
+              <div id="panel-seq56-badge" class="badge">seq56 4</div>
+            </div>
+            <dl class="meta-grid" style="margin-top:16px;">
+              <div class="meta-card"><dt>Digest</dt><dd id="panel-digest">7862472510642391428</dd></div>
+              <div class="meta-card"><dt>Triplet</dt><dd id="panel-triplet">[0, 1, 3]</dd></div>
+              <div class="meta-card"><dt>Order</dt><dd id="panel-order">[0, 1, 3]</dd></div>
+              <div class="meta-card"><dt>seq56</dt><dd id="panel-seq56">4</dd></div>
+              <div class="meta-card"><dt>Layer</dt><dd id="panel-layer">4</dd></div>
+              <div class="meta-card"><dt>Coords</dt><dd id="panel-coords">(3, 0, 1)</dd></div>
+              <div class="meta-card"><dt>Coefficient</dt><dd id="panel-coeff">4</dd></div>
+            </dl>
+          </article>
+          <div class="canvas-shell">
+            <canvas
+              id="ttc-canvas"
+              width="520"
+              height="360"
+              data-ttc-surface="matrix"
+            ></canvas>
+          </div>
+        </div>
+      </section>
+
+      <footer class="card">
+        <p>This page is a generated seal surface. Canonical authority remains the embedded artifact bytes and verified identity, not the page markup or rendering.</p>
+      </footer>
+    </main>
+
+    <script>
+// The shared renderer is a projection consumer only.
+// It may read and update projection-local DOM state, but it must not define
+// schema, runtime logic, or transport semantics.
+function findWithinRoot(root, selector) {
+  return root.matches?.(selector) ? root : root.querySelector(selector);
+}
+
+function parseList(raw) {
+  return String(raw || "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .map((value) => Number(value));
+}
+
+function nodePosition(index) {
+  const centerX = 260;
+  const centerY = 126;
+  const radius = 98;
+  const angle = (-90 + index * (360 / 7)) * (Math.PI / 180);
+  return {
+    x: centerX + Math.cos(angle) * radius,
+    y: centerY + Math.sin(angle) * radius,
+  };
+}
+
+function createSurface(width, height) {
+  const surface =
+    typeof OffscreenCanvas !== "undefined" ? new OffscreenCanvas(width, height) : document.createElement("canvas");
+  surface.width = width;
+  surface.height = height;
+  return surface;
+}
+
+function drawSeqStrip(ctx, seq56, color) {
+  const columns = 8;
+  const rows = 7;
+  const cell = 18;
+  const originX = 188;
+  const originY = 262;
+  const activeRow = Math.floor(seq56 / columns);
+  const activeCol = seq56 % columns;
+
+  ctx.fillStyle = "#0f172a";
+  ctx.fillRect(originX - 10, originY - 10, columns * cell + 20, rows * cell + 20);
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < columns; col += 1) {
+      const x = originX + col * cell;
+      const y = originY + row * cell;
+      ctx.fillStyle = row === activeRow && col === activeCol ? color : "#111827";
+      ctx.fillRect(x, y, cell - 2, cell - 2);
+    }
+  }
+
+  ctx.fillStyle = "#94a3b8";
+  ctx.font = "12px ui-monospace, SFMono-Regular, monospace";
+  ctx.fillText("seq56 strip", originX, originY - 18);
+}
+
+function writeDataset(stepEl, step) {
+  if (!step) {
+    return;
+  }
+
+  stepEl.dataset.ttcStep = String(step.tick ?? step.step ?? 0);
+  stepEl.dataset.ttcDigest = String(step.step_digest ?? step.digest ?? 0);
+  stepEl.dataset.ttcTriplet = (step.triplet || []).join(",");
+  stepEl.dataset.ttcOrder = (step.order || []).join(",");
+  stepEl.dataset.ttcSeq56 = String(step.seq56 ?? 0);
+  stepEl.dataset.ttcIncidenceLayer = String(step.incidence_layer ?? step.layer ?? 0);
+
+  if (Array.isArray(step.incidence_coords)) {
+    stepEl.dataset.ttcIncidenceCoords = step.incidence_coords.join(",");
+  } else {
+    stepEl.dataset.ttcIncidenceCoords = [
+      step.incidence_x ?? step.x ?? 0,
+      step.incidence_y ?? step.y ?? 0,
+      step.incidence_z ?? step.z ?? 0,
+    ].join(",");
+  }
+
+  stepEl.dataset.ttcIncidenceCoeff = String(step.incidence_coeff ?? step.coeff ?? 0);
+}
+
+function readProjection(stepEl) {
+  return {
+    step: Number(stepEl.dataset.ttcStep),
+    digest: stepEl.dataset.ttcDigest,
+    triplet: parseList(stepEl.dataset.ttcTriplet),
+    order: parseList(stepEl.dataset.ttcOrder),
+    seq56: Number(stepEl.dataset.ttcSeq56),
+    layer: Number(stepEl.dataset.ttcIncidenceLayer),
+    coords: parseList(stepEl.dataset.ttcIncidenceCoords),
+    coeff: stepEl.dataset.ttcIncidenceCoeff,
+  };
+}
+
+function updatePanel(root, selector, value) {
+  const el = root.querySelector(selector);
+  if (el) {
+    el.textContent = value;
+  }
+}
+
+function publishSnapshot(root, projection, canvas) {
+  let snapshotEl = root.querySelector("#ttc-projection-snapshot");
+  if (!snapshotEl) {
+    snapshotEl = document.createElement("script");
+    snapshotEl.id = "ttc-projection-snapshot";
+    snapshotEl.type = "application/json";
+    root.appendChild(snapshotEl);
+  }
+
+  const snapshot = {
+    step: String(projection.step),
+    digest: String(projection.digest),
+    triplet: `[${projection.triplet.join(", ")}]`,
+    order: `[${projection.order.join(", ")}]`,
+    seq56: String(projection.seq56),
+    layer: String(projection.layer),
+    coords: `(${projection.coords.join(", ")})`,
+    coeff: String(projection.coeff),
+    canvas_data_url: canvas ? canvas.toDataURL() : null,
+  };
+
+  snapshotEl.textContent = JSON.stringify(snapshot);
+}
+
+function paintCanvas(canvas, projection) {
+  const visibleCtx = canvas.getContext("2d");
+  const surface = createSurface(canvas.width, canvas.height);
+  const ctx = surface.getContext("2d");
+  const highlightColor = "#38bdf8";
+  const orderColors = ["#34d399", "#38bdf8", "#f472b6"];
+
+  ctx.clearRect(0, 0, surface.width, surface.height);
+  ctx.fillStyle = "#020617";
+  ctx.fillRect(0, 0, surface.width, surface.height);
+
+  ctx.strokeStyle = "#1f2937";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(260, 126, 110, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.fillStyle = "#64748b";
+  ctx.font = "12px ui-monospace, SFMono-Regular, monospace";
+  ctx.fillText(`step ${projection.step}`, 24, 28);
+  ctx.fillText(`digest ${projection.digest}`, 24, 48);
+  ctx.fillText(
+    `layer ${projection.layer} coords (${projection.coords.join(",")}) coeff ${projection.coeff}`,
+    24,
+    68
+  );
+
+  projection.triplet.forEach((value) => {
+    const pos = nodePosition(value);
+    ctx.beginPath();
+    ctx.fillStyle = "#1e293b";
+    ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#475569";
+    ctx.stroke();
+    ctx.fillStyle = "#cbd5e1";
+    ctx.font = "14px ui-monospace, SFMono-Regular, monospace";
+    ctx.fillText(String(value), pos.x - 4, pos.y + 4);
+  });
+
+  projection.order.forEach((value, index) => {
+    const pos = nodePosition(value);
+    ctx.beginPath();
+    ctx.fillStyle = orderColors[index] || highlightColor;
+    ctx.arc(pos.x, pos.y, 10, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#020617";
+    ctx.font = "11px ui-monospace, SFMono-Regular, monospace";
+    ctx.fillText(String(index + 1), pos.x - 3, pos.y + 4);
+  });
+
+  drawSeqStrip(ctx, projection.seq56, highlightColor);
+
+  if (surface instanceof OffscreenCanvas && visibleCtx.transferFromImageBitmap) {
+    const bitmap = surface.transferToImageBitmap();
+    visibleCtx.transferFromImageBitmap(bitmap);
+    bitmap.close?.();
+  } else {
+    visibleCtx.clearRect(0, 0, canvas.width, canvas.height);
+    visibleCtx.drawImage(surface, 0, 0);
+  }
+}
+
+function renderTtcProjection(stepEl, step) {
+  const root = stepEl.closest("[data-ttc-root]") || document;
+  const canvas = findWithinRoot(root, '[data-ttc-surface="matrix"]');
+
+  writeDataset(stepEl, step);
+
+  const projection = readProjection(stepEl);
+  updatePanel(root, "#panel-step", String(projection.step));
+  updatePanel(root, "#panel-digest", projection.digest);
+  updatePanel(root, "#panel-triplet", `[${projection.triplet.join(", ")}]`);
+  updatePanel(root, "#panel-order", `[${projection.order.join(", ")}]`);
+  updatePanel(root, "#panel-seq56", String(projection.seq56));
+  updatePanel(root, "#panel-layer", String(projection.layer));
+  updatePanel(root, "#panel-coords", `(${projection.coords.join(", ")})`);
+  updatePanel(root, "#panel-coeff", String(projection.coeff));
+  updatePanel(root, "#panel-seq56-badge", `seq56 ${projection.seq56}`);
+
+  if (canvas) {
+    paintCanvas(canvas, projection);
+  }
+
+  publishSnapshot(root, projection, canvas);
+
+  return projection;
+}
+
+
+const stepEl = document.getElementById("seal-step");
+renderTtcProjection(stepEl);
+    </script>
+  </body>
+</html>

@@ -500,6 +500,14 @@ def main() -> int:
 
     input_path = Path(args.input)
     output_path = Path(args.output)
+    if not input_path.exists():
+        print(
+            f"error: input payload not found: {input_path}\n"
+            "Provide a path to canonical payload bytes, for example:\n"
+            "  make seal-page INPUT=demo/ttc_payload_sample.bin OUTPUT=artifacts/seal/matrix_seal_page.html",
+            file=sys.stderr,
+        )
+        return 1
     payload = input_path.read_bytes()
     artifact_hash = hashlib.sha256(payload).hexdigest()
 
