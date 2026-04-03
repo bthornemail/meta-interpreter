@@ -96,8 +96,10 @@ It is a projection-only surface using embedded `data-ttc-*` metadata plus canvas
 Open the NDJSON adapter demo at:
 
 - `demo/ttc_projection_stream.html`
+- `demo/ttc_runtime_sample.ndjson` is a real runtime-emitted sample the stream demo can consume unchanged.
 
 It consumes runtime NDJSON, updates the same frozen `data-ttc-*` contract, and reuses the projection renderer without computing runtime state.
+The projection demos are schema consumers, not schema definers.
 
 ## Run End-to-End
 
