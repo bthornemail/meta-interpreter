@@ -123,6 +123,7 @@ JSON Canvas
 3D
 AR
 VR
+timed media
 ```
 
 - layer: projection
@@ -134,6 +135,13 @@ Rule:
 ```text
 projection does not define structure
 ```
+
+Timed media notes:
+
+- MSE-backed `<audio>` / `<video>` is a timed media projection surface
+- MediaCapabilities is a projection suitability probe
+- Media Session is a platform control adapter
+- capture constraints are device-facing tuning only and do not influence runtime law
 
 ## 8. Transport Surfaces
 

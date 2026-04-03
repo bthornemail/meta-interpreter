@@ -123,6 +123,27 @@ http://127.0.0.1:8000/ttc_projection_live.html
 ```
 
 The live bridge forwards runtime NDJSON unchanged. It is a transport adapter, not a schema or projection authority.
+The live canvas page is the primary browser projection surface.
+SVG is a downstream export/share witness generated from the same selected step and the same frozen contract.
+A-Frame remains a Phase 2 projection consumer and is not part of the current implementation.
+
+Open the timed media page at:
+
+- `demo/ttc_projection_media.html`
+
+It keeps canvas as the primary live surface while adding:
+- MSE-backed timed media playback
+- MediaCapabilities profile selection
+- basic Media Session metadata + play/pause control
+- display-only capture probing via supported constraints and track settings
+
+Timed media and capture remain downstream adapters only. They do not alter runtime law, `step_digest`, incidence, or scheduling.
+
+Check the media lane with:
+
+```bash
+make media-check
+```
 
 ## Matrix Seal Page
 

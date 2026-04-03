@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TTC Projection Live Demo</title>
+    <title>TTC Live Canvas Surface</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   </head>
   <body class="min-h-screen bg-neutral-950 text-neutral-100">
@@ -21,19 +21,71 @@
     <main class="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-6 py-8" data-ttc-root>
       <header class="space-y-3 border-b border-neutral-800 pb-5">
         <p class="text-xs uppercase tracking-[0.3em] text-cyan-400">TTC Projection Live</p>
-        <h1 class="text-3xl font-semibold text-neutral-50">SSE Runtime Bridge Demo</h1>
+        <h1 class="text-3xl font-semibold text-neutral-50">Live Canvas Surface</h1>
         <p class="max-w-3xl text-sm leading-6 text-neutral-400">
-          This page connects to a local SSE bridge, consumes runtime NDJSON unchanged,
-          writes the frozen <code>data-ttc-*</code> contract, and renders the same
-          deterministic canvas projection.
+          This is the primary browser projection surface. It connects to the local
+          SSE bridge, consumes runtime NDJSON unchanged, writes the frozen
+          <code>data-ttc-*</code> contract, and renders a deterministic living canvas.
         </p>
       </header>
 
-      <section class="grid gap-6 lg:grid-cols-[0.95fr_1.05fr_1.2fr]">
+      <section class="grid gap-6 lg:grid-cols-[1.55fr_0.95fr]">
+        <section class="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-5">
+          <div class="mb-4 flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-medium text-neutral-100">Live Canvas Surface</h2>
+              <p class="text-sm text-neutral-400">Canvas is the primary live projection surface. SVG is a downstream export witness of the same selected step.</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <button id="connect-btn" class="rounded-lg border border-cyan-500/60 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-200 hover:bg-cyan-500/15">
+                Start
+              </button>
+              <button id="disconnect-btn" class="rounded-lg border border-neutral-700 px-4 py-2 text-sm text-neutral-200 hover:border-neutral-500">
+                Disconnect
+              </button>
+              <button id="export-svg-btn" class="rounded-lg border border-emerald-500/60 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-200 hover:bg-emerald-500/15">
+                Export SVG
+              </button>
+            </div>
+          </div>
+
+          <canvas
+            id="ttc-canvas"
+            width="520"
+            height="360"
+            class="w-full rounded-xl border border-neutral-800 bg-black"
+            data-ttc-surface="matrix"
+          ></canvas>
+
+          <div class="mt-4 grid gap-3 text-xs text-neutral-400 sm:grid-cols-3">
+            <div class="rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
+              <div class="mb-1 uppercase tracking-[0.2em] text-neutral-500">Nodes</div>
+              <div>Triplet nodes stay on the same 7-point ring as the other projection surfaces.</div>
+            </div>
+            <div class="rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
+              <div class="mb-1 uppercase tracking-[0.2em] text-neutral-500">Traversal</div>
+              <div>Order highlights are the same rotated sequence rendered on canvas and SVG.</div>
+            </div>
+            <div class="rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
+              <div class="mb-1 uppercase tracking-[0.2em] text-neutral-500">seq56</div>
+              <div>The supercycle strip is a downstream witness only. It does not define check ordering.</div>
+            </div>
+          </div>
+
+          <details class="mt-4 rounded-xl border border-neutral-800 bg-neutral-950/40 p-4">
+            <summary class="cursor-pointer text-sm font-medium text-neutral-200">SVG Witness Preview</summary>
+            <div
+              id="ttc-svg-preview"
+              class="mt-4 overflow-auto rounded-xl border border-neutral-800 bg-neutral-950/60 p-3"
+              data-ttc-surface="svg"
+            ></div>
+          </details>
+        </section>
+
         <section class="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-5">
           <div class="mb-4">
             <h2 class="text-lg font-medium text-neutral-100">Live Bridge Controls</h2>
-            <p class="text-sm text-neutral-400">Connect to the local SSE bridge and stream a text payload.</p>
+            <p class="text-sm text-neutral-400">The adapter writes only the frozen projection contract and never changes runtime schema.</p>
           </div>
 
           <div class="space-y-4">
@@ -55,26 +107,13 @@
                 <input id="stream-seed" class="w-full rounded-lg border border-neutral-800 bg-neutral-950/80 px-3 py-2 text-sm text-neutral-100" placeholder="optional seed for delta64" />
               </label>
             </div>
-
-            <div class="flex flex-wrap gap-3">
-              <button id="connect-btn" class="rounded-lg border border-cyan-500/60 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-200 hover:bg-cyan-500/15">
-                Connect
-              </button>
-              <button id="disconnect-btn" class="rounded-lg border border-neutral-700 px-4 py-2 text-sm text-neutral-200 hover:border-neutral-500">
-                Disconnect
-              </button>
-            </div>
-
             <div id="stream-status" class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4 text-xs text-neutral-400">
               Disconnected.
             </div>
-          </div>
-        </section>
-
-        <section class="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-5">
-          <div class="mb-4">
+          
+          <div class="mb-4 mt-6">
             <h2 class="text-lg font-medium text-neutral-100">Projected Step Surface</h2>
-            <p class="text-sm text-neutral-400">Updated by the bridge, rendered from frozen projection metadata.</p>
+            <p class="text-sm text-neutral-400">Updated by the bridge, then consumed unchanged by canvas and SVG renderers.</p>
           </div>
 
           <article
@@ -132,29 +171,15 @@
             </dl>
           </article>
         </section>
-
-        <section class="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-5">
-          <div class="mb-4">
-            <h2 class="text-lg font-medium text-neutral-100">Canvas Surface</h2>
-            <p class="text-sm text-neutral-400">The renderer only reads the dataset on the live step article.</p>
-          </div>
-
-          <canvas
-            id="ttc-canvas"
-            width="520"
-            height="360"
-            class="w-full rounded-xl border border-neutral-800 bg-black"
-            data-ttc-surface="matrix"
-          ></canvas>
-        </section>
       </section>
     </main>
 
     <script type="module">
-      import { renderTtcProjection } from "./ttc_projection_renderer.js";
+      import { readTtcProjection, renderTtcProjection, renderTtcProjectionSvg } from "./ttc_projection_renderer.js";
 
       const connectBtn = document.getElementById("connect-btn");
       const disconnectBtn = document.getElementById("disconnect-btn");
+      const exportSvgBtn = document.getElementById("export-svg-btn");
       const streamInput = document.getElementById("stream-input");
       const streamRule = document.getElementById("stream-rule");
       const streamSeed = document.getElementById("stream-seed");
@@ -186,6 +211,20 @@
 
       function applyStep(step) {
         renderTtcProjection(stepEl, step);
+      }
+
+      function exportSvg() {
+        const projection = readTtcProjection(stepEl);
+        const svg = renderTtcProjectionSvg(projection);
+        const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+        const href = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = href;
+        anchor.download = `ttc_projection_step_${projection.step}.svg`;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(href);
       }
 
       function disconnect() {
@@ -236,6 +275,7 @@
 
       connectBtn.addEventListener("click", connect);
       disconnectBtn.addEventListener("click", disconnect);
+      exportSvgBtn.addEventListener("click", exportSvg);
 
       renderTtcProjection(stepEl);
 

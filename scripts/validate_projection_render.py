@@ -127,7 +127,19 @@ def main() -> int:
         snapshots = {name: extract_snapshot(dump_dom(chromium, url)) for name, url in urls.items()}
         baseline = snapshots["static"]
 
-        required = ["step", "digest", "triplet", "order", "seq56", "layer", "coords", "coeff", "canvas_data_url"]
+        required = [
+            "step",
+            "digest",
+            "triplet",
+            "order",
+            "seq56",
+            "layer",
+            "coords",
+            "coeff",
+            "canvas_data_url",
+            "svg_markup",
+            "svg_digest_present",
+        ]
         for key in required:
             if key not in baseline:
                 raise SystemExit(f"projection check failed: baseline missing key {key}")
@@ -140,6 +152,9 @@ def main() -> int:
                         f"{name} diverged on {key}: {snapshot.get(key)!r} != {baseline.get(key)!r}"
                     )
 
+        if baseline["svg_digest_present"] is not True:
+            raise SystemExit("projection check failed: SVG witness does not preserve digest text")
+
         summary = {
             "step": baseline["step"],
             "digest": baseline["digest"],
@@ -149,6 +164,7 @@ def main() -> int:
             "layer": baseline["layer"],
             "coords": baseline["coords"],
             "coeff": baseline["coeff"],
+            "svg_digest_present": baseline["svg_digest_present"],
         }
         print("projection render check passed")
         print(json.dumps(summary, indent=2, sort_keys=True))

@@ -48,9 +48,28 @@ The browser projection lane currently has three surfaces:
 3. Live SSE demo
 
 - file: `demo/ttc_projection_live.html`
-- role: live transport adapter over the same contract
+- role: primary live canvas surface over the same contract
 - input source: SSE events from `demo/ttc_runtime_stream_server.py`
-- purpose: prove that a live runtime stream can feed the same projection surface unchanged
+- purpose: present the living browser surface while proving that a live runtime stream can feed the same projection surface unchanged
+
+4. SVG witness export
+
+- source: generated from the normalized projection object
+- role: export/share/print witness of the same selected step
+- purpose: provide a stable vector projection without introducing a second schema
+
+5. Future A-Frame surface
+
+- status: Phase 2 only
+- role: immersive projection consumer of the same normalized projection object
+- purpose: offer a 3D witness surface without redefining runtime, structure, or semantics
+
+6. Timed media surface
+
+- file: `demo/ttc_projection_media.html`
+- role: secondary timed media witness
+- input source: SSE events plus the same selected step consumed by canvas/SVG
+- purpose: prove that MSE, Media Session, and capture probes can remain downstream consumers only
 
 These pages are schema consumers, not schema definers.
 
@@ -78,13 +97,17 @@ Shared renderer:
 
 - file: `demo/ttc_projection_renderer.js`
 - exported surface: `renderTtcProjection(stepEl, step)`
+- normalized extraction surface: `readTtcProjection(stepEl)`
+- svg surface: `renderTtcProjectionSvg(projection)`
 
 Responsibilities:
 
 - optionally write projection-local dataset fields onto the selected step element
 - read the frozen `data-ttc-*` contract
+- normalize the selected step into a projection-local object
 - update projection-local panel text
 - render the canvas surface
+- render the SVG witness surface
 - publish a projection-local snapshot for automated equivalence checking
 
 Non-responsibilities:
@@ -96,6 +119,36 @@ Non-responsibilities:
 - address semantics
 - transport semantics
 - artifact identity
+
+## Timed Media Adapter
+
+Timed media adapter:
+
+- file: `demo/ttc_media_adapter.js`
+
+Responsibilities:
+
+- choose a playback profile using MediaCapabilities and MSE support
+- build a timed media surface from the same selected step stream already used by canvas
+- install basic Media Session metadata and play/pause handlers
+- probe supported constraints and track settings for display-only capture inspection
+
+Non-responsibilities:
+
+- runtime stepping
+- step selection law
+- incidence derivation
+- schema definition
+- capture-to-runtime authority
+
+Rules:
+
+```text
+MediaCapabilities selects projection/playback suitability, not canonical computation.
+MediaSource is a timed media projection/transport adapter, not a schema or runtime authority.
+Media Session is a platform control surface only.
+Capture constraints may tune device-facing behavior, but they must not influence runtime law.
+```
 
 ## What Was Refactored
 
@@ -114,7 +167,7 @@ The pages are now thin adapters:
 This keeps the architecture clean:
 
 ```text
-runtime NDJSON -> adapter -> data-ttc-* -> renderer -> canvas
+runtime NDJSON -> adapter -> data-ttc-* -> normalized projection -> canvas/svg
 ```
 
 ## Why The Precision Fix Matters
@@ -143,6 +196,7 @@ For a given step, the UI renders:
 
 - normalized metadata fields
 - deterministic canvas output
+- deterministic SVG witness output
 
 Normalized fields:
 
@@ -156,6 +210,7 @@ Normalized fields:
 - incidence coeff
 
 Canvas output is compared via a stable snapshot (`toDataURL()`).
+SVG output is compared as deterministic markup containing the same digest and projection content.
 
 ## Continuous Projection Check
 
@@ -176,12 +231,29 @@ It asserts one downstream invariant:
 same step -> same metadata -> same canvas
 ```
 
+And it additionally checks that SVG generated from the same selected step:
+
+- preserves the digest as text
+- stays deterministic across projection surfaces
+
 Important limit:
 
 ```text
 projection-check validates projection equivalence only
 it does not validate runtime law
 ```
+
+Timed media and capture probe behavior is validated separately by:
+
+- target: `make media-check`
+- script: `scripts/validate_media_render.py`
+
+That check asserts:
+
+- the media page preserves the same selected step metadata as the static projection surface
+- timed media profile selection is deterministic on the same browser
+- Media Session installs basic metadata/play-pause control without changing runtime-derived fields
+- supported constraints can be listed without affecting runtime output
 
 ## Current Invariant
 
@@ -208,5 +280,8 @@ If you change the browser projection layer, preserve these boundaries:
 3. Do not let adapters invent new field names.
 4. Do not compute canonical state in the browser.
 5. Do not treat projection stability as runtime authority.
+6. Canvas is the primary live surface.
+7. SVG is a downstream witness/export surface from the same contract.
+8. A-Frame, if added later, must consume the same normalized projection object and must not invent a new schema.
 
 If a change affects equivalence, update the projection check and prove the new behavior intentionally.

@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TTC Timed Media Surface</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="min-h-screen bg-neutral-950 text-neutral-100">
+    <!--
+      TTC timed media projection surface
+
+      MediaCapabilities selects projection/playback suitability, not canonical computation.
+      MediaSource is a timed media projection/transport adapter, not a schema or runtime authority.
+      Media Session is a platform control surface only.
+      Capture constraints may tune device-facing behavior, but they must not influence runtime law.
+
+      data-ttc-* is derived projection metadata only.
+      It must never drive runtime or canonical decisions.
+    -->
+    <main class="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-6 py-8" data-ttc-root>
+      <header class="space-y-3 border-b border-neutral-800 pb-5">
+        <p class="text-xs uppercase tracking-[0.3em] text-violet-400">TTC Timed Media</p>
+        <h1 class="text-3xl font-semibold text-neutral-50">Canvas + MSE Timed Media Surface</h1>
+        <p class="max-w-3xl text-sm leading-6 text-neutral-400">
+          Canvas remains the primary live projection surface. This page adds a secondary
+          timed media witness using Media Source Extensions, plus capability probing and
+          basic Media Session integration, without changing runtime authority or the frozen
+          <code>data-ttc-*</code> contract.
+        </p>
+      </header>
+
+      <section class="grid gap-6 xl:grid-cols-[1.5fr_1.05fr]">
+        <section class="space-y-6 rounded-2xl border border-neutral-800 bg-neutral-900/60 p-5">
+          <div class="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-medium text-neutral-100">Primary Live Canvas</h2>
+              <p class="text-sm text-neutral-400">
+                The canvas is still the main truth-feeling surface. Timed media is a secondary
+                witness that consumes the same selected step stream.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <button id="connect-btn" class="rounded-lg border border-violet-500/60 bg-violet-500/10 px-4 py-2 text-sm text-violet-200 hover:bg-violet-500/15">
+                Start
+              </button>
+              <button id="pause-btn" class="rounded-lg border border-neutral-700 px-4 py-2 text-sm text-neutral-200 hover:border-neutral-500">
+                Pause
+              </button>
+              <button id="disconnect-btn" class="rounded-lg border border-neutral-700 px-4 py-2 text-sm text-neutral-200 hover:border-neutral-500">
+                Disconnect
+              </button>
+              <button id="export-svg-btn" class="rounded-lg border border-emerald-500/60 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-200 hover:bg-emerald-500/15">
+                Export SVG
+              </button>
+            </div>
+          </div>
+
+          <canvas
+            id="ttc-canvas"
+            width="520"
+            height="360"
+            class="w-full rounded-xl border border-neutral-800 bg-black"
+            data-ttc-surface="matrix"
+          ></canvas>
+
+          <div class="grid gap-3 text-xs text-neutral-400 sm:grid-cols-3">
+            <div class="rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
+              <div class="mb-1 uppercase tracking-[0.2em] text-neutral-500">Shared Scene</div>
+              <div>The same normalized projection scene feeds canvas, SVG, and timed media.</div>
+            </div>
+            <div class="rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
+              <div class="mb-1 uppercase tracking-[0.2em] text-neutral-500">No Schema Drift</div>
+              <div>MSE and Media Session consume downstream state only and never write new runtime fields.</div>
+            </div>
+            <div class="rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
+              <div class="mb-1 uppercase tracking-[0.2em] text-neutral-500">Digest Safety</div>
+              <div>step_digest remains text-preserved across canvas, SVG, and media metadata.</div>
+            </div>
+          </div>
+
+          <details class="rounded-xl border border-neutral-800 bg-neutral-950/40 p-4">
+            <summary class="cursor-pointer text-sm font-medium text-neutral-200">SVG Witness Preview</summary>
+            <div
+              id="ttc-svg-preview"
+              class="mt-4 overflow-auto rounded-xl border border-neutral-800 bg-neutral-950/60 p-3"
+              data-ttc-surface="svg"
+            ></div>
+          </details>
+        </section>
+
+        <section class="space-y-6 rounded-2xl border border-neutral-800 bg-neutral-900/60 p-5">
+          <section class="space-y-4">
+            <div>
+              <h2 class="text-lg font-medium text-neutral-100">Live Input</h2>
+              <p class="text-sm text-neutral-400">The SSE adapter still forwards runtime NDJSON unchanged.</p>
+            </div>
+
+            <label class="block">
+              <span class="mb-2 block text-xs uppercase tracking-[0.24em] text-neutral-500">Input Text</span>
+              <textarea id="stream-input" class="h-28 w-full rounded-xl border border-neutral-800 bg-neutral-950/80 p-4 font-mono text-xs text-neutral-200" spellcheck="false">ABC123xyz</textarea>
+            </label>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+              <label class="block">
+                <span class="mb-2 block text-xs uppercase tracking-[0.24em] text-neutral-500">Rule</span>
+                <select id="stream-rule" class="w-full rounded-lg border border-neutral-800 bg-neutral-950/80 px-3 py-2 text-sm text-neutral-100">
+                  <option value="current">current</option>
+                  <option value="delta64">delta64</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="mb-2 block text-xs uppercase tracking-[0.24em] text-neutral-500">Seed</span>
+                <input id="stream-seed" class="w-full rounded-lg border border-neutral-800 bg-neutral-950/80 px-3 py-2 text-sm text-neutral-100" placeholder="optional seed for delta64" />
+              </label>
+            </div>
+
+            <div id="stream-status" class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4 text-xs text-neutral-400">
+              Disconnected.
+            </div>
+          </section>
+
+          <section class="space-y-4">
+            <div>
+              <h2 class="text-lg font-medium text-neutral-100">Timed Media Surface</h2>
+              <p class="text-sm text-neutral-400">MSE is a timed witness surface. It never changes runtime law or step ordering.</p>
+            </div>
+
+            <video
+              id="ttc-media-video"
+              class="w-full rounded-xl border border-neutral-800 bg-black"
+              controls
+              muted
+              playsinline
+            ></video>
+
+            <div id="media-status" class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4 text-xs text-neutral-400">
+              Timed media disconnected.
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
+                <div class="mb-2 text-xs uppercase tracking-[0.24em] text-neutral-500">Playback Profile</div>
+                <div id="media-profile" class="font-mono text-sm text-neutral-100">unsupported</div>
+              </div>
+              <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
+                <div class="mb-2 text-xs uppercase tracking-[0.24em] text-neutral-500">Capability Result</div>
+                <div id="media-capability" class="font-mono text-sm text-neutral-100">pending</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="space-y-4">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 class="text-lg font-medium text-neutral-100">Capture Probe</h2>
+                <p class="text-sm text-neutral-400">Display-only probe lane for supported constraints and current device settings.</p>
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <button id="probe-constraints-btn" class="rounded-lg border border-sky-500/60 bg-sky-500/10 px-3 py-2 text-sm text-sky-200 hover:bg-sky-500/15">
+                  Supported Constraints
+                </button>
+                <button id="probe-tracks-btn" class="rounded-lg border border-neutral-700 px-3 py-2 text-sm text-neutral-200 hover:border-neutral-500">
+                  Track Probe
+                </button>
+                <button id="stop-probe-btn" class="rounded-lg border border-neutral-700 px-3 py-2 text-sm text-neutral-200 hover:border-neutral-500">
+                  Stop Probe
+                </button>
+              </div>
+            </div>
+
+            <div id="capture-status" class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4 text-xs text-neutral-400">
+              Capture probe idle.
+            </div>
+
+            <div class="grid gap-3 lg:grid-cols-2">
+              <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
+                <div class="mb-2 text-xs uppercase tracking-[0.24em] text-neutral-500">Supported Constraints</div>
+                <pre id="supported-constraints" class="max-h-48 overflow-auto text-[11px] leading-5 text-neutral-300"></pre>
+              </div>
+              <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
+                <div class="mb-2 text-xs uppercase tracking-[0.24em] text-neutral-500">Track Settings / Capabilities</div>
+                <pre id="track-settings" class="max-h-48 overflow-auto text-[11px] leading-5 text-neutral-300"></pre>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <div class="mb-4">
+              <h2 class="text-lg font-medium text-neutral-100">Selected Step</h2>
+              <p class="text-sm text-neutral-400">The timed media lane reads the same selected step that canvas and SVG already consume.</p>
+            </div>
+
+            <article
+              id="live-step"
+              class="rounded-xl border border-violet-500/60 bg-violet-500/10 p-4"
+              data-ttc-surface="step"
+              data-ttc-step="0"
+              data-ttc-digest="0"
+              data-ttc-triplet="0,1,3"
+              data-ttc-order="0,1,3"
+              data-ttc-seq56="0"
+              data-ttc-incidence-layer="0"
+              data-ttc-incidence-coords="0,0,0"
+              data-ttc-incidence-coeff="0"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="text-xs uppercase tracking-[0.24em] text-violet-300">Selected Step</div>
+                  <div id="panel-step" class="mt-2 font-mono text-lg text-neutral-100">0</div>
+                </div>
+                <div id="panel-seq56-badge" class="rounded-full bg-neutral-950/80 px-3 py-1 text-xs text-neutral-300">
+                  seq56 0
+                </div>
+              </div>
+
+              <dl class="mt-4 space-y-3 text-sm">
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-neutral-500">Digest</dt>
+                  <dd id="panel-digest" class="break-all font-mono text-emerald-300">0</dd>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-neutral-500">Triplet</dt>
+                    <dd id="panel-triplet" class="font-mono text-neutral-100">[0, 1, 3]</dd>
+                  </div>
+                  <div>
+                    <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-neutral-500">Order</dt>
+                    <dd id="panel-order" class="font-mono text-neutral-100">[0, 1, 3]</dd>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                  <div>
+                    <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-neutral-500">Layer</dt>
+                    <dd id="panel-layer" class="font-mono text-neutral-100">0</dd>
+                  </div>
+                  <div class="col-span-2">
+                    <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-neutral-500">Coords</dt>
+                    <dd id="panel-coords" class="font-mono text-neutral-100">(0, 0, 0)</dd>
+                  </div>
+                </div>
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-neutral-500">Coefficient</dt>
+                  <dd id="panel-coeff" class="font-mono text-neutral-100">0</dd>
+                </div>
+              </dl>
+            </article>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script type="module">
+      import { readTtcProjection, renderTtcProjection, renderTtcProjectionSvg } from "./ttc_projection_renderer.js";
+      import { TtcCaptureProbe, TtcMediaAdapter } from "./ttc_media_adapter.js";
+
+      const connectBtn = document.getElementById("connect-btn");
+      const pauseBtn = document.getElementById("pause-btn");
+      const disconnectBtn = document.getElementById("disconnect-btn");
+      const exportSvgBtn = document.getElementById("export-svg-btn");
+      const probeConstraintsBtn = document.getElementById("probe-constraints-btn");
+      const probeTracksBtn = document.getElementById("probe-tracks-btn");
+      const stopProbeBtn = document.getElementById("stop-probe-btn");
+      const streamInput = document.getElementById("stream-input");
+      const streamRule = document.getElementById("stream-rule");
+      const streamSeed = document.getElementById("stream-seed");
+      const streamStatus = document.getElementById("stream-status");
+      const mediaStatus = document.getElementById("media-status");
+      const captureStatus = document.getElementById("capture-status");
+      const stepEl = document.getElementById("live-step");
+      const canvasEl = document.getElementById("ttc-canvas");
+      const mediaVideo = document.getElementById("ttc-media-video");
+      const mediaProfile = document.getElementById("media-profile");
+      const mediaCapability = document.getElementById("media-capability");
+      const supportedConstraintsEl = document.getElementById("supported-constraints");
+      const trackSettingsEl = document.getElementById("track-settings");
+
+      let source = null;
+      let seenSteps = 0;
+
+      const mediaAdapter = new TtcMediaAdapter({
+        videoEl: mediaVideo,
+        statusEl: mediaStatus,
+        onStateChange(state) {
+          mediaProfile.textContent = state.profile;
+          mediaCapability.textContent = state.supported
+            ? `supported=${state.supported} smooth=${state.smooth} power=${state.powerEfficient}`
+            : state.reason;
+          publishMediaSnapshot(state);
+        },
+      });
+
+      const captureProbe = new TtcCaptureProbe({
+        statusEl: captureStatus,
+        onStateChange(state) {
+          supportedConstraintsEl.textContent = JSON.stringify(state.supportedConstraints, null, 2);
+          trackSettingsEl.textContent = JSON.stringify(state.tracks, null, 2);
+          publishMediaSnapshot(mediaAdapter.snapshot(), state);
+        },
+      });
+
+      function getQueryConfig() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+          autoconnect: params.get("autoconnect") === "1",
+          autostartMedia: params.get("autostart_media") === "1",
+          probeConstraints: params.get("probe_constraints") === "1",
+          input: params.get("input") || null,
+          rule: params.get("rule") || null,
+          seed: params.get("seed") || null,
+          stopAfter: Number(params.get("stop_after") || "0"),
+        };
+      }
+
+      function parseRuntimeStep(raw) {
+        const digestMatch = raw.match(/"step_digest"\s*:\s*([0-9]+)/);
+        const step = JSON.parse(raw);
+        if (digestMatch) {
+          step.step_digest = digestMatch[1];
+        }
+        return step;
+      }
+
+      function publishMediaSnapshot(mediaState = mediaAdapter.snapshot(), captureState = captureProbe.snapshot()) {
+        let snapshotEl = document.getElementById("ttc-media-snapshot");
+        if (!snapshotEl) {
+          snapshotEl = document.createElement("script");
+          snapshotEl.id = "ttc-media-snapshot";
+          snapshotEl.type = "application/json";
+          document.querySelector("[data-ttc-root]").appendChild(snapshotEl);
+        }
+        const projection = readTtcProjection(stepEl);
+        const projectionSnapshotEl = document.getElementById("ttc-projection-snapshot");
+        const projectionSnapshot = projectionSnapshotEl ? JSON.parse(projectionSnapshotEl.textContent) : null;
+        const snapshot = {
+          step: String(projection.step),
+          digest: String(projection.digest),
+          triplet: `[${projection.triplet.join(", ")}]`,
+          order: `[${projection.order.join(", ")}]`,
+          seq56: String(projection.seq56),
+          layer: String(projection.layer),
+          coords: `(${projection.coords.join(", ")})`,
+          coeff: String(projection.coeff),
+          canvas_data_url: projectionSnapshot?.canvas_data_url ?? null,
+          media_profile: mediaState.profile,
+          media_supported: mediaState.supported,
+          media_smooth: mediaState.smooth,
+          media_power_efficient: mediaState.powerEfficient,
+          media_source_supported: mediaState.mediaSourceSupported,
+          media_session_available: mediaState.mediaSessionAvailable,
+          media_session_installed: mediaState.mediaSessionInstalled,
+          mse_active: mediaState.mseActive,
+          mse_started_once: mediaState.mseStartedOnce,
+          supported_constraints_count: captureState.supportedConstraintCount,
+          digest_preserved: typeof projection.digest === "string",
+        };
+        snapshotEl.textContent = JSON.stringify(snapshot);
+      }
+
+      function applyStep(step) {
+        renderTtcProjection(stepEl, step);
+        mediaAdapter.handleProjection(readTtcProjection(stepEl));
+        publishMediaSnapshot();
+      }
+
+      function exportSvg() {
+        const projection = readTtcProjection(stepEl);
+        const svg = renderTtcProjectionSvg(projection);
+        const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+        const href = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = href;
+        anchor.download = `ttc_projection_step_${projection.step}.svg`;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(href);
+      }
+
+      async function disconnectAll() {
+        if (source) {
+          source.close();
+          source = null;
+        }
+        await mediaAdapter.disconnect();
+        streamStatus.textContent = "Disconnected.";
+        publishMediaSnapshot();
+      }
+
+      async function connectLive(startMedia = true) {
+        const config = getQueryConfig();
+        await disconnectAll();
+        seenSteps = 0;
+        const params = new URLSearchParams({
+          input: config.input ?? streamInput.value,
+          rule: config.rule ?? streamRule.value,
+        });
+        const seed = config.seed ?? streamSeed.value.trim();
+        if (seed) {
+          params.set("seed", seed);
+        }
+
+        streamStatus.textContent = "Connecting…";
+
+        if (startMedia) {
+          mediaAdapter
+            .start(canvasEl, readTtcProjection(stepEl))
+            .then(() => {
+              publishMediaSnapshot();
+            })
+            .catch((error) => {
+              mediaStatus.textContent = `Timed media unavailable: ${error?.message || "start failed"}. Canvas remains authoritative downstream surface.`;
+              publishMediaSnapshot();
+            });
+        }
+
+        source = new EventSource(`/events?${params.toString()}`);
+
+        source.addEventListener("step", (event) => {
+          const data = parseRuntimeStep(event.data);
+          applyStep(data);
+          seenSteps += 1;
+          streamStatus.textContent = `Streaming tick ${data.tick}, seq56 ${data.seq56}.`;
+          if (config.stopAfter > 0 && seenSteps >= config.stopAfter) {
+            if (source) {
+              source.close();
+              source = null;
+            }
+            streamStatus.textContent = `SSE stopped after ${seenSteps} streamed step(s). Timed media remains downstream.`;
+          }
+        });
+
+        source.addEventListener("end", (event) => {
+          const data = JSON.parse(event.data);
+          streamStatus.textContent = `Stream ended with exit_code=${data.exit_code}.`;
+          if (source) {
+            source.close();
+            source = null;
+          }
+          publishMediaSnapshot();
+        });
+
+        source.onerror = () => {
+          streamStatus.textContent = "Stream error or bridge unavailable.";
+        };
+      }
+
+      connectBtn.addEventListener("click", () => connectLive(true));
+      pauseBtn.addEventListener("click", () => {
+        mediaAdapter.pause();
+        publishMediaSnapshot();
+      });
+      disconnectBtn.addEventListener("click", () => {
+        disconnectAll();
+      });
+      exportSvgBtn.addEventListener("click", exportSvg);
+      probeConstraintsBtn.addEventListener("click", () => captureProbe.probeSupportedConstraints());
+      probeTracksBtn.addEventListener("click", () => captureProbe.requestTrackProbe());
+      stopProbeBtn.addEventListener("click", () => captureProbe.stop());
+
+      renderTtcProjection(stepEl);
+      publishMediaSnapshot();
+
+      const config = getQueryConfig();
+      if (config.input) {
+        streamInput.value = config.input;
+      }
+      if (config.rule) {
+        streamRule.value = config.rule;
+      }
+      if (config.seed) {
+        streamSeed.value = config.seed;
+      }
+      if (config.probeConstraints) {
+        captureProbe.probeSupportedConstraints();
+      }
+      if (config.autoconnect) {
+        connectLive(config.autostartMedia);
+      }
+    </script>
+  </body>
+</html>

@@ -13,6 +13,15 @@ function parseList(raw) {
     .map((value) => Number(value));
 }
 
+function escapeXml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;");
+}
+
 function nodePosition(index) {
   const centerX = 260;
   const centerY = 126;
@@ -96,6 +105,31 @@ function readProjection(stepEl) {
   };
 }
 
+function buildSeqCellsSvg(seq56, color) {
+  const columns = 8;
+  const rows = 7;
+  const cell = 18;
+  const originX = 188;
+  const originY = 262;
+  const activeRow = Math.floor(seq56 / columns);
+  const activeCol = seq56 % columns;
+  const cells = [`<rect x="${originX - 10}" y="${originY - 10}" width="${columns * cell + 20}" height="${rows * cell + 20}" fill="#0f172a" />`];
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < columns; col += 1) {
+      const x = originX + col * cell;
+      const y = originY + row * cell;
+      const fill = row === activeRow && col === activeCol ? color : "#111827";
+      cells.push(`<rect x="${x}" y="${y}" width="${cell - 2}" height="${cell - 2}" fill="${fill}" />`);
+    }
+  }
+
+  cells.push(
+    `<text x="${originX}" y="${originY - 18}" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, monospace" font-size="12">seq56 strip</text>`
+  );
+  return cells.join("");
+}
+
 function updatePanel(root, selector, value) {
   const el = root.querySelector(selector);
   if (el) {
@@ -123,6 +157,10 @@ function publishSnapshot(root, projection, canvas) {
     coeff: String(projection.coeff),
     canvas_data_url: canvas ? canvas.toDataURL() : null,
   };
+
+  const svgMarkup = renderTtcProjectionSvg(projection);
+  snapshot.svg_markup = svgMarkup;
+  snapshot.svg_digest_present = svgMarkup.includes(String(projection.digest));
 
   snapshotEl.textContent = JSON.stringify(snapshot);
 }
@@ -190,6 +228,47 @@ function paintCanvas(canvas, projection) {
   }
 }
 
+export function readTtcProjection(stepEl) {
+  return readProjection(stepEl);
+}
+
+export function renderTtcProjectionSvg(projection) {
+  const highlightColor = "#38bdf8";
+  const orderColors = ["#34d399", "#38bdf8", "#f472b6"];
+
+  const tripletNodes = projection.triplet
+    .map((value) => {
+      const pos = nodePosition(value);
+      return `
+        <circle cx="${pos.x}" cy="${pos.y}" r="18" fill="#1e293b" stroke="#475569" stroke-width="2" />
+        <text x="${pos.x}" y="${pos.y + 5}" fill="#cbd5e1" font-family="ui-monospace, SFMono-Regular, monospace" font-size="14" text-anchor="middle">${escapeXml(value)}</text>
+      `;
+    })
+    .join("");
+
+  const orderNodes = projection.order
+    .map((value, index) => {
+      const pos = nodePosition(value);
+      return `
+        <circle cx="${pos.x}" cy="${pos.y}" r="10" fill="${orderColors[index] || highlightColor}" />
+        <text x="${pos.x}" y="${pos.y + 4}" fill="#020617" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" text-anchor="middle">${index + 1}</text>
+      `;
+    })
+    .join("");
+
+  return `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 360" role="img" aria-label="TTC projection witness">
+  <rect width="520" height="360" fill="#020617" />
+  <circle cx="260" cy="126" r="110" fill="none" stroke="#1f2937" stroke-width="2" />
+  <text x="24" y="28" fill="#64748b" font-family="ui-monospace, SFMono-Regular, monospace" font-size="12">step ${escapeXml(projection.step)}</text>
+  <text x="24" y="48" fill="#64748b" font-family="ui-monospace, SFMono-Regular, monospace" font-size="12">digest ${escapeXml(projection.digest)}</text>
+  <text x="24" y="68" fill="#64748b" font-family="ui-monospace, SFMono-Regular, monospace" font-size="12">layer ${escapeXml(projection.layer)} coords (${escapeXml(projection.coords.join(","))}) coeff ${escapeXml(projection.coeff)}</text>
+  ${tripletNodes}
+  ${orderNodes}
+  ${buildSeqCellsSvg(projection.seq56, highlightColor)}
+</svg>`.trim();
+}
+
 export function renderTtcProjection(stepEl, step) {
   const root = stepEl.closest("[data-ttc-root]") || document;
   const canvas = findWithinRoot(root, '[data-ttc-surface="matrix"]');
@@ -209,6 +288,11 @@ export function renderTtcProjection(stepEl, step) {
 
   if (canvas) {
     paintCanvas(canvas, projection);
+  }
+
+  const svgHost = findWithinRoot(root, '[data-ttc-surface="svg"]');
+  if (svgHost) {
+    svgHost.innerHTML = renderTtcProjectionSvg(projection);
   }
 
   publishSnapshot(root, projection, canvas);
