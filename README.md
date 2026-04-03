@@ -104,6 +104,7 @@ The shared renderer is a projection consumer only. It may read and update projec
 Projection equivalence can be checked continuously with `make projection-check`.
 That check validates projection equivalence only. It does not validate runtime law.
 See `docs/PROJECTION_UI.md` for the authoritative explanation of the browser projection surfaces, shared renderer, adapters, and why the UI is kept strictly downstream.
+See `docs/MATRIX_SEAL_PAGE_SPEC.md` for the generated matrix seal page specification and the non-authority rule for HTML seal surfaces.
 
 Open the live SSE demo at:
 
