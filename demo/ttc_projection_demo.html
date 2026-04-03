@@ -13,7 +13,7 @@
       data-ttc-* is derived projection metadata only.
       It must never drive runtime or canonical decisions.
     -->
-    <main class="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-6 py-8">
+    <main class="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-6 py-8" data-ttc-root>
       <header class="space-y-3 border-b border-neutral-800 pb-5">
         <p class="text-xs uppercase tracking-[0.3em] text-emerald-400">TTC Projection Surface</p>
         <h1 class="text-3xl font-semibold text-neutral-50">Static Step Projection Demo</h1>
@@ -244,88 +244,13 @@
       </section>
     </main>
 
-    <script>
+    <script type="module">
+      import { renderTtcProjection } from "./ttc_projection_renderer.js";
+
       const stepCards = Array.from(document.querySelectorAll(".ttc-step"));
-      const canvas = document.getElementById("ttc-canvas");
-      const visibleCtx = canvas.getContext("2d");
-      const surface =
-        typeof OffscreenCanvas !== "undefined"
-          ? new OffscreenCanvas(canvas.width, canvas.height)
-          : document.createElement("canvas");
-      surface.width = canvas.width;
-      surface.height = canvas.height;
-      const ctx = surface.getContext("2d");
-
-      const panelStep = document.getElementById("panel-step");
-      const panelDigest = document.getElementById("panel-digest");
-      const panelTriplet = document.getElementById("panel-triplet");
-      const panelOrder = document.getElementById("panel-order");
-      const panelSeq56 = document.getElementById("panel-seq56");
-      const panelLayer = document.getElementById("panel-layer");
-      const panelCoords = document.getElementById("panel-coords");
-      const panelCoeff = document.getElementById("panel-coeff");
-
-      function parseList(raw) {
-        return raw.split(",").map((value) => Number(value.trim()));
-      }
-
-      function nodePosition(index) {
-        const centerX = 260;
-        const centerY = 126;
-        const radius = 98;
-        const angle = (-90 + index * (360 / 7)) * (Math.PI / 180);
-        return {
-          x: centerX + Math.cos(angle) * radius,
-          y: centerY + Math.sin(angle) * radius,
-        };
-      }
-
-      function drawSeqStrip(seq56) {
-        const columns = 8;
-        const rows = 7;
-        const cell = 18;
-        const originX = 188;
-        const originY = 262;
-        const activeRow = Math.floor(seq56 / columns);
-        const activeCol = seq56 % columns;
-
-        ctx.fillStyle = "#0f172a";
-        ctx.strokeStyle = "#334155";
-        ctx.lineWidth = 1;
-        ctx.fillRect(originX - 10, originY - 10, columns * cell + 20, rows * cell + 20);
-
-        for (let row = 0; row < rows; row += 1) {
-          for (let col = 0; col < columns; col += 1) {
-            const x = originX + col * cell;
-            const y = originY + row * cell;
-            ctx.fillStyle = row === activeRow && col === activeCol ? "#34d399" : "#111827";
-            ctx.fillRect(x, y, cell - 2, cell - 2);
-          }
-        }
-
-        ctx.fillStyle = "#94a3b8";
-        ctx.font = "12px ui-monospace, SFMono-Regular, monospace";
-        ctx.fillText("seq56 strip", originX, originY - 18);
-      }
 
       function renderStep(card) {
-        const step = Number(card.dataset.ttcStep);
-        const digest = card.dataset.ttcDigest;
-        const triplet = parseList(card.dataset.ttcTriplet);
-        const order = parseList(card.dataset.ttcOrder);
-        const seq56 = Number(card.dataset.ttcSeq56);
-        const layer = Number(card.dataset.ttcIncidenceLayer);
-        const coords = parseList(card.dataset.ttcIncidenceCoords);
-        const coeff = card.dataset.ttcIncidenceCoeff;
-
-        panelStep.textContent = step;
-        panelDigest.textContent = digest;
-        panelTriplet.textContent = `[${triplet.join(", ")}]`;
-        panelOrder.textContent = `[${order.join(", ")}]`;
-        panelSeq56.textContent = seq56;
-        panelLayer.textContent = layer;
-        panelCoords.textContent = `(${coords.join(", ")})`;
-        panelCoeff.textContent = coeff;
+        renderTtcProjection(card);
 
         stepCards.forEach((item) => {
           item.classList.remove("border-emerald-500/60", "bg-emerald-500/10");
@@ -333,58 +258,6 @@
         });
         card.classList.add("border-emerald-500/60", "bg-emerald-500/10");
         card.classList.remove("border-neutral-800", "bg-neutral-950/40");
-
-        ctx.clearRect(0, 0, surface.width, surface.height);
-        ctx.fillStyle = "#020617";
-        ctx.fillRect(0, 0, surface.width, surface.height);
-
-        ctx.strokeStyle = "#1f2937";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(260, 126, 110, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.fillStyle = "#64748b";
-        ctx.font = "12px ui-monospace, SFMono-Regular, monospace";
-        ctx.fillText(`step ${step}`, 24, 28);
-        ctx.fillText(`digest ${digest}`, 24, 48);
-        ctx.fillText(`layer ${layer} coords (${coords.join(",")}) coeff ${coeff}`, 24, 68);
-
-        triplet.forEach((value) => {
-          const pos = nodePosition(value);
-          ctx.beginPath();
-          ctx.fillStyle = "#1e293b";
-          ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.strokeStyle = "#475569";
-          ctx.stroke();
-          ctx.fillStyle = "#cbd5e1";
-          ctx.font = "14px ui-monospace, SFMono-Regular, monospace";
-          ctx.fillText(String(value), pos.x - 4, pos.y + 4);
-        });
-
-        order.forEach((value, index) => {
-          const pos = nodePosition(value);
-          const colors = ["#34d399", "#38bdf8", "#f472b6"];
-          ctx.beginPath();
-          ctx.fillStyle = colors[index];
-          ctx.arc(pos.x, pos.y, 10, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = "#020617";
-          ctx.font = "11px ui-monospace, SFMono-Regular, monospace";
-          ctx.fillText(String(index + 1), pos.x - 3, pos.y + 4);
-        });
-
-        drawSeqStrip(seq56);
-
-        if (surface instanceof OffscreenCanvas && visibleCtx.transferFromImageBitmap) {
-          const bitmap = surface.transferToImageBitmap();
-          visibleCtx.transferFromImageBitmap(bitmap);
-          bitmap.close?.();
-        } else {
-          visibleCtx.clearRect(0, 0, canvas.width, canvas.height);
-          visibleCtx.drawImage(surface, 0, 0);
-        }
       }
 
       stepCards.forEach((card) => {
