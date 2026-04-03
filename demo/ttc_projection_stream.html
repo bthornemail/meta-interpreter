@@ -155,8 +155,26 @@
       let currentIndex = 0;
       let timer = null;
 
+      function getQueryConfig() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+          autoload: params.get("autoload") === "1",
+          source: params.get("source") || null,
+          index: Number(params.get("index") || "0"),
+        };
+      }
+
       function applyStep(step) {
         renderTtcProjection(stepEl, step);
+      }
+
+      function parseRuntimeStep(raw) {
+        const digestMatch = raw.match(/"step_digest"\s*:\s*([0-9]+)/);
+        const step = JSON.parse(raw);
+        if (digestMatch) {
+          step.step_digest = digestMatch[1];
+        }
+        return step;
       }
 
       function parseNdjson(text) {
@@ -164,7 +182,7 @@
           .split(/\n+/)
           .map((line) => line.trim())
           .filter(Boolean)
-          .map((line) => JSON.parse(line));
+          .map((line) => parseRuntimeStep(line));
       }
 
       function loadSteps() {
@@ -175,8 +193,8 @@
             status.textContent = "No NDJSON rows found.";
             return;
           }
-          applyStep(steps[currentIndex]);
-          status.textContent = `Loaded ${steps.length} step rows. Showing row 1.`;
+          showIndex(currentIndex);
+          status.textContent = `Loaded ${steps.length} step rows. Showing row ${currentIndex + 1}.`;
         } catch (error) {
           status.textContent = `NDJSON parse failed: ${error.message}`;
         }
@@ -214,7 +232,23 @@
       nextBtn.addEventListener("click", () => showIndex(currentIndex + 1));
       playBtn.addEventListener("click", togglePlay);
 
-      loadSteps();
+      async function boot() {
+        const config = getQueryConfig();
+        if (config.source) {
+          const response = await fetch(config.source, { cache: "no-store" });
+          input.value = await response.text();
+        }
+        if (config.autoload || !config.source) {
+          loadSteps();
+          if (steps.length) {
+            showIndex(config.index);
+          }
+        }
+      }
+
+      boot().catch((error) => {
+        status.textContent = `NDJSON load failed: ${error.message}`;
+      });
     </script>
   </body>
 </html>

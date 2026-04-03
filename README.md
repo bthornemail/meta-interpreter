@@ -100,6 +100,9 @@ Open the NDJSON adapter demo at:
 
 It consumes runtime NDJSON, updates the same frozen `data-ttc-*` contract, and reuses the projection renderer without computing runtime state.
 The projection demos are schema consumers, not schema definers.
+The shared renderer is a projection consumer only. It may read and update projection-local DOM state, but it must not define schema, runtime logic, or transport semantics.
+Projection equivalence can be checked continuously with `make projection-check`.
+That check validates projection equivalence only. It does not validate runtime law.
 
 Open the live SSE demo at:
 

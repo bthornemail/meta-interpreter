@@ -45,7 +45,7 @@ WIT_BIN := $(BIN_DIR)/ttc_witness
 CAN_RUNTIME_BIN := $(BIN_DIR)/ttc_canonical_runtime
 FRAMEWORK_BIN := $(BIN_DIR)/ttc_framework
 
-.PHONY: build pipe clean codec codec-test canonical canonical-smoke busybox-smoke busybox-uri-smoke symbolic-smoke symbolic-check factoradic-smoke factoradic-fifo-demo braille-mnemonic adapters-smoke adapters-check rules.extract rules.validate rules.digest rules.run rules.check framework-check lexicon-check ontology-check surfaces-check governance-audit governance-audit-check aztec-transport-check aztec-std-placeholder
+.PHONY: build pipe clean codec codec-test canonical canonical-smoke busybox-smoke busybox-uri-smoke symbolic-smoke symbolic-check factoradic-smoke factoradic-fifo-demo braille-mnemonic adapters-smoke adapters-check rules.extract rules.validate rules.digest rules.run rules.check framework-check lexicon-check ontology-check surfaces-check governance-audit governance-audit-check projection-check aztec-transport-check aztec-std-placeholder
 
 build: $(RUNTIME_LIB) $(WITNESS_LIB) $(MATRIX_LIB) $(AZTEC_LIB) $(FRAMEWORK_LIB) $(ENC_BIN) $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) $(CAN_RUNTIME_BIN) $(FRAMEWORK_BIN)
 
@@ -146,6 +146,9 @@ governance-audit: lexicon-check ontology-check
 
 governance-audit-check: lexicon-check ontology-check
 	./scripts/validate_governance_audit.sh
+
+projection-check: build
+	python3 ./scripts/validate_projection_render.py
 
 aztec-transport-check: $(FRAMEWORK_BIN)
 	./scripts/validate_aztec_transport.sh

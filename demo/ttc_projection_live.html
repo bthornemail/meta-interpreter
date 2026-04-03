@@ -162,6 +162,28 @@
       const stepEl = document.getElementById("live-step");
 
       let source = null;
+      let seenSteps = 0;
+
+      function getQueryConfig() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+          autoconnect: params.get("autoconnect") === "1",
+          input: params.get("input") || null,
+          rule: params.get("rule") || null,
+          seed: params.get("seed") || null,
+          stopAfter: Number(params.get("stop_after") || "0"),
+        };
+      }
+
+      function parseRuntimeStep(raw) {
+        const digestMatch = raw.match(/"step_digest"\s*:\s*([0-9]+)/);
+        const step = JSON.parse(raw);
+        if (digestMatch) {
+          step.step_digest = digestMatch[1];
+        }
+        return step;
+      }
+
       function applyStep(step) {
         renderTtcProjection(stepEl, step);
       }
@@ -175,22 +197,30 @@
       }
 
       function connect() {
+        const config = getQueryConfig();
         disconnect();
+        seenSteps = 0;
         const params = new URLSearchParams({
-          input: streamInput.value,
-          rule: streamRule.value,
+          input: config.input ?? streamInput.value,
+          rule: config.rule ?? streamRule.value,
         });
-        if (streamSeed.value.trim()) {
-          params.set("seed", streamSeed.value.trim());
+        const seed = config.seed ?? streamSeed.value.trim();
+        if (seed) {
+          params.set("seed", seed);
         }
 
         source = new EventSource(`/events?${params.toString()}`);
         status.textContent = "Connecting...";
 
         source.addEventListener("step", (event) => {
-          const data = JSON.parse(event.data);
+          const data = parseRuntimeStep(event.data);
           applyStep(data);
+          seenSteps += 1;
           status.textContent = `Streaming tick ${data.tick}, seq56 ${data.seq56}.`;
+          if (config.stopAfter > 0 && seenSteps >= config.stopAfter) {
+            disconnect();
+            status.textContent = `Disconnected after ${seenSteps} streamed step(s).`;
+          }
         });
 
         source.addEventListener("end", (event) => {
@@ -208,6 +238,20 @@
       disconnectBtn.addEventListener("click", disconnect);
 
       renderTtcProjection(stepEl);
+
+      const config = getQueryConfig();
+      if (config.input) {
+        streamInput.value = config.input;
+      }
+      if (config.rule) {
+        streamRule.value = config.rule;
+      }
+      if (config.seed) {
+        streamSeed.value = config.seed;
+      }
+      if (config.autoconnect) {
+        connect();
+      }
     </script>
   </body>
 </html>

@@ -1,3 +1,6 @@
+// The shared renderer is a projection consumer only.
+// It may read and update projection-local DOM state, but it must not define
+// schema, runtime logic, or transport semantics.
 function findWithinRoot(root, selector) {
   return root.matches?.(selector) ? root : root.querySelector(selector);
 }
@@ -100,6 +103,30 @@ function updatePanel(root, selector, value) {
   }
 }
 
+function publishSnapshot(root, projection, canvas) {
+  let snapshotEl = root.querySelector("#ttc-projection-snapshot");
+  if (!snapshotEl) {
+    snapshotEl = document.createElement("script");
+    snapshotEl.id = "ttc-projection-snapshot";
+    snapshotEl.type = "application/json";
+    root.appendChild(snapshotEl);
+  }
+
+  const snapshot = {
+    step: String(projection.step),
+    digest: String(projection.digest),
+    triplet: `[${projection.triplet.join(", ")}]`,
+    order: `[${projection.order.join(", ")}]`,
+    seq56: String(projection.seq56),
+    layer: String(projection.layer),
+    coords: `(${projection.coords.join(", ")})`,
+    coeff: String(projection.coeff),
+    canvas_data_url: canvas ? canvas.toDataURL() : null,
+  };
+
+  snapshotEl.textContent = JSON.stringify(snapshot);
+}
+
 function paintCanvas(canvas, projection) {
   const visibleCtx = canvas.getContext("2d");
   const surface = createSurface(canvas.width, canvas.height);
@@ -183,6 +210,8 @@ export function renderTtcProjection(stepEl, step) {
   if (canvas) {
     paintCanvas(canvas, projection);
   }
+
+  publishSnapshot(root, projection, canvas);
 
   return projection;
 }
