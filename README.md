@@ -124,6 +124,35 @@ http://127.0.0.1:8000/ttc_projection_live.html
 
 The live bridge forwards runtime NDJSON unchanged. It is a transport adapter, not a schema or projection authority.
 
+## Matrix Seal Page
+
+Generate a self-contained matrix seal page from canonical payload bytes:
+
+```bash
+make seal-page INPUT=artifact.bin OUTPUT=artifacts/seal/matrix_seal_page.html
+```
+
+Optional overrides:
+
+```bash
+make seal-page \
+  INPUT=artifact.bin \
+  OUTPUT=artifacts/seal/custom_seal.html \
+  RULE=current \
+  TITLE="TTC Matrix Seal Page" \
+  NOTE="generated from canonical payload bytes"
+```
+
+The seal page is a generated seal surface. Canonical authority remains the embedded
+artifact bytes and verified identity, not the page markup or rendering.
+It carries:
+
+- artifact identity
+- payload hex and base64 witness views
+- the current TTC matrix seal surface
+- runtime NDJSON replay preview
+- the frozen browser projection viewer
+
 ## Run End-to-End
 
 ```bash
