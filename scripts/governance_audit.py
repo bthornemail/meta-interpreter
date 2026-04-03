@@ -17,7 +17,6 @@ GOVERNANCE_META = {
     "docs/ONTOLOGY.json",
     "docs/SURFACES.md",
     "docs/SURFACES.json",
-    "docs/ttc_authoritative_lexicon_v1.md",
     "docs/GOVERNANCE_ALLOWLIST.json",
     "docs/GOVERNANCE_RULES.json",
     "scripts/validate_lexicon.sh",

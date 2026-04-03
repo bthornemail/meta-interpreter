@@ -35,7 +35,6 @@ required_layer_files=(
 
 for pattern in "${forbidden_patterns[@]}"; do
   if rg -n "$pattern" "${files[@]}" \
-    -g '!docs/ttc_authoritative_lexicon_v1.md' \
     -g '!docs/LEXICON.md' \
     -g '!docs/LEXICON.json' \
     -g '!docs/GOVERNANCE_ALLOWLIST.json' \
@@ -58,11 +57,6 @@ done
 
 if ! rg -q "compat alias; not standards Aztec" src/ttc_framework_cli.c; then
   echo "lexicon violation: framework CLI must warn on aztec compatibility alias" >&2
-  exit 1
-fi
-
-if ! rg -q "TTC Authoritative Lexicon v1" docs/ttc_authoritative_lexicon_v1.md; then
-  echo "lexicon violation: authoritative lexicon document missing" >&2
   exit 1
 fi
 
