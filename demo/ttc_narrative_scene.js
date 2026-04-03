@@ -488,7 +488,7 @@ export function buildNarrativeAFrameScene(scene) {
   };
 }
 
-export function renderNarrativeAFrame(root, aframeScene) {
+export function renderNarrativeAFrameMarkup(aframeScene) {
   const nodeMarkup = aframeScene.nodes.map((node) => `
     <a-entity position="${node.position.x} ${node.position.y} ${node.position.z}">
       <a-sphere radius="${node.radius}" color="${node.color}" opacity="${node.opacity}"></a-sphere>
@@ -502,7 +502,7 @@ export function renderNarrativeAFrame(root, aframeScene) {
     <a-text value="${escapeAFrameText(edge.predicate)}" color="#cbd5e1" align="center" width="3" position="${edge.label_position.x} ${edge.label_position.y} ${edge.label_position.z}"></a-text>
   `).join("");
 
-  root.innerHTML = `
+  return `
     <a-scene embedded background="color: #09090b" renderer="colorManagement: true; antialias: true">
       <a-entity light="type: ambient; color: #94a3b8; intensity: 0.7"></a-entity>
       <a-entity light="type: directional; color: #67e8f9; intensity: 1.1" position="1.5 3.4 2.2"></a-entity>
@@ -516,6 +516,10 @@ export function renderNarrativeAFrame(root, aframeScene) {
       ${nodeMarkup}
     </a-scene>
   `.trim();
+}
+
+export function renderNarrativeAFrame(root, aframeScene) {
+  root.innerHTML = renderNarrativeAFrameMarkup(aframeScene);
 }
 
 function hexToRgba(hex, alpha) {

@@ -45,7 +45,7 @@ WIT_BIN := $(BIN_DIR)/ttc_witness
 CAN_RUNTIME_BIN := $(BIN_DIR)/ttc_canonical_runtime
 FRAMEWORK_BIN := $(BIN_DIR)/ttc_framework
 
-.PHONY: build pipe clean codec codec-test canonical canonical-smoke busybox-smoke busybox-uri-smoke symbolic-smoke symbolic-check factoradic-smoke factoradic-fifo-demo braille-mnemonic adapters-smoke adapters-check rules.extract rules.validate rules.digest rules.run rules.check framework-check lexicon-check ontology-check surfaces-check governance-audit governance-audit-check projection-check media-check narrative-check seal-page aztec-transport-check aztec-std-placeholder
+.PHONY: build pipe clean codec codec-test canonical canonical-smoke busybox-smoke busybox-uri-smoke symbolic-smoke symbolic-check factoradic-smoke factoradic-fifo-demo braille-mnemonic adapters-smoke adapters-check rules.extract rules.validate rules.digest rules.run rules.check framework-check lexicon-check ontology-check surfaces-check governance-audit governance-audit-check projection-check media-check narrative-check narrative-frame-check narrative-frame-export seal-page aztec-transport-check aztec-std-placeholder
 
 build: $(RUNTIME_LIB) $(WITNESS_LIB) $(MATRIX_LIB) $(AZTEC_LIB) $(FRAMEWORK_LIB) $(ENC_BIN) $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) $(CAN_RUNTIME_BIN) $(FRAMEWORK_BIN)
 
@@ -155,6 +155,26 @@ media-check: build
 
 narrative-check:
 	python3 ./scripts/validate_narrative_binding.py
+
+narrative-frame-check:
+	python3 ./scripts/validate_narrative_frame_export.py
+
+narrative-frame-export:
+	@if [ -z "$(CHAPTER)" ] || [ -z "$(FROM_STEP)" ] || [ -z "$(TO_STEP)" ] || [ -z "$(OUT_DIR)" ]; then \
+		echo "usage: make narrative-frame-export CHAPTER=ch_xxx FROM_STEP=N TO_STEP=N OUT_DIR=artifacts/narrative_frames/run1 [MODE=narrative|witness] [FRAME=semantic_graph|world|replay_timeline] [ATTENTION=narrow|expand] [DEPTH=less|more] [FRAMES=N]"; \
+		echo "example: make narrative-frame-export CHAPTER=ch_dcdf6301992e FROM_STEP=16 TO_STEP=17 OUT_DIR=artifacts/narrative_frames/covenant MODE=witness FRAME=replay_timeline ATTENTION=narrow DEPTH=more FRAMES=8"; \
+		exit 1; \
+	fi
+	node ./scripts/export_narrative_frames.mjs \
+		--chapter "$(CHAPTER)" \
+		--from-step "$(FROM_STEP)" \
+		--to-step "$(TO_STEP)" \
+		--out-dir "$(OUT_DIR)" \
+		--mode "$(if $(MODE),$(MODE),narrative)" \
+		--frame "$(if $(FRAME),$(FRAME),semantic_graph)" \
+		--attention "$(if $(ATTENTION),$(ATTENTION),narrow)" \
+		--depth "$(if $(DEPTH),$(DEPTH),less)" \
+		$(if $(FRAMES),--frames "$(FRAMES)",)
 
 seal-page: build
 	@if [ -z "$(INPUT)" ]; then \

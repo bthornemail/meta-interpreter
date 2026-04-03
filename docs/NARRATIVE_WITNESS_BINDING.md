@@ -61,7 +61,8 @@ That role remains advisory. It does not grant mutation authority.
 
 ## UI Boundary
 
-The narrative witness page is a projection consumer only.
+The narrative frame witness page is the public narrative entry surface.
+It remains a projection consumer only.
 Its primary controls follow the strict attention grammar:
 
 - `Mode`
@@ -69,7 +70,15 @@ Its primary controls follow the strict attention grammar:
 - `Attention`
 - `Depth`
 
-Secondary chapter and step tools are hidden behind `More`.
+Secondary chapter, step, manifest, and loader tools are hidden behind `More`.
+
+The public witness page consumes:
+- `manifest.json`
+- `projection_receipts.ndjson`
+- exported `frames/frame_*.svg`
+
+It verifies and presents exported frame witnesses only.
+Replay and geometric shell cues are presentation aids; they do not define canonical identity, step order, or projection derivation inputs.
 
 The page builds one normalized narrative scene object per selected bound step.
 That scene object is the single downstream source for:
@@ -86,6 +95,20 @@ Projection surfaces may also emit projection hashes over:
 
 These hashes witness downstream integrity only.
 They do not redefine canonical authority.
+
+Frame export is also projection-only and may derive:
+- interpolated scene receipts
+- SVG frame artifacts
+- downstream projection hashes per frame
+
+Frame export MUST NOT:
+- redefine chapter identity
+- redefine step order
+- feed projection hashes back into runtime law
+
+UI attention invariant for frame witnesses:
+
+> For a fixed manifest, receipts, selected frame, and control state (Mode, Frame, Attention, Depth), the rendered projection and all visible hashes must be deterministic and reproducible; UI controls may change presentation and visibility only, never canonical identity or projection derivation inputs.
 
 3D rendering must consume the same normalized scene object used by SVG/canvas:
 - nodes map to 3D anchors
@@ -115,6 +138,7 @@ Frozen invariant:
 
 Reproducibility is enforced by:
 - `make narrative-check`
+- `make narrative-frame-check`
 
 That check proves only:
 - the binding artifacts are deterministic and reproducible

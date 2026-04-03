@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TTC Narrative Frame Witness</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(34,211,238,0.12),_transparent_28%),linear-gradient(180deg,_#09090b_0%,_#111827_56%,_#050816_100%)] text-stone-100">
+    <!--
+      Narrative frame witness page
+
+      This page is a projection witness over exported frame artifacts and
+      receipts. Canonical authority remains upstream; the page verifies and
+      presents, but does not define.
+    -->
+    <main class="relative mx-auto flex min-h-screen max-w-7xl flex-col gap-6 overflow-hidden px-4 py-6 sm:px-6 sm:py-8">
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+        <div id="poly-shell-a" class="absolute left-[-14rem] top-[-10rem] h-[28rem] w-[28rem] rotate-12 rounded-[22%] border border-cyan-400/10 bg-cyan-400/5 blur-3xl"></div>
+        <div id="poly-shell-b" class="absolute right-[-10rem] top-24 h-[24rem] w-[24rem] -rotate-12 rounded-[18%] border border-amber-300/10 bg-amber-300/5 blur-3xl"></div>
+        <div id="poly-shell-c" class="absolute bottom-[-11rem] left-1/2 h-[22rem] w-[22rem] -translate-x-1/2 rotate-45 border border-stone-400/10 bg-stone-300/5 [clip-path:polygon(50%_0%,100%_38%,82%_100%,18%_100%,0%_38%)]"></div>
+      </div>
+
+      <header class="relative space-y-4 border-b border-stone-800/80 pb-5">
+        <div class="flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.34em] text-cyan-300/80">
+          <span class="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1">Narrative Frame Witness</span>
+          <span class="text-stone-500">Primary Public Entry Surface</span>
+        </div>
+        <div class="grid gap-4 lg:grid-cols-[1.4fr_0.8fr] lg:items-end">
+          <div class="space-y-3">
+            <h1 class="max-w-4xl text-3xl font-semibold tracking-tight text-stone-50 sm:text-4xl">Verified narrative frames, replayed as witness rather than authority.</h1>
+            <p class="max-w-3xl text-sm leading-6 text-stone-300 sm:text-base">
+              This page presents exported frame witnesses and projection receipts from the same lawful scene seam.
+              Replay, hashes, and geometry are presentation aids only; canonical authority remains upstream of the export.
+            </p>
+          </div>
+          <aside class="rounded-2xl border border-stone-800/80 bg-stone-900/50 p-4 shadow-[0_0_0_1px_rgba(34,211,238,0.04),0_24px_90px_rgba(0,0,0,0.22)]">
+            <p class="text-[11px] uppercase tracking-[0.3em] text-stone-500">Witness Law</p>
+            <p id="public-witness-law" class="mt-2 text-sm leading-6 text-stone-300">
+              This page verifies and presents exported frame witnesses; canonical authority remains upstream.
+            </p>
+          </aside>
+        </div>
+      </header>
+
+      <section class="relative overflow-hidden rounded-[1.75rem] border border-stone-800/90 bg-stone-900/70 p-4 shadow-[0_24px_120px_rgba(0,0,0,0.28)] sm:p-5">
+        <div aria-hidden="true" class="pointer-events-none absolute inset-0 opacity-70">
+          <div class="absolute inset-x-10 top-3 h-px bg-gradient-to-r from-transparent via-cyan-300/25 to-transparent"></div>
+          <div class="absolute left-8 top-8 h-24 w-24 rotate-12 border border-cyan-300/10 [clip-path:polygon(50%_0%,100%_35%,82%_100%,18%_100%,0%_35%)]"></div>
+          <div class="absolute bottom-6 right-6 h-20 w-20 -rotate-6 border border-amber-300/10 [clip-path:polygon(50%_0%,100%_50%,50%_100%,0%_50%)]"></div>
+        </div>
+
+        <div class="relative grid gap-3 md:grid-cols-[1fr_1.55fr_1fr_auto] xl:grid-cols-[0.9fr_1.8fr_0.9fr_auto]">
+          <label class="flex flex-col gap-2">
+            <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Mode</span>
+            <select id="mode-select" class="rounded-xl border border-stone-700/80 bg-stone-950/90 px-3 py-3 text-sm text-stone-100 shadow-inner shadow-black/20">
+              <option value="witness">Witness</option>
+              <option value="replay">Replay</option>
+              <option value="export">Export</option>
+            </select>
+          </label>
+
+          <div class="flex flex-col gap-2">
+            <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Frame</span>
+            <div class="grid items-center gap-3 md:grid-cols-[auto_1fr_auto]">
+              <button id="prev-frame" class="rounded-xl border border-stone-700/80 bg-stone-950/90 px-4 py-3 text-sm text-stone-100 transition hover:border-cyan-400/40 hover:text-cyan-100">Prev</button>
+              <input id="frame-range" type="range" min="0" max="0" value="0" class="w-full accent-cyan-400" />
+              <button id="next-frame" class="rounded-xl border border-stone-700/80 bg-stone-950/90 px-4 py-3 text-sm text-stone-100 transition hover:border-cyan-400/40 hover:text-cyan-100">Next</button>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Attention</span>
+            <div class="grid gap-2 sm:grid-cols-2">
+              <button id="attention-narrow" class="rounded-xl border border-cyan-500/60 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-100">Narrow</button>
+              <button id="attention-expand" class="rounded-xl border border-stone-700/80 bg-stone-950/90 px-4 py-3 text-sm text-stone-200">Expand</button>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Depth</span>
+            <button id="depth-toggle" class="rounded-xl border border-amber-500/60 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">More</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="witness-layout" class="grid gap-6 xl:grid-cols-[1.45fr_0.8fr] xl:items-start">
+        <section id="hero-panel" class="relative overflow-hidden rounded-[1.8rem] border border-stone-800/90 bg-gradient-to-b from-stone-900/90 via-stone-950/80 to-stone-950/95 p-4 shadow-[0_32px_120px_rgba(0,0,0,0.32)] sm:p-6">
+          <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+            <div id="hero-shell-plane" class="absolute inset-x-8 top-8 h-28 rounded-[18%] border border-cyan-300/10 bg-cyan-300/5 blur-2xl transition duration-300"></div>
+            <div id="hero-shell-shadow" class="absolute inset-x-12 bottom-6 h-10 rounded-full bg-black/25 blur-3xl transition duration-300"></div>
+          </div>
+
+          <div class="relative flex flex-wrap items-start justify-between gap-4">
+            <div class="space-y-2">
+              <p class="text-[11px] uppercase tracking-[0.3em] text-stone-500">Replay Witness</p>
+              <h2 class="text-xl font-medium text-stone-50 sm:text-2xl">A verified frame view over exported projection artifacts.</h2>
+              <p id="hero-subtitle" class="max-w-2xl text-sm leading-6 text-stone-400">
+                Replay moves across already-exported witness frames. It does not derive new canonical state or reinterpret receipts.
+              </p>
+            </div>
+            <div id="frame-badge" class="rounded-full border border-stone-700/80 bg-stone-950/85 px-4 py-1.5 text-xs text-stone-300 shadow-sm shadow-black/20">No export loaded</div>
+          </div>
+
+          <div class="relative mt-6 overflow-hidden rounded-[1.5rem] border border-stone-800 bg-stone-950/80 p-3 sm:p-4">
+            <div class="mb-3 flex items-center justify-between gap-3">
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.28em] text-stone-500">Frame Witness</p>
+                <p id="frame-caption" class="mt-1 text-sm text-stone-400">Load a manifest and receipts to enter replay.</p>
+              </div>
+              <div id="quiet-summary" class="rounded-full border border-stone-700/80 bg-stone-950/90 px-3 py-1 text-xs text-stone-300">Awaiting export</div>
+            </div>
+            <div id="frame-stage" class="relative mx-auto flex min-h-[24rem] items-center justify-center overflow-hidden rounded-[1.3rem] border border-stone-900 bg-[radial-gradient(circle_at_top,_rgba(34,211,238,0.05),_transparent_40%),linear-gradient(180deg,_rgba(12,10,9,0.88),_rgba(9,9,11,0.98))] p-2 sm:min-h-[34rem] sm:p-4">
+              <div aria-hidden="true" class="pointer-events-none absolute inset-5 rounded-[1.15rem] border border-cyan-300/8"></div>
+              <div id="frame-viewport" class="relative z-10 flex w-full items-center justify-center opacity-100 transition duration-300 ease-out"></div>
+            </div>
+          </div>
+
+          <div class="relative mt-4 grid gap-3 lg:grid-cols-[1.1fr_0.9fr]">
+            <article class="rounded-2xl border border-stone-800/90 bg-stone-950/55 p-4">
+              <p class="text-[11px] uppercase tracking-[0.28em] text-stone-500">Frame Receipt</p>
+              <dl class="mt-3 grid gap-3 text-sm sm:grid-cols-2">
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-[0.2em] text-stone-500">Chapter</dt>
+                  <dd id="field-chapter" class="text-stone-100"></dd>
+                </div>
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-[0.2em] text-stone-500">Frame Index</dt>
+                  <dd id="field-frame" class="font-mono text-stone-100"></dd>
+                </div>
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-[0.2em] text-stone-500">Steps</dt>
+                  <dd id="field-steps" class="font-mono text-stone-100"></dd>
+                </div>
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-[0.2em] text-stone-500">Target Step</dt>
+                  <dd id="field-target-step" class="font-mono text-stone-100"></dd>
+                </div>
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-[0.2em] text-stone-500">Interpolation</dt>
+                  <dd id="field-interpolation" class="font-mono text-cyan-300"></dd>
+                </div>
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-[0.2em] text-stone-500">Controls</dt>
+                  <dd id="field-controls" class="font-mono text-stone-100"></dd>
+                </div>
+              </dl>
+            </article>
+
+            <article id="inline-summary" class="hidden rounded-2xl border border-stone-800/90 bg-stone-950/55 p-4 text-sm text-stone-300"></article>
+          </div>
+        </section>
+
+        <aside class="space-y-4">
+          <section id="hash-card" class="hidden rounded-[1.6rem] border border-stone-800/90 bg-stone-900/70 p-5 shadow-[0_22px_90px_rgba(0,0,0,0.26)]">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.28em] text-stone-500">Visible Verification</p>
+                <h3 class="mt-2 text-lg font-medium text-stone-50">Projection hashes for the current frame</h3>
+              </div>
+              <div class="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.25em] text-cyan-100">Expand</div>
+            </div>
+            <p class="mt-3 text-sm leading-6 text-stone-400">These hashes witness downstream agreement only. They do not redefine chapter identity, step order, or canonical truth.</p>
+            <ul id="hash-list" class="mt-4 space-y-2 text-sm text-stone-300"></ul>
+          </section>
+
+          <section id="details-panel" class="hidden rounded-[1.6rem] border border-stone-800/90 bg-stone-900/70 p-5 shadow-[0_22px_90px_rgba(0,0,0,0.26)]">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.28em] text-stone-500">Operator Detail</p>
+                <h3 class="mt-2 text-lg font-medium text-stone-50">Export context and loader inputs</h3>
+              </div>
+              <div class="rounded-full border border-amber-400/20 bg-amber-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.25em] text-amber-100">More</div>
+            </div>
+            <p class="mt-3 text-sm leading-6 text-stone-400">Depth reveals manifest provenance and loader tools without changing replay truth, frame identity, or receipt values.</p>
+
+            <section id="receipt-section" class="mt-4 rounded-xl border border-stone-800 bg-stone-950/60 p-4">
+              <div class="mb-2 text-xs uppercase tracking-[0.24em] text-stone-500">Manifest Summary</div>
+              <pre id="manifest-summary" class="overflow-x-auto whitespace-pre-wrap text-xs leading-6 text-stone-300"></pre>
+            </section>
+
+            <section id="secondary-tools" class="mt-4 rounded-xl border border-stone-800 bg-stone-950/60 p-4">
+              <div class="grid gap-4 md:grid-cols-[1.2fr_1.2fr_auto]">
+                <label class="flex flex-col gap-2">
+                  <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Manifest</span>
+                  <input id="manifest-input" type="file" accept=".json,application/json" class="rounded-lg border border-stone-700 bg-stone-950 px-3 py-2 text-sm text-stone-100 file:mr-3 file:rounded-md file:border-0 file:bg-cyan-500/15 file:px-3 file:py-1 file:text-cyan-100" />
+                </label>
+                <label class="flex flex-col gap-2">
+                  <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Receipts</span>
+                  <input id="receipts-input" type="file" accept=".ndjson,.txt,application/x-ndjson" class="rounded-lg border border-stone-700 bg-stone-950 px-3 py-2 text-sm text-stone-100 file:mr-3 file:rounded-md file:border-0 file:bg-cyan-500/15 file:px-3 file:py-1 file:text-cyan-100" />
+                </label>
+                <div class="flex flex-col gap-2">
+                  <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Source</span>
+                  <button id="load-query" class="rounded-lg border border-stone-700 bg-stone-950 px-4 py-2 text-sm text-stone-100">Load Query</button>
+                </div>
+              </div>
+            </section>
+          </section>
+        </aside>
+      </section>
+    </main>
+    <script id="ttc-narrative-frame-witness-snapshot" type="application/json">{}</script>
+
+    <script type="module">
+      const params = new URLSearchParams(window.location.search);
+      const modeSelect = document.getElementById("mode-select");
+      const manifestInput = document.getElementById("manifest-input");
+      const receiptsInput = document.getElementById("receipts-input");
+      const loadQuery = document.getElementById("load-query");
+      const witnessLayout = document.getElementById("witness-layout");
+      const frameViewport = document.getElementById("frame-viewport");
+      const frameBadge = document.getElementById("frame-badge");
+      const frameCaption = document.getElementById("frame-caption");
+      const quietSummary = document.getElementById("quiet-summary");
+      const heroSubtitle = document.getElementById("hero-subtitle");
+      const heroShellPlane = document.getElementById("hero-shell-plane");
+      const heroShellShadow = document.getElementById("hero-shell-shadow");
+      const attentionNarrow = document.getElementById("attention-narrow");
+      const attentionExpand = document.getElementById("attention-expand");
+      const depthToggle = document.getElementById("depth-toggle");
+      const secondaryTools = document.getElementById("secondary-tools");
+      const inlineSummary = document.getElementById("inline-summary");
+      const detailsPanel = document.getElementById("details-panel");
+      const hashCard = document.getElementById("hash-card");
+      const receiptSection = document.getElementById("receipt-section");
+      const frameRange = document.getElementById("frame-range");
+      const prevFrame = document.getElementById("prev-frame");
+      const nextFrame = document.getElementById("next-frame");
+      const fieldChapter = document.getElementById("field-chapter");
+      const fieldFrame = document.getElementById("field-frame");
+      const fieldSteps = document.getElementById("field-steps");
+      const fieldTargetStep = document.getElementById("field-target-step");
+      const fieldInterpolation = document.getElementById("field-interpolation");
+      const fieldControls = document.getElementById("field-controls");
+      const hashList = document.getElementById("hash-list");
+      const manifestSummary = document.getElementById("manifest-summary");
+      const snapshotNode = document.getElementById("ttc-narrative-frame-witness-snapshot");
+
+      let attention = params.get("attention") === "expand" ? "expand" : "narrow";
+      let expandedDepth = params.get("depth") === "more";
+      let manifest = null;
+      let receipts = [];
+      let baseDir = "";
+      let currentIndex = 0;
+      let lastFrameUrl = "";
+      let lastFrameMarkup = "";
+      let renderEpoch = 0;
+
+      async function readJsonFile(file) {
+        return JSON.parse(await file.text());
+      }
+
+      async function readNdjsonFile(file) {
+        return (await file.text())
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => JSON.parse(line));
+      }
+
+      async function fetchJson(url) {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`failed to load ${url}: ${response.status}`);
+        }
+        return response.json();
+      }
+
+      async function fetchNdjson(url) {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`failed to load ${url}: ${response.status}`);
+        }
+        return (await response.text())
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => JSON.parse(line));
+      }
+
+      function joinPath(base, relative) {
+        const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+        return new URL(relative, new URL(normalizedBase, window.location.href)).toString();
+      }
+
+      function manifestBaseFromPath(pathValue) {
+        const lastSlash = pathValue.lastIndexOf("/");
+        return lastSlash >= 0 ? pathValue.slice(0, lastSlash + 1) : "";
+      }
+
+      function selectedMode() {
+        return modeSelect.value || "replay";
+      }
+
+      function animateFrameSwap() {
+        frameViewport.classList.add("scale-[0.985]", "opacity-70");
+        window.setTimeout(() => {
+          frameViewport.classList.remove("scale-[0.985]", "opacity-70");
+        }, 160);
+      }
+
+      async function loadFrameMarkup(frameUrl) {
+        if (frameUrl === lastFrameUrl && lastFrameMarkup) {
+          return lastFrameMarkup;
+        }
+        const response = await fetch(frameUrl);
+        if (!response.ok) {
+          throw new Error(`failed to load frame ${frameUrl}: ${response.status}`);
+        }
+        const markup = await response.text();
+        lastFrameUrl = frameUrl;
+        lastFrameMarkup = markup;
+        return markup;
+      }
+
+      function syncAttentionButtons() {
+        attentionNarrow.className = attention === "narrow"
+          ? "rounded-xl border border-cyan-500/60 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-100"
+          : "rounded-xl border border-stone-700/80 bg-stone-950/90 px-4 py-3 text-sm text-stone-200";
+        attentionExpand.className = attention === "expand"
+          ? "rounded-xl border border-cyan-500/60 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-100"
+          : "rounded-xl border border-stone-700/80 bg-stone-950/90 px-4 py-3 text-sm text-stone-200";
+      }
+
+      function syncDepthControls() {
+        depthToggle.textContent = expandedDepth ? "Less" : "More";
+      }
+
+      function syncPanels() {
+        const showExpanded = attention === "expand";
+        inlineSummary.classList.toggle("hidden", !showExpanded);
+        hashCard.classList.toggle("hidden", !showExpanded);
+        detailsPanel.classList.toggle("hidden", !expandedDepth);
+        receiptSection.classList.toggle("hidden", !expandedDepth);
+        secondaryTools.classList.toggle("hidden", !expandedDepth);
+        heroShellPlane.classList.toggle("opacity-80", showExpanded);
+        heroShellPlane.classList.toggle("scale-[1.03]", expandedDepth);
+        heroShellShadow.classList.toggle("opacity-70", expandedDepth);
+        witnessLayout.className = showExpanded || expandedDepth
+          ? "grid gap-6 xl:grid-cols-[1.45fr_0.8fr] xl:items-start"
+          : "grid gap-6";
+      }
+
+      function syncModeCopy() {
+        const mode = selectedMode();
+        if (mode === "replay") {
+          heroSubtitle.textContent = "Replay moves across already-exported witness frames. It does not derive new canonical state or reinterpret receipts.";
+          frameCaption.textContent = manifest
+            ? "Use Frame to scrub the exported witness sequence. Replay changes presentation only."
+            : "Load a manifest and receipts to enter replay.";
+          return;
+        }
+        if (mode === "witness") {
+          heroSubtitle.textContent = "Witness mode centers the selected exported frame and quiets temporal emphasis without changing the receipt trail.";
+          frameCaption.textContent = manifest
+            ? "Witness mode holds on one verified frame while preserving the same export hashes."
+            : "Load a manifest and receipts to inspect a single exported witness.";
+          return;
+        }
+        heroSubtitle.textContent = "Export mode surfaces the artifact context around the current frame without elevating projection to authority.";
+        frameCaption.textContent = manifest
+          ? "Export mode keeps the same frame witness visible while emphasizing export provenance."
+          : "Load a manifest and receipts to inspect export provenance.";
+      }
+
+      function updateSnapshot(receipt, frameUrl) {
+        const showExpanded = attention === "expand";
+        const visibleHashes = showExpanded
+          ? {
+              scene_hash: receipt.scene_hash,
+              svg_hash: receipt.svg_hash,
+              aframe_scene_hash: receipt.aframe_scene_hash,
+              aframe_markup_hash: receipt.aframe_markup_hash,
+            }
+          : {};
+        snapshotNode.textContent = JSON.stringify(
+          {
+            chapter_id: manifest.chapter_id,
+            from_step: manifest.from_step,
+            to_step: manifest.to_step,
+            mode: modeSelect.value,
+            attention,
+            depth: expandedDepth ? "more" : "less",
+            frame_index: receipt.frame_index,
+            frame_total: receipt.frame_total,
+            target_step: receipt.target_step,
+            t: receipt.t,
+            controls: receipt.controls,
+            frame_url: frameUrl,
+            hero_frame_loaded: frameViewport.querySelector("svg") !== null,
+            default_mode_expected: "replay",
+            hash_summary_visible: showExpanded,
+            operator_detail_visible: expandedDepth,
+            secondary_tools_visible: expandedDepth,
+            frame_caption: frameCaption.textContent,
+            quiet_summary: quietSummary.textContent,
+            scene_hash: receipt.scene_hash,
+            svg_hash: receipt.svg_hash,
+            aframe_scene_hash: receipt.aframe_scene_hash,
+            aframe_markup_hash: receipt.aframe_markup_hash,
+            visible_hashes: visibleHashes,
+          },
+          null,
+          2,
+        );
+      }
+
+      async function render() {
+        if (!manifest || !receipts.length) {
+          return;
+        }
+        const epoch = ++renderEpoch;
+        currentIndex = Math.max(0, Math.min(receipts.length - 1, currentIndex));
+        const receipt = receipts[currentIndex];
+        const frameUrl = joinPath(baseDir || window.location.href, receipt.svg_file);
+        if (frameUrl !== lastFrameUrl) {
+          animateFrameSwap();
+        }
+        const markup = await loadFrameMarkup(frameUrl);
+        if (epoch !== renderEpoch) {
+          return;
+        }
+        frameViewport.innerHTML = markup;
+        const svg = frameViewport.querySelector("svg");
+        if (svg) {
+          svg.classList.add("w-full", "h-auto", "max-h-[68vh]", "rounded-[1rem]", "border", "border-stone-900", "bg-stone-950", "shadow-[0_20px_70px_rgba(0,0,0,0.35)]");
+          svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+        }
+        frameBadge.textContent = `${manifest.chapter_title} · frame ${receipt.frame_index + 1}/${receipt.frame_total}`;
+        quietSummary.textContent = `${receipt.frame_index + 1}/${receipt.frame_total} · t=${Number(receipt.t).toFixed(3)}`;
+        fieldChapter.textContent = `${manifest.chapter_id} · ${manifest.chapter_title}`;
+        fieldFrame.textContent = `${receipt.frame_index + 1} / ${receipt.frame_total}`;
+        fieldSteps.textContent = `${manifest.from_step} → ${manifest.to_step}`;
+        fieldTargetStep.textContent = receipt.target_step;
+        fieldInterpolation.textContent = receipt.interpolation ? `${receipt.interpolation.from_scene_id} → ${receipt.interpolation.to_scene_id} @ ${receipt.interpolation.t}` : "static target";
+        fieldControls.textContent = `${receipt.controls.mode} · ${receipt.controls.frame} · ${receipt.controls.attention} · ${receipt.controls.depth}`;
+        inlineSummary.textContent = `${selectedMode()} · frame ${receipt.frame_index + 1}/${receipt.frame_total} · t=${Number(receipt.t).toFixed(3)} · scene ${receipt.scene_hash}`;
+        hashList.innerHTML = "";
+        for (const [label, value] of [
+          ["scene_hash", receipt.scene_hash],
+          ["svg_hash", receipt.svg_hash],
+          ["aframe_scene_hash", receipt.aframe_scene_hash],
+          ["aframe_markup_hash", receipt.aframe_markup_hash],
+        ]) {
+          const li = document.createElement("li");
+          li.className = "rounded-lg border border-stone-800 bg-stone-900/70 px-3 py-2";
+          li.textContent = `${label}: ${value}`;
+          hashList.appendChild(li);
+        }
+        manifestSummary.textContent = JSON.stringify(
+          {
+            chapter_id: manifest.chapter_id,
+            chapter_title: manifest.chapter_title,
+            template_id: manifest.template_id,
+            frame_window: `${manifest.from_step} -> ${manifest.to_step}`,
+            frame_total: manifest.frame_total,
+            controls: manifest.controls,
+          },
+          null,
+          2,
+        );
+        syncModeCopy();
+        syncPanels();
+        frameRange.max = String(Math.max(receipts.length - 1, 0));
+        frameRange.value = String(currentIndex);
+        updateSnapshot(receipt, frameUrl);
+      }
+
+      async function loadFromQuery() {
+        const manifestPath = params.get("manifest");
+        const receiptsPath = params.get("receipts");
+        if (!manifestPath || !receiptsPath) {
+          return;
+        }
+        baseDir = manifestBaseFromPath(manifestPath);
+        manifest = await fetchJson(manifestPath);
+        receipts = await fetchNdjson(receiptsPath);
+        currentIndex = params.has("frame")
+          ? Math.max(0, Number(params.get("frame") || "0"))
+          : Math.floor(Math.max(receipts.length - 1, 0) / 2);
+        await render();
+      }
+
+      async function loadFromFiles() {
+        const manifestFile = manifestInput.files?.[0];
+        const receiptsFile = receiptsInput.files?.[0];
+        if (!manifestFile || !receiptsFile) {
+          return;
+        }
+        baseDir = "";
+        manifest = await readJsonFile(manifestFile);
+        receipts = await readNdjsonFile(receiptsFile);
+        currentIndex = Math.floor(Math.max(receipts.length - 1, 0) / 2);
+        await render();
+      }
+
+      prevFrame.addEventListener("click", () => {
+        currentIndex = Math.max(0, currentIndex - 1);
+        render().catch((error) => {
+          manifestSummary.textContent = String(error.message || error);
+        });
+      });
+      nextFrame.addEventListener("click", () => {
+        currentIndex = Math.min(receipts.length - 1, currentIndex + 1);
+        render().catch((error) => {
+          manifestSummary.textContent = String(error.message || error);
+        });
+      });
+      attentionNarrow.addEventListener("click", () => {
+        attention = "narrow";
+        syncAttentionButtons();
+        render().catch((error) => {
+          manifestSummary.textContent = String(error.message || error);
+        });
+      });
+      attentionExpand.addEventListener("click", () => {
+        attention = "expand";
+        syncAttentionButtons();
+        render().catch((error) => {
+          manifestSummary.textContent = String(error.message || error);
+        });
+      });
+      depthToggle.addEventListener("click", () => {
+        expandedDepth = !expandedDepth;
+        syncDepthControls();
+        render().catch((error) => {
+          manifestSummary.textContent = String(error.message || error);
+        });
+      });
+      frameRange.addEventListener("input", () => {
+        currentIndex = Number(frameRange.value);
+        render().catch((error) => {
+          manifestSummary.textContent = String(error.message || error);
+        });
+      });
+      modeSelect.addEventListener("change", () => {
+        syncModeCopy();
+        render().catch((error) => {
+          manifestSummary.textContent = String(error.message || error);
+        });
+      });
+      loadQuery.addEventListener("click", () => {
+        loadFromQuery().catch((error) => {
+          manifestSummary.textContent = String(error.message || error);
+        });
+      });
+      manifestInput.addEventListener("change", () => {
+        loadFromFiles().catch((error) => {
+          manifestSummary.textContent = String(error.message || error);
+        });
+      });
+      receiptsInput.addEventListener("change", () => {
+        loadFromFiles().catch((error) => {
+          manifestSummary.textContent = String(error.message || error);
+        });
+      });
+
+      modeSelect.value = params.get("mode") || "replay";
+      syncAttentionButtons();
+      syncDepthControls();
+      syncPanels();
+      syncModeCopy();
+      loadFromQuery().catch((error) => {
+        manifestSummary.textContent = String(error.message || error);
+      });
+    </script>
+  </body>
+</html>

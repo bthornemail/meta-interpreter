@@ -149,6 +149,8 @@ make media-check
 
 The narrative corpus can be bound into an advisory witness artifact without changing canonical chapter NDJSON.
 
+- primary public entry surface:
+  - `demo/ttc_narrative_frame_witness.html`
 - witness page:
   - `demo/ttc_narrative_witness.html`
 - 3D witness page:
@@ -159,7 +161,9 @@ The narrative corpus can be bound into an advisory witness artifact without chan
   - `demo/narrative_data/narrative.bound.v0.ndjson`
   - `demo/narrative_data/narrative_bound_bundle.js`
 
-The narrative witness page is a projection-only witness surface. Canonical narrative chapters remain authoritative.
+The narrative frame witness page is the primary public narrative entry surface.
+It consumes exported frame witnesses and projection receipts only. Canonical narrative chapters remain authoritative.
+Replay and geometric shell cues are presentation aids, not canonical inputs.
 Its primary control grammar is intentionally bounded to:
 
 - `Mode`
@@ -168,6 +172,12 @@ Its primary control grammar is intentionally bounded to:
 - `Depth`
 
 Secondary tools are hidden behind `More`, consistent with the strict attention-law boundary.
+
+Default public entry behavior:
+- starts in `Replay`
+- shows the selected exported frame as the dominant witness
+- reveals hashes only when `Attention = Expand`
+- reveals manifest and loader detail only when `Depth = More`
 
 The narrative scene seam now feeds three downstream renderers without schema changes:
 
@@ -179,6 +189,32 @@ Regenerate and verify the binding with:
 
 ```bash
 make narrative-check
+```
+
+Export deterministic interpolated narrative frames from the same normalized scene path:
+
+```bash
+make narrative-frame-export \
+  CHAPTER=ch_dcdf6301992e \
+  FROM_STEP=16 \
+  TO_STEP=17 \
+  OUT_DIR=artifacts/narrative_frames/covenant \
+  MODE=witness \
+  FRAME=replay_timeline \
+  ATTENTION=narrow \
+  DEPTH=more \
+  FRAMES=8
+```
+
+This writes:
+- `manifest.json`
+- `projection_receipts.ndjson`
+- `frames/frame_*.svg`
+
+Check deterministic export with:
+
+```bash
+make narrative-frame-check
 ```
 
 ## Matrix Seal Page
