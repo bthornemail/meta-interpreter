@@ -8,10 +8,25 @@ always yield the same narrative witness artifact; any witness/media/UI
 adaptation may change only downstream presentation, never canonical
 narrative authority.
 
-Scene/SVG invariant:
+Scene/SVG/canvas invariant:
 Same bound narrative step must yield the same normalized scene object and
-the same SVG witness. Attention/depth may change presentation only, never
-selected chapter/step identity.
+the same SVG witness and the same canvas witness. Attention/depth may
+change presentation only, never selected chapter/step identity.
+
+A-Frame invariant:
+Same bound narrative step must yield the same normalized A-Frame scene
+description and the same generated A-Frame markup. Renderer differences
+may change presentation only, never narrative authority.
+
+Projection hash invariant:
+Same projection input must yield the same scene hash and the same
+renderer-surface hashes. Hashes witness projection integrity only; they
+do not redefine canonical authority.
+
+Interpolation invariant:
+Local frame interpolation is a deterministic projection over canonical
+steps. It may change presentation only and must not alter selected target
+chapter/step identity or canonical reconstruction.
 """
 
 from __future__ import annotations
@@ -37,9 +52,14 @@ BINDER = ROOT / "scripts" / "bind_narrative_to_witness.py"
 EXPECTED_NDJSON = ROOT / "demo" / "narrative_data" / "narrative.bound.v0.ndjson"
 EXPECTED_JS = ROOT / "demo" / "narrative_data" / "narrative_bound_bundle.js"
 PAGE = ROOT / "demo" / "ttc_narrative_witness.html"
+A_FRAME_PAGE = ROOT / "demo" / "ttc_narrative_aframe.html"
 DEMO_SERVER = ROOT / "demo" / "ttc_runtime_stream_server.py"
 SNAPSHOT_RE = re.compile(
     r'<script[^>]*id=["\']ttc-narrative-scene-snapshot["\'][^>]*>(.*?)</script>',
+    re.DOTALL | re.IGNORECASE,
+)
+AFRAME_SNAPSHOT_RE = re.compile(
+    r'<script[^>]*id=["\']ttc-narrative-aframe-snapshot["\'][^>]*>(.*?)</script>',
     re.DOTALL | re.IGNORECASE,
 )
 
@@ -93,10 +113,11 @@ def dump_dom(chromium: str, url: str) -> str:
     return result.stdout
 
 
-def extract_snapshot(dom: str) -> dict[str, object]:
-    match = SNAPSHOT_RE.search(dom)
+def extract_snapshot(dom: str, *, aframe: bool = False) -> dict[str, object]:
+    match = (AFRAME_SNAPSHOT_RE if aframe else SNAPSHOT_RE).search(dom)
     if not match:
-        raise SystemExit("narrative binding check failed: narrative snapshot missing from DOM")
+        kind = "narrative A-Frame" if aframe else "narrative"
+        raise SystemExit(f"narrative binding check failed: {kind} snapshot missing from DOM")
     payload = html.unescape(match.group(1)).strip()
     return json.loads(payload)
 
@@ -116,15 +137,22 @@ def run_server(port: int) -> subprocess.Popen[str]:
 def load_snapshot(chromium: str, port: int, **params: str) -> dict[str, object]:
     query = "&".join(f"{key}={value}" for key, value in params.items())
     url = f"http://127.0.0.1:{port}/ttc_narrative_witness.html?{query}"
-    return extract_snapshot(dump_dom(chromium, url))
+    return extract_snapshot(dump_dom(chromium, url), aframe=False)
+
+
+def load_aframe_snapshot(chromium: str, port: int, **params: str) -> dict[str, object]:
+    query = "&".join(f"{key}={value}" for key, value in params.items())
+    url = f"http://127.0.0.1:{port}/ttc_narrative_aframe.html?{query}"
+    return extract_snapshot(dump_dom(chromium, url), aframe=True)
 
 
 def assert_page_controls() -> None:
-    page_text = PAGE.read_text(encoding="utf-8")
     required_controls = ["Mode", "Frame", "Narrow", "Expand", "More", "Less"]
-    for label in required_controls:
-        if label not in page_text:
-            raise SystemExit(f"narrative binding check failed: missing attention-law control label {label!r}")
+    for page in (PAGE, A_FRAME_PAGE):
+        page_text = page.read_text(encoding="utf-8")
+        for label in required_controls:
+            if label not in page_text:
+                raise SystemExit(f"narrative binding check failed: missing attention-law control label {label!r} in {page.name}")
 
 
 def assert_reproducible_binding() -> None:
@@ -179,10 +207,208 @@ def assert_svg_determinism(chromium: str, port: int, **params: str) -> dict[str,
     second = load_snapshot(chromium, port, **params)
     if first.get("scene_json") != second.get("scene_json"):
         raise SystemExit("narrative binding check failed: normalized scene drift for identical input")
+    if first.get("scene_hash") != second.get("scene_hash"):
+        raise SystemExit("narrative binding check failed: scene hash drift for identical input")
     if first.get("svg_markup") != second.get("svg_markup"):
         raise SystemExit("narrative binding check failed: SVG drift for identical scene")
+    if first.get("svg_hash") != second.get("svg_hash"):
+        raise SystemExit("narrative binding check failed: SVG hash drift for identical scene")
+    if first.get("canvas_data_url") != second.get("canvas_data_url"):
+        raise SystemExit("narrative binding check failed: canvas drift for identical scene")
+    if first.get("canvas_hash") != second.get("canvas_hash"):
+        raise SystemExit("narrative binding check failed: canvas hash drift for identical scene")
     assert_text_stability(first)
     return first
+
+
+def assert_interpolation_determinism(
+    chromium: str,
+    port: int,
+    *,
+    chapter: str,
+    from_step: str,
+    to_step: str,
+    mode: str,
+    frame: str,
+) -> None:
+    first = load_snapshot(
+        chromium,
+        port,
+        chapter=chapter,
+        step=to_step,
+        mode=mode,
+        frame=frame,
+        attention="narrow",
+        depth="more",
+        interpolate_from_step=from_step,
+        transition_t="0.500",
+    )
+    second = load_snapshot(
+        chromium,
+        port,
+        chapter=chapter,
+        step=to_step,
+        mode=mode,
+        frame=frame,
+        attention="narrow",
+        depth="more",
+        interpolate_from_step=from_step,
+        transition_t="0.500",
+    )
+    if first.get("scene_json") != second.get("scene_json"):
+        raise SystemExit("narrative binding check failed: interpolated scene drift for identical input")
+    if first.get("scene_hash") != second.get("scene_hash"):
+        raise SystemExit("narrative binding check failed: interpolated scene hash drift for identical input")
+    if first.get("svg_markup") != second.get("svg_markup"):
+        raise SystemExit("narrative binding check failed: interpolated SVG drift for identical input")
+    if first.get("svg_hash") != second.get("svg_hash"):
+        raise SystemExit("narrative binding check failed: interpolated SVG hash drift for identical input")
+    if first.get("canvas_data_url") != second.get("canvas_data_url"):
+        raise SystemExit("narrative binding check failed: interpolated canvas drift for identical input")
+    if first.get("canvas_hash") != second.get("canvas_hash"):
+        raise SystemExit("narrative binding check failed: interpolated canvas hash drift for identical input")
+    interpolation = first.get("interpolation")
+    if not isinstance(interpolation, dict) or interpolation.get("t") != 0.5:
+        raise SystemExit("narrative binding check failed: interpolation metadata missing or incorrect")
+    if first.get("step") != to_step:
+        raise SystemExit("narrative binding check failed: interpolation altered selected target step identity")
+    quarter = load_snapshot(
+        chromium,
+        port,
+        chapter=chapter,
+        step=to_step,
+        mode=mode,
+        frame=frame,
+        attention="narrow",
+        depth="more",
+        interpolate_from_step=from_step,
+        transition_t="0.250",
+    )
+    if first.get("svg_markup") == quarter.get("svg_markup"):
+        raise SystemExit("narrative binding check failed: interpolation progress does not affect projection")
+    if first.get("canvas_data_url") == quarter.get("canvas_data_url"):
+        raise SystemExit("narrative binding check failed: interpolation progress does not affect canvas projection")
+    if first.get("scene_hash") == quarter.get("scene_hash"):
+        raise SystemExit("narrative binding check failed: interpolation progress does not affect scene hash")
+
+
+def assert_aframe_determinism(chromium: str, port: int, **params: str) -> dict[str, object]:
+    first = load_aframe_snapshot(chromium, port, **params)
+    second = load_aframe_snapshot(chromium, port, **params)
+    if first.get("scene_json") != second.get("scene_json"):
+        raise SystemExit("narrative binding check failed: A-Frame source scene drift for identical input")
+    if first.get("scene_hash") != second.get("scene_hash"):
+        raise SystemExit("narrative binding check failed: A-Frame source scene hash drift for identical input")
+    if first.get("aframe_scene_json") != second.get("aframe_scene_json"):
+        raise SystemExit("narrative binding check failed: A-Frame scene description drift for identical input")
+    if first.get("aframe_scene_hash") != second.get("aframe_scene_hash"):
+        raise SystemExit("narrative binding check failed: A-Frame scene hash drift for identical input")
+    if first.get("aframe_markup") != second.get("aframe_markup"):
+        raise SystemExit("narrative binding check failed: A-Frame markup drift for identical input")
+    if first.get("aframe_markup_hash") != second.get("aframe_markup_hash"):
+        raise SystemExit("narrative binding check failed: A-Frame markup hash drift for identical input")
+    assert_text_stability(first)
+    return first
+
+
+def assert_aframe_presentation_only_variants(
+    chromium: str,
+    port: int,
+    *,
+    chapter: str,
+    step: str,
+    mode: str,
+    frame: str,
+) -> None:
+    narrow = load_aframe_snapshot(
+        chromium,
+        port,
+        chapter=chapter,
+        step=step,
+        mode=mode,
+        frame=frame,
+        attention="narrow",
+        depth="less",
+    )
+    expand = load_aframe_snapshot(
+        chromium,
+        port,
+        chapter=chapter,
+        step=step,
+        mode=mode,
+        frame=frame,
+        attention="expand",
+        depth="less",
+    )
+    more = load_aframe_snapshot(
+        chromium,
+        port,
+        chapter=chapter,
+        step=step,
+        mode=mode,
+        frame=frame,
+        attention="narrow",
+        depth="more",
+    )
+    assert_identical_identity(narrow, expand)
+    assert_identical_identity(narrow, more)
+    if narrow.get("aframe_scene_json") == expand.get("aframe_scene_json"):
+        raise SystemExit("narrative binding check failed: A-Frame attention change did not affect projection")
+    if narrow.get("aframe_scene_json") == more.get("aframe_scene_json"):
+        raise SystemExit("narrative binding check failed: A-Frame depth change did not affect projection")
+    if narrow.get("aframe_scene_hash") == expand.get("aframe_scene_hash"):
+        raise SystemExit("narrative binding check failed: A-Frame attention change did not affect scene hash")
+    if narrow.get("aframe_scene_hash") == more.get("aframe_scene_hash"):
+        raise SystemExit("narrative binding check failed: A-Frame depth change did not affect scene hash")
+
+
+def assert_aframe_interpolation_determinism(
+    chromium: str,
+    port: int,
+    *,
+    chapter: str,
+    from_step: str,
+    to_step: str,
+    mode: str,
+    frame: str,
+) -> None:
+    first = load_aframe_snapshot(
+        chromium,
+        port,
+        chapter=chapter,
+        step=to_step,
+        mode=mode,
+        frame=frame,
+        attention="narrow",
+        depth="more",
+        interpolate_from_step=from_step,
+        transition_t="0.500",
+    )
+    second = load_aframe_snapshot(
+        chromium,
+        port,
+        chapter=chapter,
+        step=to_step,
+        mode=mode,
+        frame=frame,
+        attention="narrow",
+        depth="more",
+        interpolate_from_step=from_step,
+        transition_t="0.500",
+    )
+    if first.get("aframe_scene_json") != second.get("aframe_scene_json"):
+        raise SystemExit("narrative binding check failed: interpolated A-Frame scene drift for identical input")
+    if first.get("aframe_scene_hash") != second.get("aframe_scene_hash"):
+        raise SystemExit("narrative binding check failed: interpolated A-Frame scene hash drift for identical input")
+    if first.get("aframe_markup") != second.get("aframe_markup"):
+        raise SystemExit("narrative binding check failed: interpolated A-Frame markup drift for identical input")
+    if first.get("aframe_markup_hash") != second.get("aframe_markup_hash"):
+        raise SystemExit("narrative binding check failed: interpolated A-Frame markup hash drift for identical input")
+    interpolation = first.get("interpolation")
+    if not isinstance(interpolation, dict) or interpolation.get("t") != 0.5:
+        raise SystemExit("narrative binding check failed: A-Frame interpolation metadata missing or incorrect")
+    if first.get("step") != to_step:
+        raise SystemExit("narrative binding check failed: A-Frame interpolation altered selected target step identity")
 
 
 def assert_presentation_only_variants(
@@ -232,6 +458,14 @@ def assert_presentation_only_variants(
         raise SystemExit("narrative binding check failed: attention change did not affect SVG presentation")
     if narrow.get("svg_markup") == more.get("svg_markup"):
         raise SystemExit("narrative binding check failed: depth change did not affect SVG presentation")
+    if narrow.get("canvas_data_url") == expand.get("canvas_data_url"):
+        raise SystemExit("narrative binding check failed: attention change did not affect canvas presentation")
+    if narrow.get("canvas_data_url") == more.get("canvas_data_url"):
+        raise SystemExit("narrative binding check failed: depth change did not affect canvas presentation")
+    if narrow.get("svg_hash") == expand.get("svg_hash"):
+        raise SystemExit("narrative binding check failed: attention change did not affect SVG hash")
+    if narrow.get("canvas_hash") == more.get("canvas_hash"):
+        raise SystemExit("narrative binding check failed: depth change did not affect canvas hash")
 
 
 def main() -> int:
@@ -244,6 +478,7 @@ def main() -> int:
 
     try:
         wait_for_server(f"http://127.0.0.1:{port}/ttc_narrative_witness.html")
+        wait_for_server(f"http://127.0.0.1:{port}/ttc_narrative_aframe.html")
 
         scenarios = [
             {
@@ -267,11 +502,38 @@ def main() -> int:
         ]
 
         snapshots = [assert_svg_determinism(chromium, port, **scenario) for scenario in scenarios]
+        aframe_snapshots = [assert_aframe_determinism(chromium, port, **scenario) for scenario in scenarios]
         assert_presentation_only_variants(
             chromium,
             port,
             chapter="ch_dcdf6301992e",
             step="17",
+            mode="witness",
+            frame="replay_timeline",
+        )
+        assert_aframe_presentation_only_variants(
+            chromium,
+            port,
+            chapter="ch_dcdf6301992e",
+            step="17",
+            mode="witness",
+            frame="replay_timeline",
+        )
+        assert_interpolation_determinism(
+            chromium,
+            port,
+            chapter="ch_dcdf6301992e",
+            from_step="16",
+            to_step="17",
+            mode="witness",
+            frame="replay_timeline",
+        )
+        assert_aframe_interpolation_determinism(
+            chromium,
+            port,
+            chapter="ch_dcdf6301992e",
+            from_step="16",
+            to_step="17",
             mode="witness",
             frame="replay_timeline",
         )
@@ -282,9 +544,23 @@ def main() -> int:
                 "step": snapshot["step"],
                 "scene_id": snapshot["scene_id"],
                 "template_id": snapshot["template_id"],
+                "scene_hash": snapshot["scene_hash"],
+                "svg_hash": snapshot["svg_hash"],
+                "canvas_hash": snapshot["canvas_hash"],
             }
             for snapshot in snapshots
         ]
+        summary.extend(
+            {
+                "aframe_chapter_id": snapshot["chapter_id"],
+                "aframe_scene_id": snapshot["scene_id"],
+                "aframe_step": snapshot["step"],
+                "aframe_template_id": snapshot["template_id"],
+                "aframe_scene_hash": snapshot["aframe_scene_hash"],
+                "aframe_markup_hash": snapshot["aframe_markup_hash"],
+            }
+            for snapshot in aframe_snapshots
+        )
         print("narrative binding check passed")
         print(json.dumps(summary, indent=2, sort_keys=True))
         return 0

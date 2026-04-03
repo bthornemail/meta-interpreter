@@ -3,28 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TTC Narrative Witness</title>
+    <title>TTC Narrative Witness 3D</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="./narrative_data/narrative_bound_bundle.js"></script>
   </head>
   <body class="min-h-screen bg-stone-950 text-stone-100">
     <!--
-      Narrative witness page
+      Narrative witness 3D page
 
       This page is a projection-only witness surface.
       Canonical chapter NDJSON remains authoritative.
-      Templates and witness hooks are advisory bindings only.
+      The 3D scene consumes the same normalized scene object as SVG/canvas.
 
       Primary controls intentionally follow:
       Mode + Frame + Attention + Depth
     -->
     <main class="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-6 py-8">
       <header class="space-y-3 border-b border-stone-800 pb-5">
-        <p class="text-xs uppercase tracking-[0.32em] text-cyan-400">Narrative Witness</p>
-        <h1 class="text-3xl font-semibold text-stone-50">Canonical Narrative, Advisory Witness, Downstream Projection</h1>
+        <p class="text-xs uppercase tracking-[0.32em] text-cyan-400">Narrative Witness 3D</p>
+        <h1 class="text-3xl font-semibold text-stone-50">Normalized Scene, Immersive Projection, No New Authority</h1>
         <p class="max-w-3xl text-sm leading-6 text-stone-400">
-          This surface binds canonical chapter transitions to reusable graph templates and witness hooks
-          without promoting interpretation to authority.
+          This surface maps the same bound narrative scene into A-Frame anchors and lines without
+          redefining canonical chapter identity or witness semantics.
         </p>
       </header>
 
@@ -66,16 +67,10 @@
             <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Chapter</span>
             <select id="chapter-select" class="rounded-lg border border-stone-700 bg-stone-950 px-3 py-2 text-sm text-stone-100"></select>
           </label>
-          <div class="grid gap-4 md:grid-cols-[1fr_auto]">
-            <label class="flex flex-col gap-2">
-              <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Step</span>
-              <input id="step-range" type="range" min="1" max="1" value="1" class="w-full accent-cyan-400" />
-            </label>
-            <div class="flex flex-col gap-2">
-              <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Export</span>
-              <button id="export-svg" class="rounded-lg border border-stone-700 bg-stone-950 px-4 py-2 text-sm text-stone-100">SVG</button>
-            </div>
-          </div>
+          <label class="flex flex-col gap-2">
+            <span class="text-xs uppercase tracking-[0.26em] text-stone-500">Step</span>
+            <input id="step-range" type="range" min="1" max="1" value="1" class="w-full accent-cyan-400" />
+          </label>
         </div>
       </section>
 
@@ -83,27 +78,18 @@
         <section class="space-y-4 rounded-2xl border border-stone-800 bg-stone-900/60 p-5">
           <div class="flex items-start justify-between gap-4">
             <div>
-              <h2 class="text-lg font-medium text-stone-50">Scene Witness</h2>
-              <p class="text-sm text-stone-400">Canvas and SVG consume the same normalized scene object derived from the selected chapter binding.</p>
+              <h2 class="text-lg font-medium text-stone-50">A-Frame Witness</h2>
+              <p class="text-sm text-stone-400">Nodes map to anchors, edges to lines, and active transitions to elevation/highlight only.</p>
             </div>
             <div id="chapter-badge" class="rounded-full bg-stone-950/80 px-3 py-1 text-xs text-stone-300"></div>
           </div>
-          <div class="grid gap-4 lg:grid-cols-2">
-            <div class="overflow-hidden rounded-xl border border-stone-800 bg-stone-950/80 p-3">
-              <div class="mb-2 text-xs uppercase tracking-[0.24em] text-stone-500">Canvas</div>
-              <canvas id="graph-canvas" width="500" height="340" class="w-full rounded-lg border border-stone-900 bg-stone-950"></canvas>
-            </div>
-            <div class="overflow-hidden rounded-xl border border-stone-800 bg-stone-950/80 p-3">
-              <div class="mb-2 text-xs uppercase tracking-[0.24em] text-stone-500">SVG</div>
-              <div id="graph-host"></div>
-            </div>
-          </div>
+          <div id="aframe-host" class="min-h-[420px] overflow-hidden rounded-xl border border-stone-800 bg-stone-950/80 p-3"></div>
         </section>
 
         <section class="space-y-4 rounded-2xl border border-stone-800 bg-stone-900/60 p-5">
           <div>
             <h2 class="text-lg font-medium text-stone-50">Selected Step</h2>
-            <p class="text-sm text-stone-400">Witness role and projection hints remain advisory; they never mutate canonical state.</p>
+            <p class="text-sm text-stone-400">3D rendering is still downstream-only and inherits the same chapter/scene identity as SVG and canvas.</p>
           </div>
 
           <article class="rounded-xl border border-stone-800 bg-stone-950/60 p-4">
@@ -147,16 +133,16 @@
         </section>
       </section>
     </main>
-    <script id="ttc-narrative-scene-snapshot" type="application/json">{}</script>
+    <script id="ttc-narrative-aframe-snapshot" type="application/json">{}</script>
 
     <script type="module">
       import {
         buildNarrativeScene,
+        buildNarrativeAFrameScene,
         frameBudgetForControls,
         interpolateNarrativeScene,
         projectionHash,
-        renderNarrativeSceneCanvas,
-        renderNarrativeSceneSvg,
+        renderNarrativeAFrame,
       } from "./ttc_narrative_scene.js";
 
       const data = window.NARRATIVE_WITNESS_DATA;
@@ -169,9 +155,7 @@
       const secondaryTools = document.getElementById("secondary-tools");
       const chapterSelect = document.getElementById("chapter-select");
       const stepRange = document.getElementById("step-range");
-      const exportSvg = document.getElementById("export-svg");
-      const graphCanvas = document.getElementById("graph-canvas");
-      const graphHost = document.getElementById("graph-host");
+      const aframeHost = document.getElementById("aframe-host");
       const chapterBadge = document.getElementById("chapter-badge");
       const fieldChapter = document.getElementById("field-chapter");
       const fieldStep = document.getElementById("field-step");
@@ -181,12 +165,11 @@
       const fieldTransition = document.getElementById("field-transition");
       const hookList = document.getElementById("hook-list");
       const excerptText = document.getElementById("excerpt-text");
-      const snapshotNode = document.getElementById("ttc-narrative-scene-snapshot");
+      const snapshotNode = document.getElementById("ttc-narrative-aframe-snapshot");
 
       let attention = params.get("attention") === "expand" ? "expand" : "narrow";
       let expandedDepth = params.get("depth") === "more";
       let currentScene = null;
-      let currentSvg = "";
       let animationHandle = 0;
 
       function syncAttentionButtons() {
@@ -212,8 +195,9 @@
         };
       }
 
-      function updateSnapshot(scene, svgMarkup, canvasDataUrl) {
+      function updateSnapshot(scene, aframeScene, aframeMarkup) {
         const sceneJson = JSON.stringify(scene);
+        const aframeSceneJson = JSON.stringify(aframeScene);
         snapshotNode.textContent = JSON.stringify(
           {
             chapter_id: scene.chapter_id,
@@ -228,35 +212,20 @@
             interpolation: scene.interpolation || null,
             scene_hash: projectionHash(sceneJson),
             scene_json: sceneJson,
-            svg_hash: projectionHash(svgMarkup),
-            canvas_data_url: canvasDataUrl,
-            canvas_hash: projectionHash(canvasDataUrl),
-            svg_markup: svgMarkup,
+            aframe_scene_hash: projectionHash(aframeSceneJson),
+            aframe_scene_json: aframeSceneJson,
+            aframe_markup_hash: projectionHash(aframeMarkup),
+            aframe_markup: aframeMarkup,
           },
           null,
           2,
         );
       }
 
-      function exportCurrentSvg() {
-        if (!currentSvg || !currentScene) {
-          return;
-        }
-        const blob = new Blob([currentSvg], { type: "image/svg+xml;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `${currentScene.chapter_id}-step-${currentScene.step}.svg`;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        URL.revokeObjectURL(url);
-      }
-
       function renderScene(scene, chapterEntry, totalSteps, headingFallback) {
-        const svgMarkup = renderNarrativeSceneSvg(scene);
-        renderNarrativeSceneCanvas(graphCanvas, scene);
-        const canvasDataUrl = graphCanvas.toDataURL("image/png");
+        const aframeScene = buildNarrativeAFrameScene(scene);
+        renderNarrativeAFrame(aframeHost, aframeScene);
+        const aframeMarkup = aframeHost.innerHTML;
         chapterBadge.textContent = `${chapterEntry.chapter.phase} · ${chapterEntry.chapter.world_theme}`;
         fieldChapter.textContent = chapterEntry.chapter.title;
         fieldStep.textContent = `${scene.step} / ${totalSteps}`;
@@ -275,10 +244,8 @@
           li.textContent = text;
           hookList.appendChild(li);
         }
-        graphHost.innerHTML = svgMarkup;
         currentScene = scene;
-        currentSvg = svgMarkup;
-        updateSnapshot(scene, svgMarkup, canvasDataUrl);
+        updateSnapshot(scene, aframeScene, aframeMarkup);
       }
 
       function cancelAnimation() {
@@ -387,7 +354,6 @@
       stepRange.addEventListener("input", () => render({ animate: true }));
       modeSelect.addEventListener("change", render);
       frameSelect.addEventListener("change", render);
-      exportSvg.addEventListener("click", exportCurrentSvg);
 
       chapterSelect.value = data.chapter_order[0];
       if (params.get("chapter") && data.chapter_order.includes(params.get("chapter"))) {

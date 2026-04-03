@@ -125,7 +125,7 @@ http://127.0.0.1:8000/ttc_projection_live.html
 The live bridge forwards runtime NDJSON unchanged. It is a transport adapter, not a schema or projection authority.
 The live canvas page is the primary browser projection surface.
 SVG is a downstream export/share witness generated from the same selected step and the same frozen contract.
-A-Frame remains a Phase 2 projection consumer and is not part of the current implementation.
+A-Frame is a downstream 3D projection consumer over the same normalized scene object.
 
 Open the timed media page at:
 
@@ -151,6 +151,8 @@ The narrative corpus can be bound into an advisory witness artifact without chan
 
 - witness page:
   - `demo/ttc_narrative_witness.html`
+- 3D witness page:
+  - `demo/ttc_narrative_aframe.html`
 - binding spec:
   - `docs/NARRATIVE_WITNESS_BINDING.md`
 - derived artifacts:
@@ -166,6 +168,12 @@ Its primary control grammar is intentionally bounded to:
 - `Depth`
 
 Secondary tools are hidden behind `More`, consistent with the strict attention-law boundary.
+
+The narrative scene seam now feeds three downstream renderers without schema changes:
+
+- SVG witness
+- canvas witness
+- A-Frame 3D witness
 
 Regenerate and verify the binding with:
 

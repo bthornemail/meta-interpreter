@@ -74,19 +74,35 @@ Secondary chapter and step tools are hidden behind `More`.
 The page builds one normalized narrative scene object per selected bound step.
 That scene object is the single downstream source for:
 - SVG witness rendering now
+- canvas witness rendering now
+- A-Frame witness rendering now
 - future canvas animation
-- future A-Frame rendering
 
-Future 3D rendering must consume the same normalized scene object used by SVG:
+Projection surfaces may also emit projection hashes over:
+- the normalized scene object
+- SVG witness markup
+- canvas witness pixels
+- A-Frame scene description
+
+These hashes witness downstream integrity only.
+They do not redefine canonical authority.
+
+3D rendering must consume the same normalized scene object used by SVG/canvas:
 - nodes map to 3D anchors
 - edges map to 3D lines or tubes
 - active transition maps to elevation/highlight only
 - no 3D-specific semantics may be introduced
 - canonical NDJSON must not be read directly from 3D renderers
 
-Local frame interpolation is reserved for later projection work only.
-If added, it must interpolate between normalized scene objects and must not
-alter chapter identity, step identity, or canonical reconstruction.
+Local frame interpolation is now permitted as projection-only behavior.
+It must interpolate between normalized scene objects and must not alter:
+- chapter identity
+- selected target step identity
+- canonical reconstruction
+
+Frozen interpolation invariant:
+
+> Animation frames are locally generated interpolations between canonical steps; they may vary in density and timing per device or user, but must not alter step identity, order, or canonical reconstruction.
 
 ## Reproducibility
 
@@ -104,6 +120,10 @@ That check proves only:
 - the binding artifacts are deterministic and reproducible
 - the witness page preserves the required attention-law control labels
 - the same bound step yields the same normalized scene object and the same SVG witness
+- the same bound step yields the same normalized scene object and the same canvas witness
+- the same bound step yields the same normalized scene object and the same A-Frame scene description
+- the same projection input yields the same scene hash and the same surface hashes
 - attention/depth changes affect presentation only, not selected chapter/step identity
+- local interpolation frames are deterministic for the same source step, target step, controls, and interpolation progress
 
 It does not elevate the narrative witness page to runtime authority.

@@ -282,6 +282,6 @@ If you change the browser projection layer, preserve these boundaries:
 5. Do not treat projection stability as runtime authority.
 6. Canvas is the primary live surface.
 7. SVG is a downstream witness/export surface from the same contract.
-8. A-Frame, if added later, must consume the same normalized projection object and must not invent a new schema.
+8. A-Frame, when used, must consume the same normalized projection object and must not invent a new schema.
 
 If a change affects equivalence, update the projection check and prove the new behavior intentionally.
