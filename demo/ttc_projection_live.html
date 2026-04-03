@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TTC Projection Live Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="min-h-screen bg-neutral-950 text-neutral-100">
+    <!--
+      TTC live projection demo
+
+      The live bridge forwards runtime NDJSON unchanged.
+      It is a transport adapter, not a schema or projection authority.
+
+      The stream page may update data-ttc-*.
+      The renderer only reads data-ttc-*.
+      data-ttc-* is derived projection metadata only.
+      It must never drive runtime or canonical decisions.
+    -->
+    <main class="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-6 py-8">
+      <header class="space-y-3 border-b border-neutral-800 pb-5">
+        <p class="text-xs uppercase tracking-[0.3em] text-cyan-400">TTC Projection Live</p>
+        <h1 class="text-3xl font-semibold text-neutral-50">SSE Runtime Bridge Demo</h1>
+        <p class="max-w-3xl text-sm leading-6 text-neutral-400">
+          This page connects to a local SSE bridge, consumes runtime NDJSON unchanged,
+          writes the frozen <code>data-ttc-*</code> contract, and renders the same
+          deterministic canvas projection.
+        </p>
+      </header>
+
+      <section class="grid gap-6 lg:grid-cols-[0.95fr_1.05fr_1.2fr]">
+        <section class="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-5">
+          <div class="mb-4">
+            <h2 class="text-lg font-medium text-neutral-100">Live Bridge Controls</h2>
+            <p class="text-sm text-neutral-400">Connect to the local SSE bridge and stream a text payload.</p>
+          </div>
+
+          <div class="space-y-4">
+            <label class="block">
+              <span class="mb-2 block text-xs uppercase tracking-[0.24em] text-neutral-500">Input Text</span>
+              <textarea id="stream-input" class="h-40 w-full rounded-xl border border-neutral-800 bg-neutral-950/80 p-4 font-mono text-xs text-neutral-200" spellcheck="false">ABC123xyz</textarea>
+            </label>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+              <label class="block">
+                <span class="mb-2 block text-xs uppercase tracking-[0.24em] text-neutral-500">Rule</span>
+                <select id="stream-rule" class="w-full rounded-lg border border-neutral-800 bg-neutral-950/80 px-3 py-2 text-sm text-neutral-100">
+                  <option value="current">current</option>
+                  <option value="delta64">delta64</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="mb-2 block text-xs uppercase tracking-[0.24em] text-neutral-500">Seed</span>
+                <input id="stream-seed" class="w-full rounded-lg border border-neutral-800 bg-neutral-950/80 px-3 py-2 text-sm text-neutral-100" placeholder="optional seed for delta64" />
+              </label>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+              <button id="connect-btn" class="rounded-lg border border-cyan-500/60 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-200 hover:bg-cyan-500/15">
+                Connect
+              </button>
+              <button id="disconnect-btn" class="rounded-lg border border-neutral-700 px-4 py-2 text-sm text-neutral-200 hover:border-neutral-500">
+                Disconnect
+              </button>
+            </div>
+
+            <div id="stream-status" class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4 text-xs text-neutral-400">
+              Disconnected.
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-5">
+          <div class="mb-4">
+            <h2 class="text-lg font-medium text-neutral-100">Projected Step Surface</h2>
+            <p class="text-sm text-neutral-400">Updated by the bridge, rendered from frozen projection metadata.</p>
+          </div>
+
+          <article
+            id="live-step"
+            class="rounded-xl border border-cyan-500/60 bg-cyan-500/10 p-4"
+            data-ttc-surface="step"
+            data-ttc-step="0"
+            data-ttc-digest="0"
+            data-ttc-triplet="0,1,3"
+            data-ttc-order="0,1,3"
+            data-ttc-seq56="0"
+            data-ttc-incidence-layer="0"
+            data-ttc-incidence-coords="0,0,0"
+            data-ttc-incidence-coeff="0"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="text-xs uppercase tracking-[0.24em] text-cyan-300">Live Step</div>
+                <div id="panel-step" class="mt-2 font-mono text-lg text-neutral-100">0</div>
+              </div>
+              <div id="panel-seq56-badge" class="rounded-full bg-neutral-950/80 px-3 py-1 text-xs text-neutral-300">
+                seq56 0
+              </div>
+            </div>
+
+            <dl class="mt-4 space-y-3 text-sm">
+              <div>
+                <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-neutral-500">Digest</dt>
+                <dd id="panel-digest" class="break-all font-mono text-emerald-300">0</dd>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-neutral-500">Triplet</dt>
+                  <dd id="panel-triplet" class="font-mono text-neutral-100">[0, 1, 3]</dd>
+                </div>
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-neutral-500">Order</dt>
+                  <dd id="panel-order" class="font-mono text-neutral-100">[0, 1, 3]</dd>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-3">
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-neutral-500">Layer</dt>
+                  <dd id="panel-layer" class="font-mono text-neutral-100">0</dd>
+                </div>
+                <div class="col-span-2">
+                  <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-neutral-500">Coords</dt>
+                  <dd id="panel-coords" class="font-mono text-neutral-100">(0, 0, 0)</dd>
+                </div>
+              </div>
+              <div>
+                <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-neutral-500">Coefficient</dt>
+                <dd id="panel-coeff" class="font-mono text-neutral-100">0</dd>
+              </div>
+            </dl>
+          </article>
+        </section>
+
+        <section class="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-5">
+          <div class="mb-4">
+            <h2 class="text-lg font-medium text-neutral-100">Canvas Surface</h2>
+            <p class="text-sm text-neutral-400">The renderer only reads the dataset on the live step article.</p>
+          </div>
+
+          <canvas
+            id="ttc-canvas"
+            width="520"
+            height="360"
+            class="w-full rounded-xl border border-neutral-800 bg-black"
+            data-ttc-surface="matrix"
+          ></canvas>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const connectBtn = document.getElementById("connect-btn");
+      const disconnectBtn = document.getElementById("disconnect-btn");
+      const streamInput = document.getElementById("stream-input");
+      const streamRule = document.getElementById("stream-rule");
+      const streamSeed = document.getElementById("stream-seed");
+      const status = document.getElementById("stream-status");
+      const stepEl = document.getElementById("live-step");
+
+      const panelStep = document.getElementById("panel-step");
+      const panelDigest = document.getElementById("panel-digest");
+      const panelTriplet = document.getElementById("panel-triplet");
+      const panelOrder = document.getElementById("panel-order");
+      const panelLayer = document.getElementById("panel-layer");
+      const panelCoords = document.getElementById("panel-coords");
+      const panelCoeff = document.getElementById("panel-coeff");
+      const panelSeq56Badge = document.getElementById("panel-seq56-badge");
+
+      const canvas = document.getElementById("ttc-canvas");
+      const visibleCtx = canvas.getContext("2d");
+      const surface =
+        typeof OffscreenCanvas !== "undefined"
+          ? new OffscreenCanvas(canvas.width, canvas.height)
+          : document.createElement("canvas");
+      surface.width = canvas.width;
+      surface.height = canvas.height;
+      const ctx = surface.getContext("2d");
+
+      let source = null;
+
+      function parseList(raw) {
+        return raw.split(",").map((value) => Number(value.trim()));
+      }
+
+      function nodePosition(index) {
+        const centerX = 260;
+        const centerY = 126;
+        const radius = 98;
+        const angle = (-90 + index * (360 / 7)) * (Math.PI / 180);
+        return {
+          x: centerX + Math.cos(angle) * radius,
+          y: centerY + Math.sin(angle) * radius,
+        };
+      }
+
+      function drawSeqStrip(seq56) {
+        const columns = 8;
+        const rows = 7;
+        const cell = 18;
+        const originX = 188;
+        const originY = 262;
+        const activeRow = Math.floor(seq56 / columns);
+        const activeCol = seq56 % columns;
+
+        ctx.fillStyle = "#0f172a";
+        ctx.fillRect(originX - 10, originY - 10, columns * cell + 20, rows * cell + 20);
+
+        for (let row = 0; row < rows; row += 1) {
+          for (let col = 0; col < columns; col += 1) {
+            const x = originX + col * cell;
+            const y = originY + row * cell;
+            ctx.fillStyle = row === activeRow && col === activeCol ? "#22d3ee" : "#111827";
+            ctx.fillRect(x, y, cell - 2, cell - 2);
+          }
+        }
+
+        ctx.fillStyle = "#94a3b8";
+        ctx.font = "12px ui-monospace, SFMono-Regular, monospace";
+        ctx.fillText("seq56 strip", originX, originY - 18);
+      }
+
+      function renderFromDataset(el) {
+        const step = Number(el.dataset.ttcStep);
+        const digest = el.dataset.ttcDigest;
+        const triplet = parseList(el.dataset.ttcTriplet);
+        const order = parseList(el.dataset.ttcOrder);
+        const seq56 = Number(el.dataset.ttcSeq56);
+        const layer = Number(el.dataset.ttcIncidenceLayer);
+        const coords = parseList(el.dataset.ttcIncidenceCoords);
+        const coeff = el.dataset.ttcIncidenceCoeff;
+
+        panelStep.textContent = step;
+        panelDigest.textContent = digest;
+        panelTriplet.textContent = `[${triplet.join(", ")}]`;
+        panelOrder.textContent = `[${order.join(", ")}]`;
+        panelLayer.textContent = layer;
+        panelCoords.textContent = `(${coords.join(", ")})`;
+        panelCoeff.textContent = coeff;
+        panelSeq56Badge.textContent = `seq56 ${seq56}`;
+
+        ctx.clearRect(0, 0, surface.width, surface.height);
+        ctx.fillStyle = "#020617";
+        ctx.fillRect(0, 0, surface.width, surface.height);
+
+        ctx.strokeStyle = "#1f2937";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(260, 126, 110, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = "#64748b";
+        ctx.font = "12px ui-monospace, SFMono-Regular, monospace";
+        ctx.fillText(`step ${step}`, 24, 28);
+        ctx.fillText(`digest ${digest}`, 24, 48);
+        ctx.fillText(`layer ${layer} coords (${coords.join(",")}) coeff ${coeff}`, 24, 68);
+
+        triplet.forEach((value) => {
+          const pos = nodePosition(value);
+          ctx.beginPath();
+          ctx.fillStyle = "#1e293b";
+          ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "#475569";
+          ctx.stroke();
+          ctx.fillStyle = "#cbd5e1";
+          ctx.font = "14px ui-monospace, SFMono-Regular, monospace";
+          ctx.fillText(String(value), pos.x - 4, pos.y + 4);
+        });
+
+        order.forEach((value, index) => {
+          const pos = nodePosition(value);
+          const colors = ["#34d399", "#22d3ee", "#f472b6"];
+          ctx.beginPath();
+          ctx.fillStyle = colors[index];
+          ctx.arc(pos.x, pos.y, 10, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#020617";
+          ctx.font = "11px ui-monospace, SFMono-Regular, monospace";
+          ctx.fillText(String(index + 1), pos.x - 3, pos.y + 4);
+        });
+
+        drawSeqStrip(seq56);
+
+        if (surface instanceof OffscreenCanvas && visibleCtx.transferFromImageBitmap) {
+          const bitmap = surface.transferToImageBitmap();
+          visibleCtx.transferFromImageBitmap(bitmap);
+          bitmap.close?.();
+        } else {
+          visibleCtx.clearRect(0, 0, canvas.width, canvas.height);
+          visibleCtx.drawImage(surface, 0, 0);
+        }
+      }
+
+      function applyStep(step) {
+        stepEl.dataset.ttcStep = String(step.tick ?? 0);
+        stepEl.dataset.ttcDigest = String(step.step_digest);
+        stepEl.dataset.ttcTriplet = (step.triplet || []).join(",");
+        stepEl.dataset.ttcOrder = (step.order || []).join(",");
+        stepEl.dataset.ttcSeq56 = String(step.seq56);
+        stepEl.dataset.ttcIncidenceLayer = String(step.incidence_layer ?? 0);
+        stepEl.dataset.ttcIncidenceCoords = [
+          step.incidence_x ?? 0,
+          step.incidence_y ?? 0,
+          step.incidence_z ?? 0,
+        ].join(",");
+        stepEl.dataset.ttcIncidenceCoeff = String(step.incidence_coeff ?? 0);
+        renderFromDataset(stepEl);
+      }
+
+      function disconnect() {
+        if (source) {
+          source.close();
+          source = null;
+        }
+        status.textContent = "Disconnected.";
+      }
+
+      function connect() {
+        disconnect();
+        const params = new URLSearchParams({
+          input: streamInput.value,
+          rule: streamRule.value,
+        });
+        if (streamSeed.value.trim()) {
+          params.set("seed", streamSeed.value.trim());
+        }
+
+        source = new EventSource(`/events?${params.toString()}`);
+        status.textContent = "Connecting...";
+
+        source.addEventListener("step", (event) => {
+          const data = JSON.parse(event.data);
+          applyStep(data);
+          status.textContent = `Streaming tick ${data.tick}, seq56 ${data.seq56}.`;
+        });
+
+        source.addEventListener("end", (event) => {
+          const data = JSON.parse(event.data);
+          status.textContent = `Stream ended with exit_code=${data.exit_code}.`;
+          disconnect();
+        });
+
+        source.onerror = () => {
+          status.textContent = "Stream error or bridge unavailable.";
+        };
+      }
+
+      connectBtn.addEventListener("click", connect);
+      disconnectBtn.addEventListener("click", disconnect);
+
+      renderFromDataset(stepEl);
+    </script>
+  </body>
+</html>

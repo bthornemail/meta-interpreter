@@ -101,6 +101,24 @@ Open the NDJSON adapter demo at:
 It consumes runtime NDJSON, updates the same frozen `data-ttc-*` contract, and reuses the projection renderer without computing runtime state.
 The projection demos are schema consumers, not schema definers.
 
+Open the live SSE demo at:
+
+- `demo/ttc_projection_live.html`
+
+Start the local bridge:
+
+```bash
+python3 demo/ttc_runtime_stream_server.py --port 8000
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8000/ttc_projection_live.html
+```
+
+The live bridge forwards runtime NDJSON unchanged. It is a transport adapter, not a schema or projection authority.
+
 ## Run End-to-End
 
 ```bash
