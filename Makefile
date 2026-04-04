@@ -133,31 +133,31 @@ framework-check: $(FRAMEWORK_BIN) $(CAN_RUNTIME_BIN) $(CAN_ENC_BIN) $(CAN_DEC_BI
 	./scripts/validate_framework.sh
 
 lexicon-check:
-	./scripts/validate_lexicon.sh
+	./scripts/governance/validate_lexicon.sh
 
 ontology-check:
-	./scripts/validate_ontology.sh
+	./scripts/governance/validate_ontology.sh
 
 surfaces-check:
-	./scripts/validate_surfaces.sh
+	./scripts/governance/validate_surfaces.sh
 
 governance-audit: lexicon-check ontology-check
-	./scripts/governance_audit.py
+	./scripts/governance/governance_audit.py
 
 governance-audit-check: lexicon-check ontology-check
-	./scripts/validate_governance_audit.sh
+	./scripts/governance/validate_governance_audit.sh
 
 projection-check: build
-	python3 ./scripts/validate_projection_render.py
+	python3 ./scripts/projection/validate_projection_render.py
 
 media-check: build
-	python3 ./scripts/validate_media_render.py
+	python3 ./scripts/projection/validate_media_render.py
 
 narrative-check:
-	python3 ./scripts/validate_narrative_binding.py
+	python3 ./scripts/narrative/validate_narrative_binding.py
 
 narrative-frame-check:
-	python3 ./scripts/validate_narrative_frame_export.py
+	python3 ./scripts/narrative/validate_narrative_frame_export.py
 
 narrative-frame-export:
 	@if [ -z "$(CHAPTER)" ] || [ -z "$(FROM_STEP)" ] || [ -z "$(TO_STEP)" ] || [ -z "$(OUT_DIR)" ]; then \
@@ -165,7 +165,7 @@ narrative-frame-export:
 		echo "example: make narrative-frame-export CHAPTER=ch_dcdf6301992e FROM_STEP=16 TO_STEP=17 OUT_DIR=artifacts/narrative_frames/covenant MODE=witness FRAME=replay_timeline ATTENTION=narrow DEPTH=more FRAMES=8"; \
 		exit 1; \
 	fi
-	node ./scripts/export_narrative_frames.mjs \
+	node ./scripts/narrative/export_narrative_frames.mjs \
 		--chapter "$(CHAPTER)" \
 		--from-step "$(FROM_STEP)" \
 		--to-step "$(TO_STEP)" \
@@ -179,10 +179,10 @@ narrative-frame-export:
 seal-page: build
 	@if [ -z "$(INPUT)" ]; then \
 		echo "usage: make seal-page INPUT=payload.bin OUTPUT=artifacts/seal/matrix_seal_page.html [RULE=current|delta64] [SEED=N] [NOTE='...']"; \
-		echo "example: make seal-page INPUT=demo/ttc_payload_sample.bin OUTPUT=artifacts/seal/matrix_seal_page.html"; \
+		echo "example: make seal-page INPUT=demo/samples/ttc_payload_sample.bin OUTPUT=artifacts/seal/matrix_seal_page.html"; \
 		exit 1; \
 	fi
-	python3 ./scripts/generate_matrix_seal_page.py \
+	python3 ./scripts/projection/generate_matrix_seal_page.py \
 		--input "$(INPUT)" \
 		--output "$(if $(OUTPUT),$(OUTPUT),artifacts/seal/matrix_seal_page.html)" \
 		--title "$(if $(TITLE),$(TITLE),TTC Matrix Seal Page)" \

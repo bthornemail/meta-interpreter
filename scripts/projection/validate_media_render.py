@@ -22,8 +22,8 @@ from contextlib import closing
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
-DEMO_SERVER = ROOT / "demo" / "ttc_runtime_stream_server.py"
+ROOT = Path(__file__).resolve().parents[2]
+DEMO_SERVER = ROOT / "demo" / "browser" / "servers" / "ttc_runtime_stream_server.py"
 SNAPSHOT_RE = re.compile(
     r'<script[^>]*id=["\'](?P<id>ttc-(?:projection|media)-snapshot)["\'][^>]*>(?P<payload>.*?)</script>',
     re.DOTALL | re.IGNORECASE,
@@ -104,12 +104,12 @@ def main() -> int:
     server = run_server(port)
 
     try:
-        wait_for_server(f"http://127.0.0.1:{port}/ttc_projection_media.html")
-        static_dom = dump_dom(chromium, f"http://127.0.0.1:{port}/ttc_projection_demo.html?projection_check=1")
+        wait_for_server(f"http://127.0.0.1:{port}/browser/projection/ttc_projection_media.html")
+        static_dom = dump_dom(chromium, f"http://127.0.0.1:{port}/browser/projection/ttc_projection_demo.html?projection_check=1")
         media_dom = dump_dom(
             chromium,
             (
-                f"http://127.0.0.1:{port}/ttc_projection_media.html"
+                f"http://127.0.0.1:{port}/browser/projection/ttc_projection_media.html"
                 "?autoconnect=1&autostart_media=1&probe_constraints=1&input=A&rule=current&stop_after=1"
             ),
         )

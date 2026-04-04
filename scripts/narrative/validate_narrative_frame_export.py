@@ -25,10 +25,10 @@ from contextlib import closing
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
-EXPORTER = ROOT / "scripts" / "export_narrative_frames.mjs"
-DEMO_SERVER = ROOT / "demo" / "ttc_runtime_stream_server.py"
-PAGE = ROOT / "demo" / "ttc_narrative_frame_witness.html"
+ROOT = Path(__file__).resolve().parents[2]
+EXPORTER = ROOT / "scripts" / "narrative" / "export_narrative_frames.mjs"
+DEMO_SERVER = ROOT / "demo" / "browser" / "servers" / "ttc_runtime_stream_server.py"
+PAGE = ROOT / "demo" / "browser" / "narrative" / "ttc_narrative_frame_witness.html"
 SNAPSHOT_RE = re.compile(
     r'<script[^>]*id=["\']ttc-narrative-frame-witness-snapshot["\'][^>]*>(.*?)</script>',
     re.DOTALL | re.IGNORECASE,
@@ -191,18 +191,18 @@ def main() -> int:
             "last_scene_hash": receipts[-1]["scene_hash"],
         }
 
-        demo_export_root = ROOT / "demo" / "_frame_export_check"
+        demo_export_root = ROOT / "demo" / "narrative" / "derived" / "_frame_export_check"
         if demo_export_root.exists():
-          shutil.rmtree(demo_export_root)
+            shutil.rmtree(demo_export_root)
         shutil.copytree(first, demo_export_root)
         port = find_port()
         server = run_server(port)
         try:
-            wait_for_server(f"http://127.0.0.1:{port}/ttc_narrative_frame_witness.html")
+            wait_for_server(f"http://127.0.0.1:{port}/browser/narrative/ttc_narrative_frame_witness.html")
             base_url = (
-                f"http://127.0.0.1:{port}/ttc_narrative_frame_witness.html"
-                "?manifest=_frame_export_check/manifest.json"
-                "&receipts=_frame_export_check/projection_receipts.ndjson"
+                f"http://127.0.0.1:{port}/browser/narrative/ttc_narrative_frame_witness.html"
+                "?manifest=narrative/derived/_frame_export_check/manifest.json"
+                "&receipts=narrative/derived/_frame_export_check/projection_receipts.ndjson"
                 "&frame=3"
             )
             snapshot = extract_snapshot(

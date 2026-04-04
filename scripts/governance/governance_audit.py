@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_ACTIVE = ["README.md", "docs", "dev-docs", "src", "scripts", "Makefile"]
 DEFAULT_HISTORICAL = ["archive", "research"]
 GOVERNANCE_META = {
@@ -19,11 +19,11 @@ GOVERNANCE_META = {
     "docs/SURFACES.json",
     "docs/GOVERNANCE_ALLOWLIST.json",
     "docs/GOVERNANCE_RULES.json",
-    "scripts/validate_lexicon.sh",
-    "scripts/validate_ontology.sh",
-    "scripts/validate_surfaces.sh",
-    "scripts/governance_audit.py",
-    "scripts/validate_governance_audit.sh",
+    "scripts/governance/validate_lexicon.sh",
+    "scripts/governance/validate_ontology.sh",
+    "scripts/governance/validate_surfaces.sh",
+    "scripts/governance/governance_audit.py",
+    "scripts/governance/validate_governance_audit.sh",
 }
 
 TEXT_SUFFIXES = {

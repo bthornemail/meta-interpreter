@@ -33,23 +33,23 @@ The browser projection lane currently has three surfaces:
 
 1. Static demo
 
-- file: `demo/ttc_projection_demo.html`
+- file: `demo/browser/projection/ttc_projection_demo.html`
 - role: frozen reference projection
 - input source: embedded `data-ttc-*`
 - purpose: show the projection contract without any stream adapter
 
 2. NDJSON stream demo
 
-- file: `demo/ttc_projection_stream.html`
+- file: `demo/browser/projection/ttc_projection_stream.html`
 - role: file/text adapter over the same contract
 - input source: pasted or fetched NDJSON
 - purpose: prove that runtime NDJSON can feed the same projection surface unchanged
 
 3. Live SSE demo
 
-- file: `demo/ttc_projection_live.html`
+- file: `demo/browser/projection/ttc_projection_live.html`
 - role: primary live canvas surface over the same contract
-- input source: SSE events from `demo/ttc_runtime_stream_server.py`
+- input source: SSE events from `demo/browser/servers/ttc_runtime_stream_server.py`
 - purpose: present the living browser surface while proving that a live runtime stream can feed the same projection surface unchanged
 
 4. SVG witness export
@@ -66,7 +66,7 @@ The browser projection lane currently has three surfaces:
 
 6. Timed media surface
 
-- file: `demo/ttc_projection_media.html`
+- file: `demo/browser/projection/ttc_projection_media.html`
 - role: secondary timed media witness
 - input source: SSE events plus the same selected step consumed by canvas/SVG
 - purpose: prove that MSE, Media Session, and capture probes can remain downstream consumers only
@@ -95,7 +95,7 @@ These are derived from canonical runtime output. They are not canonical themselv
 
 Shared renderer:
 
-- file: `demo/ttc_projection_renderer.js`
+- file: `demo/browser/projection/ttc_projection_renderer.js`
 - exported surface: `renderTtcProjection(stepEl, step)`
 - normalized extraction surface: `readTtcProjection(stepEl)`
 - svg surface: `renderTtcProjectionSvg(projection)`
@@ -124,7 +124,7 @@ Non-responsibilities:
 
 Timed media adapter:
 
-- file: `demo/ttc_media_adapter.js`
+- file: `demo/browser/projection/ttc_media_adapter.js`
 
 Responsibilities:
 
@@ -156,7 +156,7 @@ Originally, the demo pages each carried their own copy of canvas rendering and s
 
 That duplication was removed by extracting the shared renderer into:
 
-- `demo/ttc_projection_renderer.js`
+- `demo/browser/projection/ttc_projection_renderer.js`
 
 The pages are now thin adapters:
 
@@ -185,8 +185,8 @@ even when the browser would otherwise round them
 
 That fix lives in:
 
-- `demo/ttc_projection_stream.html`
-- `demo/ttc_projection_live.html`
+- `demo/browser/projection/ttc_projection_stream.html`
+- `demo/browser/projection/ttc_projection_live.html`
 
 It does not change runtime law. It only preserves runtime-emitted text correctly downstream.
 
@@ -217,12 +217,12 @@ SVG output is compared as deterministic markup containing the same digest and pr
 Projection equivalence is continuously enforced by:
 
 - target: `make projection-check`
-- script: `scripts/validate_projection_render.py`
+- script: `scripts/projection/validate_projection_render.py`
 
 That check loads:
 
 - the static demo
-- the NDJSON demo fed from `demo/ttc_runtime_sample.ndjson`
+- the NDJSON demo fed from `demo/samples/ttc_runtime_sample.ndjson`
 - the live demo fed through SSE
 
 It asserts one downstream invariant:
@@ -246,7 +246,7 @@ it does not validate runtime law
 Timed media and capture probe behavior is validated separately by:
 
 - target: `make media-check`
-- script: `scripts/validate_media_render.py`
+- script: `scripts/projection/validate_media_render.py`
 
 That check asserts:
 

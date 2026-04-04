@@ -22,8 +22,8 @@ from contextlib import closing
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
-DEMO_SERVER = ROOT / "demo" / "ttc_runtime_stream_server.py"
+ROOT = Path(__file__).resolve().parents[2]
+DEMO_SERVER = ROOT / "demo" / "browser" / "servers" / "ttc_runtime_stream_server.py"
 FRAMEWORK_BIN = ROOT / "bin" / "ttc_framework"
 SNAPSHOT_RE = re.compile(
     r'<script[^>]*id=["\']ttc-projection-snapshot["\'][^>]*>(.*?)</script>',
@@ -110,16 +110,16 @@ def main() -> int:
     server = run_server(port)
 
     try:
-        wait_for_server(f"http://127.0.0.1:{port}/ttc_projection_demo.html")
+        wait_for_server(f"http://127.0.0.1:{port}/browser/projection/ttc_projection_demo.html")
 
         urls = {
-            "static": f"http://127.0.0.1:{port}/ttc_projection_demo.html?projection_check=1",
+            "static": f"http://127.0.0.1:{port}/browser/projection/ttc_projection_demo.html?projection_check=1",
             "stream": (
-                f"http://127.0.0.1:{port}/ttc_projection_stream.html"
-                "?projection_check=1&autoload=1&source=ttc_runtime_sample.ndjson&index=0"
+                f"http://127.0.0.1:{port}/browser/projection/ttc_projection_stream.html"
+                "?projection_check=1&autoload=1&source=../../samples/ttc_runtime_sample.ndjson&index=0"
             ),
             "live": (
-                f"http://127.0.0.1:{port}/ttc_projection_live.html"
+                f"http://127.0.0.1:{port}/browser/projection/ttc_projection_live.html"
                 "?projection_check=1&autoconnect=1&input=A&rule=current&stop_after=1"
             ),
         }

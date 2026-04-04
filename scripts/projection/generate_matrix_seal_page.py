@@ -19,9 +19,9 @@ import sys
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 FRAMEWORK_BIN = ROOT / "bin" / "ttc_framework"
-RENDERER_JS = ROOT / "demo" / "ttc_projection_renderer.js"
+RENDERER_JS = ROOT / "demo" / "browser" / "projection" / "ttc_projection_renderer.js"
 SEAL_FORMAT_VERSION = "matrix_seal_page.v1"
 
 
@@ -374,7 +374,7 @@ def build_html(
           <div class="metric"><dt>artifact hash (sha256)</dt><dd>{html.escape(artifact_hash)}</dd></div>
           <div class="metric"><dt>rule version</dt><dd>{html.escape(str(rule_version))}</dd></div>
           <div class="metric"><dt>seal format version</dt><dd>{html.escape(SEAL_FORMAT_VERSION)}</dd></div>
-          <div class="metric"><dt>generator</dt><dd>generate_matrix_seal_page.py</dd></div>
+          <div class="metric"><dt>generator</dt><dd>scripts/projection/generate_matrix_seal_page.py</dd></div>
         </div>
         {note_html}
         {seed_html}
@@ -504,7 +504,7 @@ def main() -> int:
         print(
             f"error: input payload not found: {input_path}\n"
             "Provide a path to canonical payload bytes, for example:\n"
-            "  make seal-page INPUT=demo/ttc_payload_sample.bin OUTPUT=artifacts/seal/matrix_seal_page.html",
+            "  make seal-page INPUT=demo/samples/ttc_payload_sample.bin OUTPUT=artifacts/seal/matrix_seal_page.html",
             file=sys.stderr,
         )
         return 1

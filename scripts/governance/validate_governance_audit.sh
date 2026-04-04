@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT_DIR"
 
-./scripts/governance_audit.py >/tmp/ttc_governance_audit.out 2>/tmp/ttc_governance_audit.err
+./scripts/governance/governance_audit.py >/tmp/ttc_governance_audit.out 2>/tmp/ttc_governance_audit.err
 
 test -f artifacts/governance/active_audit.ndjson
 test -f artifacts/governance/archive_audit.ndjson
@@ -41,7 +41,7 @@ cat > "$tmp_dir/active/bad.md" <<'EOF_BAD'
 Aztec transport
 EOF_BAD
 
-if ./scripts/governance_audit.py \
+if ./scripts/governance/governance_audit.py \
   --active-root "$tmp_dir/active" \
   --historical-root "$tmp_dir/research" \
   --out-dir "$tmp_dir/out" \
@@ -59,7 +59,7 @@ cat > "$tmp_dir/research/bad.md" <<'EOF_HIST'
 Aztec transport
 EOF_HIST
 
-./scripts/governance_audit.py \
+./scripts/governance/governance_audit.py \
   --active-root "$tmp_dir/active/good.md" \
   --historical-root "$tmp_dir/research" \
   --out-dir "$tmp_dir/out2" \
@@ -81,7 +81,7 @@ cat > "$tmp_dir/active/ontology_bad.md" <<'EOF_ONT'
 projection affects runtime
 EOF_ONT
 
-if ./scripts/governance_audit.py \
+if ./scripts/governance/governance_audit.py \
   --active-root "$tmp_dir/active/ontology_bad.md" \
   --historical-root "$tmp_dir/research" \
   --out-dir "$tmp_dir/out3" \

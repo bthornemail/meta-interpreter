@@ -11,6 +11,11 @@ Public package for the TTC unified framework.
 - `blocks/registry/` canonical block lookup tables
 - `blocks/archive/` archived legacy block sources
 - `bin/` compiled binaries (generated)
+- `demo/browser/` projection, narrative, and server witness surfaces
+- `demo/narrative/canonical/` authoritative narrative inputs
+- `demo/narrative/derived/` downstream narrative witness artifacts
+- `demo/samples/` reproducible sample inputs
+- `scripts/narrative/`, `scripts/projection/`, `scripts/governance/` role-grouped operational tooling
 
 ## Build
 
@@ -89,14 +94,14 @@ Active surfaces hard-fail. `archive/` and `research/` are warn-only in v1.
 
 Open the frozen projection demo at:
 
-- `demo/ttc_projection_demo.html`
+- `demo/browser/projection/ttc_projection_demo.html`
 
 It is a projection-only surface using embedded `data-ttc-*` metadata plus canvas rendering. It does not compute runtime state.
 
 Open the NDJSON adapter demo at:
 
-- `demo/ttc_projection_stream.html`
-- `demo/ttc_runtime_sample.ndjson` is a real runtime-emitted sample the stream demo can consume unchanged.
+- `demo/browser/projection/ttc_projection_stream.html`
+- `demo/samples/ttc_runtime_sample.ndjson` is a real runtime-emitted sample the stream demo can consume unchanged.
 
 It consumes runtime NDJSON, updates the same frozen `data-ttc-*` contract, and reuses the projection renderer without computing runtime state.
 The projection demos are schema consumers, not schema definers.
@@ -108,18 +113,18 @@ See `docs/MATRIX_SEAL_PAGE_SPEC.md` for the generated matrix seal page specifica
 
 Open the live SSE demo at:
 
-- `demo/ttc_projection_live.html`
+- `demo/browser/projection/ttc_projection_live.html`
 
 Start the local bridge:
 
 ```bash
-python3 demo/ttc_runtime_stream_server.py --port 8000
+python3 demo/browser/servers/ttc_runtime_stream_server.py --port 8000
 ```
 
 Then open:
 
 ```text
-http://127.0.0.1:8000/ttc_projection_live.html
+http://127.0.0.1:8000/browser/projection/ttc_projection_live.html
 ```
 
 The live bridge forwards runtime NDJSON unchanged. It is a transport adapter, not a schema or projection authority.
@@ -129,7 +134,7 @@ A-Frame is a downstream 3D projection consumer over the same normalized scene ob
 
 Open the timed media page at:
 
-- `demo/ttc_projection_media.html`
+- `demo/browser/projection/ttc_projection_media.html`
 
 It keeps canvas as the primary live surface while adding:
 - MSE-backed timed media playback
@@ -150,16 +155,16 @@ make media-check
 The narrative corpus can be bound into an advisory witness artifact without changing canonical chapter NDJSON.
 
 - primary public entry surface:
-  - `demo/ttc_narrative_frame_witness.html`
+  - `demo/browser/narrative/ttc_narrative_frame_witness.html`
 - witness page:
-  - `demo/ttc_narrative_witness.html`
+  - `demo/browser/narrative/ttc_narrative_witness.html`
 - 3D witness page:
-  - `demo/ttc_narrative_aframe.html`
+  - `demo/browser/narrative/ttc_narrative_aframe.html`
 - binding spec:
   - `docs/NARRATIVE_WITNESS_BINDING.md`
 - derived artifacts:
-  - `demo/narrative_data/narrative.bound.v0.ndjson`
-  - `demo/narrative_data/narrative_bound_bundle.js`
+  - `demo/narrative/derived/narrative.bound.v0.ndjson`
+  - `demo/narrative/derived/narrative_bound_bundle.js`
 
 The narrative frame witness page is the primary public narrative entry surface.
 It consumes exported frame witnesses and projection receipts only. Canonical narrative chapters remain authoritative.
@@ -228,7 +233,7 @@ make seal-page INPUT=artifact.bin OUTPUT=artifacts/seal/matrix_seal_page.html
 Working sample:
 
 ```bash
-make seal-page INPUT=demo/ttc_payload_sample.bin OUTPUT=artifacts/seal/matrix_seal_page.html
+make seal-page INPUT=demo/samples/ttc_payload_sample.bin OUTPUT=artifacts/seal/matrix_seal_page.html
 ```
 
 Optional overrides:

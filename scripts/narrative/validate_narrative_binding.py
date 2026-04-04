@@ -47,13 +47,13 @@ from contextlib import closing
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
-BINDER = ROOT / "scripts" / "bind_narrative_to_witness.py"
-EXPECTED_NDJSON = ROOT / "demo" / "narrative_data" / "narrative.bound.v0.ndjson"
-EXPECTED_JS = ROOT / "demo" / "narrative_data" / "narrative_bound_bundle.js"
-PAGE = ROOT / "demo" / "ttc_narrative_witness.html"
-A_FRAME_PAGE = ROOT / "demo" / "ttc_narrative_aframe.html"
-DEMO_SERVER = ROOT / "demo" / "ttc_runtime_stream_server.py"
+ROOT = Path(__file__).resolve().parents[2]
+BINDER = ROOT / "scripts" / "narrative" / "bind_narrative_to_witness.py"
+EXPECTED_NDJSON = ROOT / "demo" / "narrative" / "derived" / "narrative.bound.v0.ndjson"
+EXPECTED_JS = ROOT / "demo" / "narrative" / "derived" / "narrative_bound_bundle.js"
+PAGE = ROOT / "demo" / "browser" / "narrative" / "ttc_narrative_witness.html"
+A_FRAME_PAGE = ROOT / "demo" / "browser" / "narrative" / "ttc_narrative_aframe.html"
+DEMO_SERVER = ROOT / "demo" / "browser" / "servers" / "ttc_runtime_stream_server.py"
 SNAPSHOT_RE = re.compile(
     r'<script[^>]*id=["\']ttc-narrative-scene-snapshot["\'][^>]*>(.*?)</script>',
     re.DOTALL | re.IGNORECASE,
@@ -136,13 +136,13 @@ def run_server(port: int) -> subprocess.Popen[str]:
 
 def load_snapshot(chromium: str, port: int, **params: str) -> dict[str, object]:
     query = "&".join(f"{key}={value}" for key, value in params.items())
-    url = f"http://127.0.0.1:{port}/ttc_narrative_witness.html?{query}"
+    url = f"http://127.0.0.1:{port}/browser/narrative/ttc_narrative_witness.html?{query}"
     return extract_snapshot(dump_dom(chromium, url), aframe=False)
 
 
 def load_aframe_snapshot(chromium: str, port: int, **params: str) -> dict[str, object]:
     query = "&".join(f"{key}={value}" for key, value in params.items())
-    url = f"http://127.0.0.1:{port}/ttc_narrative_aframe.html?{query}"
+    url = f"http://127.0.0.1:{port}/browser/narrative/ttc_narrative_aframe.html?{query}"
     return extract_snapshot(dump_dom(chromium, url), aframe=True)
 
 
@@ -477,8 +477,8 @@ def main() -> int:
     server = run_server(port)
 
     try:
-        wait_for_server(f"http://127.0.0.1:{port}/ttc_narrative_witness.html")
-        wait_for_server(f"http://127.0.0.1:{port}/ttc_narrative_aframe.html")
+        wait_for_server(f"http://127.0.0.1:{port}/browser/narrative/ttc_narrative_witness.html")
+        wait_for_server(f"http://127.0.0.1:{port}/browser/narrative/ttc_narrative_aframe.html")
 
         scenarios = [
             {

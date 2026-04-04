@@ -15,13 +15,14 @@ from collections import OrderedDict
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
-NARRATIVE_DIR = ROOT / "demo" / "narrative_data"
-CHAPTERS_DIR = NARRATIVE_DIR / "chapters"
-TEMPLATES_PATH = NARRATIVE_DIR / "templates" / "character_progression_templates.json"
-HOOKS_PATH = NARRATIVE_DIR / "witness_article_hooks.json"
-DEFAULT_NDJSON_OUT = NARRATIVE_DIR / "narrative.bound.v0.ndjson"
-DEFAULT_JS_OUT = NARRATIVE_DIR / "narrative_bound_bundle.js"
+ROOT = Path(__file__).resolve().parents[2]
+CANONICAL_DIR = ROOT / "demo" / "narrative" / "canonical"
+DERIVED_DIR = ROOT / "demo" / "narrative" / "derived"
+CHAPTERS_DIR = CANONICAL_DIR / "chapters"
+TEMPLATES_PATH = CANONICAL_DIR / "templates" / "character_progression_templates.json"
+HOOKS_PATH = CANONICAL_DIR / "witness_article_hooks.json"
+DEFAULT_NDJSON_OUT = DERIVED_DIR / "narrative.bound.v0.ndjson"
+DEFAULT_JS_OUT = DERIVED_DIR / "narrative_bound_bundle.js"
 
 TOKEN_RE = re.compile(r"[a-z0-9]+")
 
@@ -144,9 +145,9 @@ def build_bound_artifact(chapters: list[dict], templates: list[dict], hooks: lis
             "version": 1,
             "series": "When Wisdom, Law, and the Tribe Sat Down Together",
             "authority": "canonical narrative remains sovereign; witness binding is advisory only",
-            "source": "demo/narrative_data/chapters/*.ndjson",
-            "templates_path": "demo/narrative_data/templates/character_progression_templates.json",
-            "hooks_path": "demo/narrative_data/witness_article_hooks.json",
+            "source": "demo/narrative/canonical/chapters/*.ndjson",
+            "templates_path": "demo/narrative/canonical/templates/character_progression_templates.json",
+            "hooks_path": "demo/narrative/canonical/witness_article_hooks.json",
         }
     ]
     bundle_chapters: list[dict] = []

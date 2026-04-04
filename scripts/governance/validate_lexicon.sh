@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT_DIR"
 
 files=(
@@ -39,9 +39,9 @@ for pattern in "${forbidden_patterns[@]}"; do
     -g '!docs/LEXICON.json' \
     -g '!docs/GOVERNANCE_ALLOWLIST.json' \
     -g '!docs/GOVERNANCE_RULES.json' \
-    -g '!scripts/validate_lexicon.sh' \
-    -g '!scripts/governance_audit.py' \
-    -g '!scripts/validate_governance_audit.sh' >/tmp/ttc_lexicon_hits.txt 2>/dev/null; then
+    -g '!scripts/governance/validate_lexicon.sh' \
+    -g '!scripts/governance/governance_audit.py' \
+    -g '!scripts/governance/validate_governance_audit.sh' >/tmp/ttc_lexicon_hits.txt 2>/dev/null; then
     echo "lexicon violation: forbidden phrase '$pattern'" >&2
     cat /tmp/ttc_lexicon_hits.txt >&2
     exit 1

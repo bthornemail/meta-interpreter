@@ -4,13 +4,13 @@ import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
-const BUNDLE = path.join(ROOT, "demo", "narrative_data", "narrative_bound_bundle.js");
-const SCENE_MODULE = pathToFileURL(path.join(ROOT, "demo", "ttc_narrative_scene.js")).href;
+const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..", "..");
+const BUNDLE = path.join(ROOT, "demo", "narrative", "derived", "narrative_bound_bundle.js");
+const SCENE_MODULE = pathToFileURL(path.join(ROOT, "demo", "browser", "narrative", "ttc_narrative_scene.js")).href;
 
 function usage() {
   console.error(
-    "usage: node scripts/export_narrative_frames.mjs " +
+    "usage: node scripts/narrative/export_narrative_frames.mjs " +
       "--chapter CHAPTER_ID --from-step N --to-step N --out-dir DIR " +
       "[--frames N] [--mode narrative|witness] [--frame semantic_graph|world|replay_timeline] " +
       "[--attention narrow|expand] [--depth less|more]",
