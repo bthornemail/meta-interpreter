@@ -135,6 +135,42 @@
       "notes": [
         "identity_only"
       ]
+    },
+    "claim": {
+      "category": "artifact",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "downstream_assertion"
+      ]
+    },
+    "receipt": {
+      "category": "artifact",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "downstream_witness"
+      ]
+    },
+    "provenance": {
+      "category": "artifact",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "custody_chain"
+      ]
+    },
+    "reconciliation": {
+      "category": "artifact",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "downstream_outcome"
+      ]
     }
   },
   "forbidden_relations": [
@@ -151,6 +187,10 @@
     "PGM is canonical",
     "JSON Canvas defines structure",
     "matrix is identity",
-    "step_digest is artifact hash"
+    "step_digest is artifact hash",
+    "claim defines truth",
+    "receipt defines truth",
+    "federation defines truth",
+    "convergence defines truth"
   ]
 }

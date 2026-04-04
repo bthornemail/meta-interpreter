@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TTC Projection Index</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(20,184,166,0.12),_transparent_30%),linear-gradient(180deg,_#050816_0%,_#09090b_55%,_#020617_100%)] text-stone-100">
+    <main class="mx-auto flex min-h-screen max-w-7xl flex-col gap-8 px-6 py-8 sm:px-8 sm:py-10">
+      <header class="space-y-4 border-b border-stone-800/80 pb-6">
+        <nav class="flex flex-wrap gap-2 text-xs uppercase tracking-[0.22em] text-stone-400">
+          <a href="../index.html" class="rounded-full border border-stone-700/80 px-3 py-1 hover:border-cyan-400/40 hover:text-cyan-100">Browser Index</a>
+          <a href="../narrative/index.html" class="rounded-full border border-stone-700/80 px-3 py-1 hover:border-amber-400/40 hover:text-amber-100">Narrative Index</a>
+        </nav>
+        <p class="text-xs uppercase tracking-[0.34em] text-cyan-300/80">Projection Lane</p>
+        <h1 class="text-4xl font-semibold tracking-tight text-stone-50">Projection clients and server roles.</h1>
+        <p class="max-w-3xl text-sm leading-7 text-stone-300">
+          All projection clients consume the same downstream contract. Transport variants are adapters only and must not
+          define schema, runtime law, or canonical identity.
+        </p>
+      </header>
+
+      <section class="grid gap-6 xl:grid-cols-[1.35fr_0.95fr]">
+        <section class="space-y-4">
+          <div class="flex items-center justify-between gap-4">
+            <h2 class="text-xl font-semibold text-stone-50">Clients</h2>
+            <span class="text-xs uppercase tracking-[0.28em] text-stone-500">Order: Data Attributes, SSE, API</span>
+          </div>
+          <article class="rounded-[1.6rem] border border-cyan-400/15 bg-stone-900/65 p-5">
+            <p class="text-xs uppercase tracking-[0.3em] text-cyan-300/80">1. Data Attributes</p>
+            <h3 class="mt-3 text-2xl font-medium text-stone-50">Frozen geometric reference surface</h3>
+            <p class="mt-3 text-sm leading-6 text-stone-300">Embedded <code>data-ttc-*</code> only. No live transport and no runtime logic in the browser.</p>
+            <div class="mt-6"><a href="./ttc_projection_demo.html" class="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm text-cyan-100 hover:bg-cyan-400/15">Open Static Surface</a></div>
+          </article>
+          <article class="rounded-[1.6rem] border border-cyan-400/15 bg-stone-900/65 p-5">
+            <p class="text-xs uppercase tracking-[0.3em] text-cyan-300/80">2. SSE</p>
+            <h3 class="mt-3 text-2xl font-medium text-stone-50">Primary live browser surface</h3>
+            <p class="mt-3 text-sm leading-6 text-stone-300">Consumes runtime NDJSON unchanged through EventSource and writes the same frozen projection contract.</p>
+            <div class="mt-6 flex flex-wrap gap-3">
+              <a href="./ttc_projection_live.html" class="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm text-cyan-100 hover:bg-cyan-400/15">Open SSE Live Surface</a>
+              <a href="./ttc_projection_media.html" class="rounded-full border border-stone-700/80 px-4 py-2 text-sm text-stone-200 hover:border-cyan-400/40 hover:text-cyan-100">Timed Media Surface</a>
+            </div>
+          </article>
+          <article class="rounded-[1.6rem] border border-cyan-400/15 bg-stone-900/65 p-5">
+            <p class="text-xs uppercase tracking-[0.3em] text-cyan-300/80">3. API / File Adapter</p>
+            <h3 class="mt-3 text-2xl font-medium text-stone-50">Request-response style intake</h3>
+            <p class="mt-3 text-sm leading-6 text-stone-300">The current repo materializes this role as the NDJSON/file adapter page over the same downstream contract.</p>
+            <div class="mt-6"><a href="./ttc_projection_stream.html" class="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm text-cyan-100 hover:bg-cyan-400/15">Open Stream/File Surface</a></div>
+          </article>
+        </section>
+
+        <aside class="space-y-4">
+          <div class="flex items-center justify-between gap-4">
+            <h2 class="text-xl font-semibold text-stone-50">Servers</h2>
+            <span class="text-xs uppercase tracking-[0.28em] text-stone-500">Order: FIFO, SSE, API</span>
+          </div>
+          <article class="rounded-[1.6rem] border border-stone-800/80 bg-stone-900/55 p-5">
+            <p class="text-xs uppercase tracking-[0.3em] text-stone-500">1. FIFO</p>
+            <h3 class="mt-3 text-lg font-medium text-stone-50">Not yet materialized</h3>
+            <p class="mt-3 text-sm leading-6 text-stone-300">Reserved transport role only. A future FIFO adapter must remain a transport witness and must not define schema.</p>
+          </article>
+          <article class="rounded-[1.6rem] border border-emerald-400/15 bg-stone-900/55 p-5">
+            <p class="text-xs uppercase tracking-[0.3em] text-emerald-300/80">2. SSE</p>
+            <h3 class="mt-3 text-lg font-medium text-stone-50">Current local bridge</h3>
+            <p class="mt-3 text-sm leading-6 text-stone-300">The current server rooted at <code>demo/</code> serves the browser lane and exposes <code>/events</code>.</p>
+            <div class="mt-5 rounded-xl border border-stone-800 bg-stone-950/60 p-4 text-xs leading-6 text-stone-300"><code>python3 demo/browser/servers/ttc_runtime_stream_server.py --port 8000</code></div>
+          </article>
+          <article class="rounded-[1.6rem] border border-stone-800/80 bg-stone-900/55 p-5">
+            <p class="text-xs uppercase tracking-[0.3em] text-stone-500">3. API</p>
+            <h3 class="mt-3 text-lg font-medium text-stone-50">Not yet materialized</h3>
+            <p class="mt-3 text-sm leading-6 text-stone-300">Reserved request-response transport role only. A future API adapter must continue to witness canonical output rather than define it.</p>
+          </article>
+        </aside>
+      </section>
+    </main>
+  </body>
+</html>

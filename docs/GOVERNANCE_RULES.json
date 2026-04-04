@@ -151,6 +151,68 @@
       "patterns": [
         "\\bbytes?\\s+(?:is|are|=)\\s+artifact\\b"
       ]
+    },
+    "claim -> truth": {
+      "term": "claim",
+      "expected": "invalid",
+      "patterns": [
+        "\\bclaims?\\b(?![^\\n.]*\\bdo(?:es)?\\s+not\\b)[^\\n.]*\\bdefines?\\s+truth\\b",
+        "\\bclaims?\\b(?![^\\n.]*\\bdo(?:es)?\\s+not\\b)[^\\n.]*\\bcreates?\\s+truth\\b",
+        "\\bclaims?\\b(?![^\\n.]*\\bdo(?:es)?\\s+not\\b)[^\\n.]*\\bis\\s+truth\\b"
+      ]
+    },
+    "receipt -> truth": {
+      "term": "receipt",
+      "expected": "invalid",
+      "patterns": [
+        "\\breceipts?\\b(?![^\\n.]*\\bdo(?:es)?\\s+not\\b)[^\\n.]*\\bdefines?\\s+truth\\b",
+        "\\breceipts?\\b(?![^\\n.]*\\bdo(?:es)?\\s+not\\b)[^\\n.]*\\bcreates?\\s+truth\\b",
+        "\\breceipts?\\b(?![^\\n.]*\\bdo(?:es)?\\s+not\\b)[^\\n.]*\\bis\\s+truth\\b"
+      ]
+    },
+    "federation -> truth": {
+      "term": "federation",
+      "expected": "invalid",
+      "patterns": [
+        "\\bfederation\\b(?![^\\n.]*\\bdo(?:es)?\\s+not\\b)[^\\n.]*\\bdefines?\\s+truth\\b",
+        "\\bfederation\\b(?![^\\n.]*\\bdo(?:es)?\\s+not\\b)[^\\n.]*\\bcreates?\\s+truth\\b",
+        "\\bfederation\\b(?![^\\n.]*\\bdo(?:es)?\\s+not\\b)[^\\n.]*\\bis\\s+truth\\b"
+      ]
+    },
+    "convergence -> truth": {
+      "term": "convergence",
+      "expected": "invalid",
+      "patterns": [
+        "\\bconvergence\\b(?![^\\n.]*\\bdo(?:es)?\\s+not\\b)[^\\n.]*\\bdefines?\\s+truth\\b",
+        "\\bconvergence\\b(?![^\\n.]*\\bdo(?:es)?\\s+not\\b)[^\\n.]*\\bcreates?\\s+truth\\b",
+        "\\bconvergence\\b(?![^\\n.]*\\bdo(?:es)?\\s+not\\b)[^\\n.]*\\bis\\s+truth\\b"
+      ]
+    },
+    "projection receipt -> runtime": {
+      "term": "receipt",
+      "expected": "invalid",
+      "patterns": [
+        "\\bprojection\\s+receipt\\b.*\\bchanges?\\s+runtime\\b",
+        "\\breceipts?\\b.*\\bchanges?\\s+runtime\\b",
+        "\\breceipts?\\b.*\\bmutates?\\s+runtime\\b"
+      ]
+    },
+    "translation -> canonical identity": {
+      "term": "translation",
+      "expected": "invalid",
+      "patterns": [
+        "\\btranslation\\b.*\\bchanges?\\s+canonical\\s+(?:replay\\s+)?identity\\b(?!.*explicit\\s+revision\\s+law)",
+        "\\btranslation\\b.*\\bmutates?\\s+canonical\\s+(?:replay\\s+)?identity\\b"
+      ]
+    },
+    "back-propagation -> runtime": {
+      "term": "back-propagation",
+      "expected": "invalid",
+      "patterns": [
+        "\\bback-propagation\\b.*\\bmutates?\\s+runtime\\b",
+        "\\bback-propagation\\b.*\\bchanges?\\s+runtime\\b",
+        "\\bback-propagation\\b.*\\bwrites?\\s+into\\s+runtime\\b"
+      ]
     }
   },
   "surface_misuse_patterns": {

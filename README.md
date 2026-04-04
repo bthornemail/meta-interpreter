@@ -16,6 +16,8 @@ Public package for the TTC unified framework.
 - `demo/narrative/derived/` downstream narrative witness artifacts
 - `demo/samples/` reproducible sample inputs
 - `scripts/narrative/`, `scripts/projection/`, `scripts/governance/` role-grouped operational tooling
+- `deploy/nginx/`, `deploy/systemd/`, `deploy/scripts/` deployment assets for medium/large/small host materialization
+- `deploy/fano_service_topology.json` deployment responsibility/communication witness
 
 ## Narrative Lane
 
@@ -281,6 +283,36 @@ It carries:
 
 ```bash
 make pipe
+```
+
+## Deployment Assets
+
+Host-targeted deployment assets are materialized in:
+
+- `deploy/nginx/medium/` — public nginx bootstrap and TLS configs
+- `deploy/nginx/small/` — download host nginx bootstrap and TLS configs
+- `deploy/systemd/ttc-runtime-sse.service` — SSE bridge unit for `large`
+- `deploy/scripts/deploy-medium.sh`
+- `deploy/scripts/deploy-large.sh`
+- `deploy/scripts/deploy-small.sh`
+
+Default host split:
+
+- `medium` serves the public browser lane at `universallifeprotocol.com`
+- `large` runs runtime-backed services such as SSE
+- `small` serves download/file artifacts at `matroid-garden.com`
+
+Deployment responsibility separation is also witnessed through a frozen Fano topology:
+
+- document: [DEPLOYMENT_FANO_TOPOLOGY.md](/home/main/Programs/meta-interpreter/docs/DEPLOYMENT_FANO_TOPOLOGY.md)
+- artifact: [fano_service_topology.json](/home/main/Programs/meta-interpreter/deploy/fano_service_topology.json)
+
+This topology is downstream deployment/governance metadata only. It expresses lawful adjacency and separation of deployment roles, but it does not replace nginx, systemd, DNS, or runtime truth.
+
+Check deployment topology drift with:
+
+```bash
+make deploy-topology-check
 ```
 
 Output defaults to `artifacts/xX/p0/0/0/aztec_legacy.txt` for the legacy witness path.

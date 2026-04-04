@@ -50,7 +50,7 @@ class TTCBridgeHandler(BaseHTTPRequestHandler):
 
     def handle_static(self, path: str) -> None:
         if path in ("", "/"):
-            path = "/browser/projection/ttc_projection_live.html"
+            path = "/browser/index.html"
         rel = path.lstrip("/")
         target = (DEMO_DIR / rel).resolve()
         if DEMO_DIR not in target.parents and target != DEMO_DIR:
@@ -141,7 +141,7 @@ def main() -> int:
     args = parser.parse_args()
 
     server = ThreadingHTTPServer((args.host, args.port), TTCBridgeHandler)
-    print(f"TTC runtime stream server listening on http://{args.host}:{args.port}/browser/projection/ttc_projection_live.html")
+    print(f"TTC runtime stream server listening on http://{args.host}:{args.port}/browser/index.html")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

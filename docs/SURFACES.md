@@ -198,6 +198,29 @@ Rule:
 artifact = identity plus payload
 ```
 
+Downstream structured witnesses that remain artifact-adjacent:
+
+- claims
+- receipts
+- provenance chains
+- reconciliation outcomes
+
+These may be packaged with artifacts or validation output, but they do not redefine canonical state.
+
+## 11. Downstream Claim and Receipt Surfaces
+
+Claims and receipts are structured downstream witness or artifact surfaces.
+
+Rules:
+
+```text
+claims do not create truth
+receipts do not create truth
+provenance is a witness chain, not a sovereign layer
+reconciliation outputs are downstream witness/artifact products
+projection may display claims and receipts, but display does not create authority
+```
+
 ## Surface Invariants
 
 ```text
@@ -210,6 +233,8 @@ No artifact defines structure.
 Projection must not influence check ordering.
 Transport must not influence check ordering.
 Artifact hash must not influence check ordering.
+Claims must not influence runtime.
+Receipts must not influence runtime.
 ```
 
 ## Surface Flow

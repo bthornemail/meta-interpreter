@@ -1,0 +1,22 @@
+[Unit]
+Description=TTC runtime SSE bridge
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/meta-interpreter
+Environment=PYTHONUNBUFFERED=1
+# Fano deployment points on large:
+# - runtime_sse
+# - future api_service
+# - future admin_mcp
+# Public-on-medium proxies directly to large over its public address, so the bridge
+# binds 0.0.0.0 here. Restrict inbound access to port 8000 to the medium host.
+ExecStart=/usr/bin/env python3 /opt/meta-interpreter/demo/browser/servers/ttc_runtime_stream_server.py --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

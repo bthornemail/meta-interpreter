@@ -45,7 +45,7 @@ WIT_BIN := $(BIN_DIR)/ttc_witness
 CAN_RUNTIME_BIN := $(BIN_DIR)/ttc_canonical_runtime
 FRAMEWORK_BIN := $(BIN_DIR)/ttc_framework
 
-.PHONY: build pipe clean codec codec-test canonical canonical-smoke busybox-smoke busybox-uri-smoke symbolic-smoke symbolic-check factoradic-smoke factoradic-fifo-demo braille-mnemonic adapters-smoke adapters-check rules.extract rules.validate rules.digest rules.run rules.check framework-check lexicon-check ontology-check surfaces-check governance-audit governance-audit-check projection-check media-check narrative-check narrative-frame-check narrative-frame-export seal-page aztec-transport-check aztec-std-placeholder
+.PHONY: build pipe clean codec codec-test canonical canonical-smoke busybox-smoke busybox-uri-smoke symbolic-smoke symbolic-check factoradic-smoke factoradic-fifo-demo braille-mnemonic adapters-smoke adapters-check rules.extract rules.validate rules.digest rules.run rules.check framework-check lexicon-check ontology-check surfaces-check governance-audit governance-audit-check deploy-topology-check projection-check media-check narrative-check narrative-frame-check narrative-frame-export seal-page aztec-transport-check aztec-std-placeholder
 
 build: $(RUNTIME_LIB) $(WITNESS_LIB) $(MATRIX_LIB) $(AZTEC_LIB) $(FRAMEWORK_LIB) $(ENC_BIN) $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) $(CAN_RUNTIME_BIN) $(FRAMEWORK_BIN)
 
@@ -147,6 +147,9 @@ governance-audit: lexicon-check ontology-check
 governance-audit-check: lexicon-check ontology-check
 	./scripts/governance/validate_governance_audit.sh
 
+deploy-topology-check:
+	python3 ./scripts/governance/validate_deploy_topology.py
+
 projection-check: build
 	python3 ./scripts/projection/validate_projection_render.py
 
@@ -189,6 +192,15 @@ seal-page: build
 		--rule "$(if $(RULE),$(RULE),current)" \
 		$(if $(SEED),--seed "$(SEED)",) \
 		$(if $(NOTE),--note "$(NOTE)",)
+
+deploy-medium:
+	./deploy/scripts/deploy-medium.sh
+
+deploy-large:
+	./deploy/scripts/deploy-large.sh
+
+deploy-small:
+	./deploy/scripts/deploy-small.sh
 
 aztec-transport-check: $(FRAMEWORK_BIN)
 	./scripts/validate_aztec_transport.sh

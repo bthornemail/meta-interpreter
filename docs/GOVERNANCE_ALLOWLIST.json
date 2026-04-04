@@ -44,6 +44,11 @@
       "path_regex": "^dev-docs/ttc_canonical_spec_v1\\.md$",
       "conflict_class": "reserved_name_misuse",
       "line_regex": "Aztec projection witness"
+    },
+    {
+      "path_regex": "^docs/PROPAGATION_CLAIMS_AND_FEDERATION\\.md$",
+      "conflict_class": "ontology_violation",
+      "line_regex": "translation must not change canonical replay identity without explicit revision law"
     }
   ]
 }

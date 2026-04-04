@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "kind": "deployment_fano_topology",
+  "authority": "Deployment topology is a downstream responsibility and communication witness only. Executable nginx, systemd, DNS, and runtime binaries remain the source of deployed behavior.",
+  "points": [
+    "public_site",
+    "browser_projection",
+    "browser_narrative",
+    "runtime_sse",
+    "api_service",
+    "downloads",
+    "admin_mcp"
+  ],
+  "lines": [
+    ["public_site", "browser_projection", "runtime_sse"],
+    ["public_site", "browser_narrative", "api_service"],
+    ["public_site", "downloads", "admin_mcp"],
+    ["browser_projection", "browser_narrative", "downloads"],
+    ["browser_projection", "api_service", "admin_mcp"],
+    ["browser_narrative", "runtime_sse", "admin_mcp"],
+    ["runtime_sse", "api_service", "downloads"]
+  ],
+  "line_labels": [
+    "public_projection_runtime",
+    "public_narrative_api",
+    "public_downloads_admin",
+    "projection_narrative_downloads",
+    "projection_api_admin",
+    "narrative_runtime_admin",
+    "runtime_api_downloads"
+  ],
+  "hosts": {
+    "medium": ["public_site", "browser_projection", "browser_narrative"],
+    "large": ["runtime_sse", "api_service", "admin_mcp"],
+    "small": ["downloads"]
+  },
+  "allowed_pairs": [
+    ["public_site", "browser_projection"],
+    ["public_site", "browser_narrative"],
+    ["public_site", "runtime_sse"],
+    ["public_site", "api_service"],
+    ["public_site", "downloads"],
+    ["public_site", "admin_mcp"],
+    ["browser_projection", "runtime_sse"],
+    ["browser_projection", "browser_narrative"],
+    ["browser_projection", "downloads"],
+    ["browser_projection", "api_service"],
+    ["browser_projection", "admin_mcp"],
+    ["browser_narrative", "api_service"],
+    ["browser_narrative", "downloads"],
+    ["browser_narrative", "runtime_sse"],
+    ["browser_narrative", "admin_mcp"],
+    ["runtime_sse", "api_service"],
+    ["runtime_sse", "downloads"],
+    ["runtime_sse", "admin_mcp"],
+    ["api_service", "downloads"],
+    ["api_service", "admin_mcp"],
+    ["downloads", "admin_mcp"]
+  ],
+  "intended_proxy_paths": {
+    "/events": "runtime_sse",
+    "/api/": "api_service"
+  },
+  "deploy_role_map": {
+    "medium:universallifeprotocol.com": "public_site",
+    "medium:/browser/projection/*": "browser_projection",
+    "medium:/browser/narrative/*": "browser_narrative",
+    "large:/events": "runtime_sse",
+    "large:/api/": "api_service",
+    "large:mcp.universal-life-protocol.com": "admin_mcp",
+    "small:matroid-garden.com": "downloads"
+  }
+}

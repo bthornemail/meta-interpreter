@@ -145,7 +145,16 @@
     "fingerprint": "artifact",
     "identity": "artifact",
     "verification": "artifact",
-    "receipt": "artifact"
+    "receipt": "artifact",
+    "claim": "artifact",
+    "provenance": "artifact",
+    "contract": "artifact",
+    "participant": "artifact",
+    "peer": "artifact",
+    "federation": "artifact",
+    "reconciliation": "artifact",
+    "convergence point": "artifact",
+    "translation": "transport"
   },
   "forbidden_collisions": [
     "Aztec transport",
@@ -190,5 +199,30 @@
     "BLOB": "transport",
     "lane": "address",
     "channel": "address"
+  },
+  "downstream_extension": {
+    "rule": "These terms are downstream and do not revise the sovereign runtime-to-projection layer map.",
+    "artifact_adjacent_terms": [
+      "claim",
+      "receipt",
+      "provenance",
+      "contract",
+      "participant",
+      "peer",
+      "federation",
+      "reconciliation",
+      "convergence point"
+    ],
+    "transport_adjacent_terms": [
+      "translation"
+    ],
+    "canonical_sentences": [
+      "claims do not create truth",
+      "receipts do not create truth",
+      "federation does not create truth",
+      "convergence does not create truth",
+      "translation must not change canonical replay identity without explicit revision law",
+      "peers exchange claims and receipts, not truth itself"
+    ]
   }
 }

@@ -67,6 +67,9 @@ The generated page may embed or display:
 
 - canonical payload views
 - artifact hash
+- claims about identity or derivation
+- receipts about generation or validation
+- provenance notes
 - runtime NDJSON samples
 - projection metadata
 - TTC matrix symbols
@@ -90,6 +93,7 @@ Optional fields:
 - provenance note
 - generator version
 - build note
+- generation receipt note
 
 Purpose:
 
@@ -201,6 +205,15 @@ Optional additions:
 - generation note
 - repository reference
 - projection-check note
+- validation receipt note
+
+Rules:
+
+```text
+claims and receipts displayed on the seal page remain downstream witnesses
+provenance notes may explain derivation or custody
+the page itself does not become authoritative by containing those claims or receipts
+```
 
 ## Honest Scope
 

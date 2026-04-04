@@ -27,6 +27,9 @@ data-ttc-* is derived projection metadata only.
 It must never drive runtime or canonical decisions.
 ```
 
+Projection pages may present downstream claims, receipts, provenance notes, and reconciliation outcomes.
+Those displays remain non-authoritative witness surfaces only.
+
 ## What The UI Surfaces Are
 
 The browser projection lane currently has three surfaces:
@@ -72,6 +75,7 @@ The browser projection lane currently has three surfaces:
 - purpose: prove that MSE, Media Session, and capture probes can remain downstream consumers only
 
 These pages are schema consumers, not schema definers.
+They may present claim/receipt material, but they do not originate canonical truth from those displays.
 
 ## Frozen DOM Contract
 
@@ -242,6 +246,9 @@ Important limit:
 projection-check validates projection equivalence only
 it does not validate runtime law
 ```
+
+Claims, receipts, provenance overlays, and reconciliation summaries shown in the UI are presentation surfaces only.
+They must not mutate runtime law or redefine canonical replay identity.
 
 Timed media and capture probe behavior is validated separately by:
 

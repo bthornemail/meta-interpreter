@@ -319,6 +319,45 @@ Clarifications:
 - `artifact_hash` proves identity
 - `step_digest` seeds structure
 
+## Downstream Extension Vocabulary
+
+These terms are downstream and artifact-/transport-adjacent. They do not revise the sovereign layer map.
+
+Keywords:
+- claim
+- receipt
+- provenance
+- contract
+- participant
+- peer
+- federation
+- reconciliation
+- convergence point
+- translation
+
+Definitions:
+- `claim`: typed assertion about a declared layer or relation between layers
+- `receipt`: deterministic witness that a claim, validation, transfer, or reconciliation step occurred
+- `provenance`: replayable derivation and custody chain for claims, receipts, and artifacts
+- `contract`: declared authority boundary under which a role may emit, verify, reject, accept, or reconcile
+- `participant`: actor capable of emitting, receiving, verifying, rejecting, or reconciling claims and receipts
+- `peer`: participant in declared federated relation to another participant
+- `federation`: exchange discipline among participants and peers under declared contracts
+- `reconciliation`: deterministic comparison of claims and receipts against replay and declared contract
+- `convergence point`: site or process where multiple claims or receipts are compared under contract
+- `translation`: change of carrier, witness surface, transport form, or presentation form that preserves canonical identity
+
+Placement:
+- `claim`, `receipt`, `provenance`, `contract`, `participant`, `peer`, `federation`, `reconciliation`, `convergence point` remain artifact-adjacent downstream terms
+- `translation` remains a downstream transport/projection/witness term
+
+Rules:
+- claims do not create truth
+- receipts do not create truth
+- federation does not create truth
+- convergence does not create truth
+- translation may change carrier or presentation, but it must not silently change canonical replay identity
+
 ## Critical Disambiguations
 
 - Braille (witness) != Braille (projection)
@@ -369,3 +408,5 @@ For structured data and process composition:
 - NDJSON and JSON carry structured projections
 - JSON Canvas carries layout projections
 - step_digest is the deterministic reduction of runtime event material used to seed incidence and structural expansion
+- peers exchange claims and receipts, not truth itself
+- truth remains canonical replay

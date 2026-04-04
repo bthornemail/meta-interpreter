@@ -298,7 +298,44 @@ Clarification:
 artifact_hash != step_digest
 ```
 
-## 17. Invariants
+## 17. Downstream Extension
+
+The downstream extension around the canonical stack is:
+
+```text
+canonical replay
+-> propagation
+-> witness
+-> claim
+-> carrier exchange
+-> provenance
+-> reconciliation
+-> federation
+```
+
+Derived downstream relations:
+
+```text
+derives(artifact + role + provenance, claim)
+carries(claim + carrier + receipt, federation_exchange)
+compares(multiple_claims, reconciliation)
+classifies(reconciliation, accept | reject | defer | fork)
+```
+
+Rules:
+
+```text
+claims do not create truth
+receipts do not create truth
+federation does not create truth
+convergence does not create truth
+translation may change carrier, witness surface, transport form, or presentation form
+translation must not change canonical replay identity without explicit revision law
+```
+
+This extension is downstream of replay and does not replace the canonical flow.
+
+## 18. Invariants
 
 ```text
 bytes are canonical
@@ -313,7 +350,7 @@ structure != transport != projection
 runtime is the only authority
 ```
 
-## 18. Minimal Prolog Form
+## 19. Minimal Prolog Form
 
 ```prolog
 produces(runtime, event).

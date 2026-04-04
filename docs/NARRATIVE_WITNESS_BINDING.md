@@ -79,6 +79,7 @@ The public witness page consumes:
 
 It verifies and presents exported frame witnesses only.
 Replay and geometric shell cues are presentation aids; they do not define canonical identity, step order, or projection derivation inputs.
+Frame manifests, projection receipts, and projection hashes are downstream claims, receipts, and provenance witnesses only.
 
 The page builds one normalized narrative scene object per selected bound step.
 That scene object is the single downstream source for:
@@ -95,11 +96,15 @@ Projection surfaces may also emit projection hashes over:
 
 These hashes witness downstream integrity only.
 They do not redefine canonical authority.
+They may participate in downstream reconciliation, but never in runtime truth-making.
 
 Frame export is also projection-only and may derive:
 - interpolated scene receipts
 - SVG frame artifacts
 - downstream projection hashes per frame
+
+These outputs are downstream claims, receipts, and provenance witnesses.
+They are not canonical truth.
 
 Frame export MUST NOT:
 - redefine chapter identity
@@ -154,3 +159,4 @@ That check proves only:
 - local interpolation frames are deterministic for the same source step, target step, controls, and interpolation progress
 
 It does not elevate the narrative witness page to runtime authority.
+It does not elevate manifests, receipts, or convergence-style comparisons to runtime authority.

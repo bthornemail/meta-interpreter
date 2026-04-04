@@ -45,6 +45,31 @@
     ["bytes", "transport"],
     ["bytes", "artifact"]
   ],
+  "downstream_extension": {
+    "flow": [
+      ["canonical_replay", "propagation"],
+      ["propagation", "witness"],
+      ["witness", "claim"],
+      ["claim", "carrier_exchange"],
+      ["carrier_exchange", "provenance"],
+      ["provenance", "reconciliation"],
+      ["reconciliation", "federation"]
+    ],
+    "relations": [
+      ["artifact+role+provenance", "derives", "claim"],
+      ["claim+carrier+receipt", "carries", "federation_exchange"],
+      ["multiple_claims", "compares", "reconciliation"],
+      ["reconciliation", "classifies", "accept|reject|defer|fork"]
+    ],
+    "rules": [
+      "claims do not create truth",
+      "receipts do not create truth",
+      "federation does not create truth",
+      "convergence does not create truth",
+      "translation may change carrier, witness surface, transport form, or presentation form",
+      "translation must not change canonical replay identity without explicit revision law"
+    ]
+  },
   "invariants": [
     "runtime does not depend on projection",
     "projection does not affect runtime",
