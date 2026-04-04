@@ -15,6 +15,23 @@ Surfaces do not define canonical state.
 
 Surfaces are classified by role, not by file format.
 
+Primary material class system for shared block and artifact surfaces:
+
+```text
+xx/xX/Xx/XX
+```
+
+Frozen material mapping:
+
+```text
+xx = affine / affine
+xX = affine / projective
+Xx = projective / affine
+XX = projective / projective
+```
+
+This class system is already materialized in `blocks/` and `artifacts/`.
+
 ## 1. Substrate Surface
 
 ```text
@@ -81,6 +98,22 @@ Includes:
 - channels
 - slots
 - address words
+
+Address-first rule:
+
+```text
+either the address exists
+or it does not
+```
+
+If it exists, the lawful reconstruction order is:
+
+```text
+class -> point -> lane -> leaf -> address bits / address word
+```
+
+The xx/xX/Xx/XX tetrad belongs to this address/materialization chain.
+It is not a later runtime classification layer.
 
 ## 5. Witness Surface
 
@@ -196,12 +229,17 @@ Rule:
 
 ```text
 artifact = identity plus payload
+xx/xX/Xx/XX is the primary material class system for shared artifact and block surfaces
 ```
 
 Downstream structured witnesses that remain artifact-adjacent:
 
 - claims
+- claim artifacts
+- proposal artifacts
+- closure artifacts
 - receipts
+- receipt artifacts
 - provenance chains
 - reconciliation outcomes
 
@@ -210,6 +248,17 @@ These may be packaged with artifacts or validation output, but they do not redef
 ## 11. Downstream Claim and Receipt Surfaces
 
 Claims and receipts are structured downstream witness or artifact surfaces.
+They are downstream symbolic-role views over the primary `xx/xX/Xx/XX` material class system.
+
+Frozen symbolic classes:
+
+```text
+claim_artifact    = point artifact
+proposal_artifact = path artifact
+closure_artifact  = constraint artifact
+receipt_artifact  = event witness artifact
+ui_frame_resolution = projection-local resolved frame witness
+```
 
 Rules:
 
@@ -219,6 +268,50 @@ receipts do not create truth
 provenance is a witness chain, not a sovereign layer
 reconciliation outputs are downstream witness/artifact products
 projection may display claims and receipts, but display does not create authority
+artifacts are classified by symbolic role, not by encoding
+symbolic role remains downstream of the primary xx/xX/Xx/XX material class system
+canonical embedding and scannable variants are translation forms of artifacts, not artifact types
+Step resolution precedes render comparison.
+```
+
+## 12. Runtime Witness Labels
+
+Some runtime emissions include implementation-facing witness labels in addition to address/material witnesses.
+
+Rules:
+
+```text
+runtime witness labels are downstream emitted summaries
+runtime witness labels do not define address law
+runtime witness labels do not replace class -> point -> lane -> leaf -> address reconstruction
+```
+
+If a surface needs first-principles explanation, it must begin with replay and address reconstruction rather than with emitted runtime labels.
+
+## 13. Address-Sided Reading
+
+Frozen distinctions:
+
+```text
+affine/projective = address-sided reading carried by x/X and xx/xX/Xx/XX
+```
+
+Address reading:
+
+```text
+xx = affine / affine = closed / closed witness
+xX = affine / projective = closed / open witness
+Xx = projective / affine = open / closed witness
+XX = projective / projective = open / open witness
+```
+
+Rules:
+
+```text
+projective is not local replay substance
+affine is not a mere shareable carrier surface
+what follows xx/xX/Xx/XX is address decomposition, not runtime classification
+first-principles explanation begins with replay and address, not emitted runtime labels
 ```
 
 ## Surface Invariants

@@ -7,7 +7,7 @@ cd "$ROOT_DIR"
 files=(
   README.md
   docs
-  dev-docs
+  dev-docs.org
   src
   scripts
 )

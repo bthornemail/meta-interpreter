@@ -11,7 +11,7 @@
       "line_regex": "aztec_legacy\\.txt|artifacts/aztec\\.(pgm|json)|aztec-transport-check|aztec-encode"
     },
     {
-      "path_regex": "^dev-docs/ttc_codebase_actual_state_v1\\.md$",
+      "path_regex": "^dev-docs\\.org::dev-docs/ttc_codebase_actual_state_v1\\.md$",
       "conflict_class": "reserved_name_misuse",
       "line_regex": "Matrix / Aztec Compatibility Functionality|--aztec|aztec\\.pos|Aztec is projection/import-export"
     },
@@ -41,7 +41,7 @@
       "line_regex": "aztec\\.txt"
     },
     {
-      "path_regex": "^dev-docs/ttc_canonical_spec_v1\\.md$",
+      "path_regex": "^dev-docs\\.org::dev-docs/ttc_canonical_spec_v1\\.md$",
       "conflict_class": "reserved_name_misuse",
       "line_regex": "Aztec projection witness"
     },

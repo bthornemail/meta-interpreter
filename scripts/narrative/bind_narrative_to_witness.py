@@ -26,6 +26,61 @@ DEFAULT_JS_OUT = DERIVED_DIR / "narrative_bound_bundle.js"
 
 TOKEN_RE = re.compile(r"[a-z0-9]+")
 
+NARRATIVE_CARRIER_MAPPING = {
+    "claim": {
+        "material_class": "xx",
+        "state_class": "LOW_LAW",
+        "carrier_resolution": {
+            "resolved_scope": 2,
+            "resolvable_scope": 0,
+            "scope_rank": 2,
+            "closure_rank": 2,
+            "closure_class": "deterministic_point",
+            "point_or_region": "point",
+            "deterministic_closure": True,
+        },
+    },
+    "proposal": {
+        "material_class": "XX",
+        "state_class": "HIGH_EDIT",
+        "carrier_resolution": {
+            "resolved_scope": 0,
+            "resolvable_scope": 2,
+            "scope_rank": 0,
+            "closure_rank": 0,
+            "closure_class": "open_region",
+            "point_or_region": "region",
+            "deterministic_closure": False,
+        },
+    },
+    "closure": {
+        "material_class": "xX",
+        "state_class": "LOW_LAW",
+        "carrier_resolution": {
+            "resolved_scope": 1,
+            "resolvable_scope": 1,
+            "scope_rank": 1,
+            "closure_rank": 2,
+            "closure_class": "deterministic_projection",
+            "point_or_region": "region",
+            "deterministic_closure": True,
+        },
+    },
+    "receipt": {
+        "material_class": "Xx",
+        "state_class": "LOW_LAW",
+        "carrier_resolution": {
+            "resolved_scope": 1,
+            "resolvable_scope": 1,
+            "scope_rank": 1,
+            "closure_rank": 2,
+            "closure_class": "deterministic_projection",
+            "point_or_region": "region",
+            "deterministic_closure": True,
+        },
+    },
+}
+
 
 def normalize_tokens(*values: str) -> set[str]:
     tokens: set[str] = set()
@@ -133,6 +188,59 @@ def projection_audio_cue(role: str, template_id: str) -> str:
     return "quiet_observation"
 
 
+def artifact_resolution_for_step(
+    *,
+    role: str,
+    transition: dict,
+    chapter_step: int,
+    template_transition: dict,
+) -> dict:
+    target_kind = transition.get("semantic_target_kind")
+    target_type = transition.get("semantic_target_type") or transition.get("target_type")
+    if role == "advisor.law" or target_kind in {"law", "covenant", "contract"}:
+        artifact_class = "closure"
+        workflow_mode = "apply"
+        frame_scope_kind = "constraint"
+        frame_scope_ref = {
+            "kind": "constraint",
+            "closure_scope": f"transition:{transition['id']}",
+            "contract": f"template:{template_transition['id']}",
+        }
+    elif target_type == "semantic_edge" or transition.get("op") == "add_edge":
+        artifact_class = "proposal"
+        workflow_mode = "evaluate"
+        frame_scope_kind = "path"
+        frame_scope_ref = {
+            "kind": "path",
+            "source_step": str(max(1, chapter_step - 1)),
+            "target_step": str(chapter_step),
+            "transition_id": transition["id"],
+        }
+    else:
+        artifact_class = "claim"
+        workflow_mode = "inspect"
+        frame_scope_kind = "point"
+        frame_scope_ref = {
+            "kind": "point",
+            "point": transition["target_id"],
+        }
+    return {
+        "artifact_class": artifact_class,
+        "workflow_mode": workflow_mode,
+        "frame_scope_kind": frame_scope_kind,
+        "frame_scope_ref": frame_scope_ref,
+    }
+
+
+def narrative_carrier_witness(artifact_class: str) -> dict:
+    mapping = NARRATIVE_CARRIER_MAPPING[artifact_class]
+    return {
+        "material_class": mapping["material_class"],
+        "state_class": mapping["state_class"],
+        "carrier_resolution": dict(mapping["carrier_resolution"]),
+    }
+
+
 def build_bound_artifact(chapters: list[dict], templates: list[dict], hooks: list[dict]) -> tuple[list[dict], dict]:
     template_by_id = {template["id"]: template for template in templates}
     hooks_by_source = {}
@@ -145,6 +253,8 @@ def build_bound_artifact(chapters: list[dict], templates: list[dict], hooks: lis
             "version": 1,
             "series": "When Wisdom, Law, and the Tribe Sat Down Together",
             "authority": "canonical narrative remains sovereign; witness binding is advisory only",
+            "carrier_mapping_version": 1,
+            "carrier_mapping_note": "narrative carrier witness is explicit downstream binding law, not replay authority",
             "source": "demo/narrative/canonical/chapters/*.ndjson",
             "templates_path": "demo/narrative/canonical/templates/character_progression_templates.json",
             "hooks_path": "demo/narrative/canonical/witness_article_hooks.json",
@@ -189,6 +299,28 @@ def build_bound_artifact(chapters: list[dict], templates: list[dict], hooks: lis
             template_transition = transitions[(chapter_step - 1) % len(transitions)]
             template_edge = template_edges.get(template_transition["target_id"])
             target = transition_targets.get(transition["target_id"], {})
+            resolution = artifact_resolution_for_step(
+                role=role,
+                transition={
+                    "id": transition["id"],
+                    "op": transition["op"],
+                    "semantic_target_kind": target.get("kind"),
+                    "semantic_target_type": target.get("type"),
+                    "target_id": transition["target_id"],
+                },
+                chapter_step=chapter_step,
+                template_transition=template_transition,
+            )
+            carrier_witness = narrative_carrier_witness(resolution["artifact_class"])
+            resolved_step_identity = {
+                "chapter_id": meta["id"],
+                "step": str(chapter_step),
+                "scene_id": transition["scene_id"],
+                "template_id": template["id"],
+                "semantic_transition_id": transition["id"],
+                "template_transition_id": template_transition["id"],
+                "template_edge_id": template_transition.get("target_id"),
+            }
             record = {
                 "type": "narrative_bound_step",
                 "version": 1,
@@ -207,6 +339,20 @@ def build_bound_artifact(chapters: list[dict], templates: list[dict], hooks: lis
                 "semantic_target_type": target.get("type"),
                 "semantic_target_kind": target.get("kind"),
                 "world_theme": meta["world_theme"],
+                "material_class": carrier_witness["material_class"],
+                "state_class": carrier_witness["state_class"],
+                "carrier_resolution": carrier_witness["carrier_resolution"],
+                "artifact_class": resolution["artifact_class"],
+                "workflow_mode": resolution["workflow_mode"],
+                "frame_scope_kind": resolution["frame_scope_kind"],
+                "frame_scope_ref": resolution["frame_scope_ref"],
+                "resolved_step_identity": resolved_step_identity,
+                "ui_frame_resolution": {
+                    "artifact_class": resolution["artifact_class"],
+                    "workflow_mode": resolution["workflow_mode"],
+                    "step_identity": resolved_step_identity,
+                    "frame_scope": resolution["frame_scope_ref"],
+                },
                 "witness": {
                     "role": role,
                     "hook_ids": [hook["id"] for hook in hook_matches],

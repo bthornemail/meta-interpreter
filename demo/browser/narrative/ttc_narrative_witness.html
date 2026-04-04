@@ -138,6 +138,30 @@
                 <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-stone-500">Transition</dt>
                 <dd id="field-transition" class="font-mono text-stone-100"></dd>
               </div>
+              <div>
+                <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-stone-500">Artifact Class</dt>
+                <dd id="field-artifact-class" class="font-mono text-amber-200"></dd>
+              </div>
+              <div>
+                <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-stone-500">Workflow</dt>
+                <dd id="field-workflow-mode" class="font-mono text-stone-100"></dd>
+              </div>
+              <div>
+                <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-stone-500">Material Class</dt>
+                <dd id="field-material-class" class="font-mono text-stone-100"></dd>
+              </div>
+              <div>
+                <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-stone-500">State Class</dt>
+                <dd id="field-state-class" class="font-mono text-stone-100"></dd>
+              </div>
+              <div class="md:col-span-2">
+                <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-stone-500">Frame Scope</dt>
+                <dd id="field-frame-scope" class="break-all font-mono text-xs text-stone-300"></dd>
+              </div>
+              <div class="md:col-span-2">
+                <dt class="mb-1 text-xs uppercase tracking-[0.24em] text-stone-500">Carrier Resolution</dt>
+                <dd id="field-carrier-resolution" class="break-all font-mono text-xs text-stone-300"></dd>
+              </div>
             </dl>
           </article>
 
@@ -161,6 +185,8 @@
         frameBudgetForControls,
         interpolateNarrativeScene,
         projectionHash,
+        resolveNarrativeSceneStepIdentity,
+        resolveNarrativeSceneUiFrame,
         renderNarrativeSceneCanvas,
         renderNarrativeSceneSvg,
       } from "./ttc_narrative_scene.js";
@@ -185,6 +211,12 @@
       const fieldRole = document.getElementById("field-role");
       const fieldScene = document.getElementById("field-scene");
       const fieldTransition = document.getElementById("field-transition");
+      const fieldArtifactClass = document.getElementById("field-artifact-class");
+      const fieldWorkflowMode = document.getElementById("field-workflow-mode");
+      const fieldMaterialClass = document.getElementById("field-material-class");
+      const fieldStateClass = document.getElementById("field-state-class");
+      const fieldFrameScope = document.getElementById("field-frame-scope");
+      const fieldCarrierResolution = document.getElementById("field-carrier-resolution");
       const hookList = document.getElementById("hook-list");
       const excerptText = document.getElementById("excerpt-text");
       const snapshotNode = document.getElementById("ttc-narrative-scene-snapshot");
@@ -220,8 +252,18 @@
 
       function updateSnapshot(scene, svgMarkup, canvasDataUrl) {
         const sceneJson = JSON.stringify(scene);
+        const uiFrameResolution = resolveNarrativeSceneUiFrame(scene);
         snapshotNode.textContent = JSON.stringify(
           {
+            resolved_step_identity: resolveNarrativeSceneStepIdentity(scene),
+            artifact_class: uiFrameResolution.artifact_class,
+            workflow_mode: uiFrameResolution.workflow_mode,
+            material_class: scene.material_class || null,
+            state_class: scene.state_class || null,
+            carrier_resolution: scene.carrier_resolution || null,
+            frame_scope_kind: uiFrameResolution.frame_scope.kind,
+            frame_scope_ref: uiFrameResolution.frame_scope,
+            ui_frame_resolution: uiFrameResolution,
             chapter_id: scene.chapter_id,
             step: scene.step,
             scene_id: scene.scene_id,
@@ -270,6 +312,13 @@
         fieldRole.textContent = scene.witness.role;
         fieldScene.textContent = headingFallback || scene.scene_id;
         fieldTransition.textContent = `${scene.active_transition.semantic_transition_id} → ${scene.active_transition.template_transition_id}`;
+        const uiFrameResolution = resolveNarrativeSceneUiFrame(scene);
+        fieldArtifactClass.textContent = uiFrameResolution.artifact_class;
+        fieldWorkflowMode.textContent = uiFrameResolution.workflow_mode;
+        fieldMaterialClass.textContent = scene.material_class || "n/a";
+        fieldStateClass.textContent = scene.state_class || "n/a";
+        fieldFrameScope.textContent = JSON.stringify(uiFrameResolution.frame_scope);
+        fieldCarrierResolution.textContent = scene.carrier_resolution ? JSON.stringify(scene.carrier_resolution) : "n/a";
         excerptText.textContent = scene.excerpt || "No excerpt.";
         hookList.innerHTML = "";
         const items = scene.witness.receipt_templates.length

@@ -45,21 +45,66 @@
     ["bytes", "transport"],
     ["bytes", "artifact"]
   ],
+  "primary_material_class_system": {
+    "classes": {
+      "xx": ["affine", "affine"],
+      "xX": ["affine", "projective"],
+      "Xx": ["projective", "affine"],
+      "XX": ["projective", "projective"]
+    },
+    "material_surfaces": [
+      "artifacts/{xx|xX|Xx|XX}/...",
+      "blocks/{xx|xX|Xx|XX}/..."
+    ],
+    "rules": [
+      "xx/xX/Xx/XX is the primary material class system for shared artifact and block surfaces",
+      "claim/proposal/closure/receipt remains downstream symbolic-role language and does not replace the four-class material system"
+    ]
+  },
+  "address_first_reconstruction": {
+    "axiom": [
+      "either the address exists or it does not",
+      "first-principles reconstruction begins with replay and address, not emitted runtime labels"
+    ],
+    "order": [
+      "replay",
+      "class",
+      "point",
+      "lane",
+      "leaf",
+      "address_bits|address_word",
+      "witness_materialization"
+    ],
+    "rules": [
+      "x/X expresses closure-sided witness inside address construction",
+      "xx/xX/Xx/XX expresses closure composition inside the primary material class system",
+      "what follows xx/xX/Xx/XX is address decomposition, not runtime classification",
+      "point, lane, leaf, and address words belong to address law"
+    ],
+    "surface_reading": {
+      "affine": "locally instantiated address side",
+      "projective": "projected or shared address side"
+    }
+  },
   "downstream_extension": {
     "flow": [
       ["canonical_replay", "propagation"],
       ["propagation", "witness"],
-      ["witness", "claim"],
+      ["witness", "claim_artifact|proposal_artifact|closure_artifact|receipt_artifact"],
       ["claim", "carrier_exchange"],
       ["carrier_exchange", "provenance"],
       ["provenance", "reconciliation"],
       ["reconciliation", "federation"]
     ],
     "relations": [
-      ["artifact+role+provenance", "derives", "claim"],
-      ["claim+carrier+receipt", "carries", "federation_exchange"],
+      ["witness+role+provenance", "derives", "claim_artifact"],
+      ["addressed_transition+role+provenance", "derives", "proposal_artifact"],
+      ["contract+role+provenance", "derives", "closure_artifact"],
+      ["event+validation+transfer", "derives", "receipt_artifact"],
+      ["artifact+carrier+translation", "carries", "federation_exchange"],
       ["multiple_claims", "compares", "reconciliation"],
-      ["reconciliation", "classifies", "accept|reject|defer|fork"]
+      ["reconciliation", "classifies", "accept|reject|defer|fork"],
+      ["control_plane+step_identity+workflow", "derives", "ui_frame_resolution"]
     ],
     "rules": [
       "claims do not create truth",
@@ -67,7 +112,12 @@
       "federation does not create truth",
       "convergence does not create truth",
       "translation may change carrier, witness surface, transport form, or presentation form",
-      "translation must not change canonical replay identity without explicit revision law"
+      "translation must not change canonical replay identity without explicit revision law",
+      "artifacts are classified by symbolic role, not by encoding",
+      "symbolic role remains downstream of the primary xx/xX/Xx/XX material class system",
+      "canonical embedding and scannable variants are translation forms of artifacts, not artifact types",
+      "control-plane multiplex may distinguish artifact class, workflow scope, record, and field boundaries without creating truth",
+      "ui_frame_resolution is downstream of replay and control resolution"
     ]
   },
   "invariants": [

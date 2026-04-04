@@ -82,6 +82,14 @@ Replay and geometric shell cues are presentation aids; they do not define canoni
 Frame manifests, projection receipts, and projection hashes are downstream claims, receipts, and provenance witnesses only.
 
 The page builds one normalized narrative scene object per selected bound step.
+That scene now also carries explicit:
+- `artifact_class`
+- `workflow_mode`
+- `frame_scope_kind`
+- `frame_scope_ref`
+- `resolved_step_identity`
+- `ui_frame_resolution`
+
 That scene object is the single downstream source for:
 - SVG witness rendering now
 - canvas witness rendering now
@@ -106,6 +114,12 @@ Frame export is also projection-only and may derive:
 These outputs are downstream claims, receipts, and provenance witnesses.
 They are not canonical truth.
 
+Frame receipts are explicit `receipt_artifact` records with:
+- `workflow_mode = verify`
+- event frame scope
+- resolved step identity
+- downstream `ui_frame_resolution`
+
 Frame export MUST NOT:
 - redefine chapter identity
 - redefine step order
@@ -114,6 +128,10 @@ Frame export MUST NOT:
 UI attention invariant for frame witnesses:
 
 > For a fixed manifest, receipts, selected frame, and control state (Mode, Frame, Attention, Depth), the rendered projection and all visible hashes must be deterministic and reproducible; UI controls may change presentation and visibility only, never canonical identity or projection derivation inputs.
+
+Difference-first invariant:
+
+> Step resolution and UI frame resolution must agree before render surfaces are compared.
 
 3D rendering must consume the same normalized scene object used by SVG/canvas:
 - nodes map to 3D anchors

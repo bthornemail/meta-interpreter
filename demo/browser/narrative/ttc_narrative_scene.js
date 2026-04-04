@@ -74,6 +74,72 @@ export function frameBudgetForControls(controls) {
   return 6 + depthBonus + attentionBonus;
 }
 
+export function resolveNarrativeSceneStepIdentity(scene) {
+  if (scene.resolved_step_identity) {
+    return scene.resolved_step_identity;
+  }
+
+  const identity = {
+    chapter_id: scene.chapter_id,
+    step: String(scene.step),
+    scene_id: scene.scene_id,
+    template_id: scene.template_id,
+    semantic_transition_id: scene.active_transition.semantic_transition_id,
+    template_transition_id: scene.active_transition.template_transition_id,
+    template_edge_id: scene.active_transition.template_edge_id,
+  };
+
+  if (scene.interpolation) {
+    identity.source_scene_id = scene.interpolation.from_scene_id;
+    identity.target_scene_id = scene.interpolation.to_scene_id;
+    if (scene.interpolation.from_step != null) {
+      identity.source_step = String(scene.interpolation.from_step);
+    }
+    if (scene.interpolation.to_step != null) {
+      identity.target_step = String(scene.interpolation.to_step);
+    }
+  }
+
+  return identity;
+}
+
+export function resolveNarrativeSceneWorkflow(scene) {
+  if (scene.ui_frame_resolution?.workflow_mode) {
+    return scene.ui_frame_resolution.workflow_mode;
+  }
+  switch (scene.artifact_class) {
+    case "proposal":
+      return "evaluate";
+    case "closure":
+      return "apply";
+    case "receipt":
+      return "verify";
+    case "claim":
+    default:
+      return "inspect";
+  }
+}
+
+export function resolveNarrativeSceneUiFrame(scene) {
+  if (scene.ui_frame_resolution) {
+    return scene.ui_frame_resolution;
+  }
+  return {
+    artifact_class: scene.artifact_class || "claim",
+    workflow_mode: resolveNarrativeSceneWorkflow(scene),
+    step_identity: resolveNarrativeSceneStepIdentity(scene),
+    frame_scope: scene.frame_scope_ref || { kind: scene.frame_scope_kind || "point" },
+  };
+}
+
+function optionalCarrierWitness(stepRecord) {
+  return {
+    material_class: stepRecord.material_class || null,
+    state_class: stepRecord.state_class || null,
+    carrier_resolution: stepRecord.carrier_resolution || null,
+  };
+}
+
 export function buildNarrativeScene(chapterEntry, stepRecord, controls) {
   const template = chapterEntry.template;
   const mode = controls.mode;
@@ -165,6 +231,13 @@ export function buildNarrativeScene(chapterEntry, stepRecord, controls) {
       receipt_templates: [...stepRecord.witness.receipt_templates],
     },
     excerpt: stepRecord.projection.text_excerpt || "",
+    ...optionalCarrierWitness(stepRecord),
+    artifact_class: stepRecord.artifact_class || "claim",
+    workflow_mode: stepRecord.workflow_mode || "inspect",
+    frame_scope_kind: stepRecord.frame_scope_kind || "point",
+    frame_scope_ref: stepRecord.frame_scope_ref || { kind: "point" },
+    resolved_step_identity: stepRecord.resolved_step_identity || null,
+    ui_frame_resolution: stepRecord.ui_frame_resolution || null,
   };
 }
 
@@ -210,11 +283,47 @@ export function interpolateNarrativeScene(fromScene, toScene, t) {
     ...toScene,
     nodes,
     edges,
+    artifact_class: toScene.artifact_class,
+    workflow_mode: toScene.workflow_mode,
+    frame_scope_kind: toScene.frame_scope_kind,
+    frame_scope_ref: {
+      ...(toScene.frame_scope_ref || { kind: toScene.frame_scope_kind || "point" }),
+      source_step: String(fromScene.step),
+      target_step: String(toScene.step),
+    },
+    resolved_step_identity: {
+      ...resolveNarrativeSceneStepIdentity(toScene),
+      source_step: String(fromScene.step),
+      target_step: String(toScene.step),
+      source_scene_id: fromScene.scene_id,
+      target_scene_id: toScene.scene_id,
+    },
+    ui_frame_resolution: {
+      artifact_class: toScene.artifact_class,
+      workflow_mode: toScene.workflow_mode,
+      step_identity: {
+        ...resolveNarrativeSceneStepIdentity(toScene),
+        source_step: String(fromScene.step),
+        target_step: String(toScene.step),
+        source_scene_id: fromScene.scene_id,
+        target_scene_id: toScene.scene_id,
+      },
+      frame_scope: {
+        ...(toScene.frame_scope_ref || { kind: toScene.frame_scope_kind || "point" }),
+        source_step: String(fromScene.step),
+        target_step: String(toScene.step),
+      },
+    },
     interpolation: {
       from_scene_id: fromScene.scene_id,
       to_scene_id: toScene.scene_id,
+      from_step: String(fromScene.step),
+      to_step: String(toScene.step),
       t: Number(progress.toFixed(3)),
     },
+    material_class: toScene.material_class || fromScene.material_class || null,
+    state_class: toScene.state_class || fromScene.state_class || null,
+    carrier_resolution: toScene.carrier_resolution || fromScene.carrier_resolution || null,
   };
 }
 

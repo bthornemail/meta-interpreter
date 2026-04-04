@@ -101,6 +101,21 @@ def run_server(port: int) -> subprocess.Popen[str]:
     )
 
 
+def assert_same_resolved_identity(left: dict[str, object], right: dict[str, object], left_name: str, right_name: str) -> None:
+    if left.get("resolved_step_identity") != right.get("resolved_step_identity"):
+        raise SystemExit(
+            "projection check failed: resolved step identity drift "
+            f"between {left_name} and {right_name}: "
+            f"{left.get('resolved_step_identity')!r} != {right.get('resolved_step_identity')!r}"
+        )
+    if left.get("ui_frame_resolution") != right.get("ui_frame_resolution"):
+        raise SystemExit(
+            "projection check failed: ui frame resolution drift "
+            f"between {left_name} and {right_name}: "
+            f"{left.get('ui_frame_resolution')!r} != {right.get('ui_frame_resolution')!r}"
+        )
+
+
 def main() -> int:
     if not FRAMEWORK_BIN.exists():
         raise SystemExit("projection check failed: bin/ttc_framework missing; run make build first")
@@ -136,6 +151,15 @@ def main() -> int:
             "layer",
             "coords",
             "coeff",
+            "material_class",
+            "state_class",
+            "carrier_resolution",
+            "artifact_class",
+            "workflow_mode",
+            "frame_scope_kind",
+            "frame_scope_ref",
+            "resolved_step_identity",
+            "ui_frame_resolution",
             "canvas_data_url",
             "svg_markup",
             "svg_digest_present",
@@ -145,6 +169,7 @@ def main() -> int:
                 raise SystemExit(f"projection check failed: baseline missing key {key}")
 
         for name, snapshot in snapshots.items():
+            assert_same_resolved_identity(snapshot, baseline, name, "static")
             for key in required:
                 if snapshot.get(key) != baseline.get(key):
                     raise SystemExit(
@@ -164,6 +189,13 @@ def main() -> int:
             "layer": baseline["layer"],
             "coords": baseline["coords"],
             "coeff": baseline["coeff"],
+            "material_class": baseline["material_class"],
+            "state_class": baseline["state_class"],
+            "carrier_resolution": baseline["carrier_resolution"],
+            "artifact_class": baseline["artifact_class"],
+            "workflow_mode": baseline["workflow_mode"],
+            "frame_scope_kind": baseline["frame_scope_kind"],
+            "resolved_step_identity": baseline["resolved_step_identity"],
             "svg_digest_present": baseline["svg_digest_present"],
         }
         print("projection render check passed")

@@ -1,0 +1,2862 @@
+#+title: dev-docs.org
+#+author: Codex
+#+startup: overview
+#+options: toc:3 num:nil
+#+property: header-args :tangle no
+
+* Reader Index
+
+This file supersedes the former =dev-docs/= directory.
+
+- Status: interpretive archive and working methodology
+- Authority: non-canonical
+- Boundary: may explain runtime law; may not replace it
+- Migration: this file is the only maintained source for former =dev-docs/= content
+
+The repo-safe methodological baseline retained here is address-first:
+
+#+begin_quote
+either the address exists or it does not
+
+if it exists:
+replay -> class -> point -> lane -> leaf -> address
+#+end_quote
+
+Thematic navigation:
+- [[*Methodology And Authority][Methodology And Authority]]
+- [[*Structural Models][Structural Models]]
+- [[*Matroidal Interpretation][Matroidal Interpretation]]
+- [[*Convergence And Reconciliation][Convergence And Reconciliation]]
+- [[*Control-Plane UI Projection][Control-Plane UI Projection]]
+- [[*Audits And Mappings][Audits And Mappings]]
+- [[*Canonical Rule Codebase State][Canonical Rule Codebase State]]
+- [[*Chat Thread][Chat Thread]]
+
+* Methodology And Authority
+
+This frontmatter replaces the former folder-level boundary of =dev-docs/=. It remains downstream of runtime law, =docs/=, and replayable file processing.
+
+- Actualities: implemented, emitted, or normatively frozen structures
+- Speculative possibilities: interpretive models or future-looking notes that must remain explicitly marked
+- Non-goals: no new ontology, no upward authority, no silent redefinition of runtime truth
+
+Everything beyond replay, type, base-clock composition, address derivation, and lawful closure is treated here as surface, witness, or interpretation.
+
+* Methodology And Authority
+
+- [[*Archive::00-methodology.md][dev-docs/00-methodology.md]]
+- [[*Archive::AGENTS.md][dev-docs/AGENTS.md]]
+- [[*Archive::address-first-methodology.md][dev-docs/address-first-methodology.md]]
+
+* Structural Models
+
+- [[*Archive::01-structural-models.md][dev-docs/01-structural-models.md]]
+- [[*Archive::02-symbolic-dialects.md][dev-docs/02-symbolic-dialects.md]]
+- [[*Archive::03-affine-vs-projective.md][dev-docs/03-affine-vs-projective.md]]
+
+* Matroidal Interpretation
+
+- [[*Archive::04-matroidal-interpretation.md][dev-docs/04-matroidal-interpretation.md]]
+
+* Convergence And Reconciliation
+
+- [[*Archive::05-convergence-and-reconciliation.md][dev-docs/05-convergence-and-reconciliation.md]]
+- [[*Archive::06-evaluation-strategy.md][dev-docs/06-evaluation-strategy.md]]
+
+* Control-Plane UI Projection
+
+- [[*Archive::07-control-plane-multiplexing.md][dev-docs/07-control-plane-multiplexing.md]]
+- [[*Archive::08-ui-as-projection.md][dev-docs/08-ui-as-projection.md]]
+- [[*Archive::09-anti-patterns.md][dev-docs/09-anti-patterns.md]]
+
+* Audits And Mappings
+
+- [[*Archive::audit-narrative-role-carrier.md][dev-docs/audit-narrative-role-carrier.md]]
+- [[*Archive::audit-narrative-role-carrier-addressing.md][dev-docs/audit-narrative-role-carrier-addressing.md]]
+- [[*Archive::README.md][dev-docs/mappings/README.md]]
+- [[*Archive::carrier_resolution.md][dev-docs/mappings/carrier_resolution.md]]
+
+* Canonical Rule Codebase State
+
+- [[*Archive::ttc_canonical_spec_v1.md][dev-docs/ttc_canonical_spec_v1.md]]
+- [[*Archive::ttc_codebase_actual_state_v1.md][dev-docs/ttc_codebase_actual_state_v1.md]]
+- [[*Archive::ttc_rule_framework_v1.md][dev-docs/ttc_rule_framework_v1.md]]
+
+* Chat Thread
+
+- [[*Archive::chat.org][dev-docs/chat.org]]
+
+* Archive
+
+Each subtree below preserves the former file identity via =:former_path:= metadata. Markdown files are embedded faithfully in non-tangling source blocks. The former =chat.org= remains Org-native and is preserved as its own subtree.
+
+** Archive::00-methodology.md
+:PROPERTIES:
+:former_path: dev-docs/00-methodology.md
+:status: Interpretive Note
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Folder-level methodology and authority boundary for the former dev-docs directory.
+
+Historical terminology note: references in preserved archived content to =LOW_LAW=, =HIGH_EDIT=, or =NULL_VOID= are retained only as historical or runtime-witness wording. They are not current methodological definitions in this migrated file.
+
+#+begin_src markdown :tangle no
+# Dev Docs Methodology
+
+Status: Interpretive Note
+Scope: `dev-docs/` as a non-normative interpretive envelope over existing repository law
+
+These documents are interpretive and explanatory.
+
+They do not introduce new primitives, alter authority order, or redefine canonical behavior.
+
+All concepts written here must map to existing repository law.
+
+## Purpose
+
+The purpose of `dev-docs/` is to protect methodology without duplicating machinery.
+
+This directory exists to:
+
+- explain structural intuitions without elevating them to law
+- preserve speculative and philosophical framing without creating a second system
+- map abstract models back to implemented or constitutionally frozen repository structures
+- reduce drift where projection, UI, protocol, or metaphor are mistaken for ontology
+
+This directory does not exist to:
+
+- define runtime authority
+- mint new primitives
+- rename existing law into parallel vocabulary
+- replace `docs/` with a second normative layer
+
+## Authority Order
+
+Authority remains unchanged:
+
+1. replayable deterministic runtime behavior
+2. normative repository law under `docs/`
+3. witness and generated artifact surfaces
+4. interpretive material under `dev-docs/`
+
+If `dev-docs/` and existing repository law diverge:
+
+1. verify replayable behavior
+2. defer to `docs/` and executable law
+3. revise `dev-docs/`
+
+`dev-docs/` has no upward authority.
+
+## Boundary Rule
+
+`dev-docs/` is an interpretive envelope over the system.
+
+It is not:
+
+- a source of new primitives
+- a second ontology
+- a replacement lexicon
+- a parallel schema set
+- a place to silently redefine identity through prose
+
+Interpretation is allowed only when it remains downstream of existing law.
+
+## Required Distinction
+
+Every file in `dev-docs/` should maintain the distinction between:
+
+- actualities: what is implemented, emitted, frozen, or already normative
+- speculative possibilities: models, analogies, future possibilities, and interpretive frames
+
+Speculative material must be marked as speculative and must not be written as if already implemented.
+
+## Canonical Working Rule
+
+When a `dev-docs/` note introduces an abstraction, it must answer:
+
+1. What existing repository structure, surface, or rule does this describe?
+2. Is this an actuality map, interpretive note, speculative model, or future possibility?
+3. What does this abstraction not change?
+4. Where is the normative source?
+
+If those answers are not available, the abstraction is not ready to keep.
+
+## Writing Template
+
+New `dev-docs/` files should follow this shape:
+
+1. Concept
+2. Interpretation
+3. Mapping to repo law
+4. Non-goals / limits
+
+Practical top labels:
+
+- `Status: Actuality Map`
+- `Status: Interpretive Note`
+- `Status: Speculative Model`
+- `Status: Future Possibility`
+
+## Mapping Discipline
+
+Abstract language is allowed only when it maps back to existing law.
+
+Examples of acceptable material:
+
+- structural models such as affine/projective or matroidal interpretation
+- symbolic dialect explanations such as Braille, hexagram, or `x/X`
+- anti-pattern notes that prevent UI, transport, or protocol drift
+- evaluation strategy interpretations such as `LOW_LAW` and `HIGH_EDIT`
+- future-facing models for convergence, reconciliation, or control-plane multiplexing
+
+Every such note must end in a direct mapping section that points back to current repository law.
+
+## Non-Duplication Rule
+
+`dev-docs/` must not restate existing normative definitions as if they originate here.
+
+In particular, `dev-docs/` should not independently redefine:
+
+- claim
+- proposal
+- closure
+- receipt
+- provenance
+- artifact identity
+- canonical, golden, or negative surfaces
+- primitive types already fixed by repository law
+
+If a note needs those terms, it should cite and map to the existing normative documents instead.
+
+## Anti-Drift Rule
+
+`dev-docs/` should actively prevent predictable failure modes.
+
+The main failure modes are:
+
+- treating philosophy as a second system
+- treating UI order as ontology
+- treating transport or encoding as truth
+- treating artifacts as identity-creating rather than identity-witnessing
+- treating speculative framing as implemented law
+- duplicating the same function under different words
+
+## What Dev Docs Is Not
+
+`dev-docs/` is not:
+
+- a messaging protocol spec
+- a browser-state authority layer
+- a graph-first redefinition of the system
+- a semantic-web-first replacement ontology
+- a consensus theory of truth
+- an excuse to move implementation drift into philosophical prose
+
+## Design Invariants To Preserve
+
+The interpretive layer should preserve these repository-level invariants:
+
+- replay remains sovereign
+- authority remains typed and deterministic
+- artifacts witness truth; they do not create it
+- projection is downstream of law
+- identity is derived from lawful replay, not presentation order
+- closure and reconciliation must remain law-derived rather than narrative-derived
+
+These are preservation statements, not new definitions.
+
+## Mapping To Repo Law
+
+This methodology note derives from, and must stay subordinate to, existing repository law including:
+
+- `AGENTS.md` for repository-wide authority order and replay sovereignty
+- `docs/ONTOLOGY.md` for derived structure, type constraints, step-centric flow, and the affine/projective plus `LOW_LAW` / `HIGH_EDIT` distinctions
+- `docs/PROPAGATION_CLAIMS_AND_FEDERATION.md` for claim/proposal/closure/receipt language, propagation, translation, provenance, reconciliation, and non-goals
+- `docs/NARRATIVE_WITNESS_BINDING.md` for a direct example of an advisory overlay that remains downstream of canonical authority
+
+## Non-Goals / Limits
+
+This note does not:
+
+- change runtime behavior
+- create normative terminology
+- settle open research questions
+- grant `dev-docs/` any governance role over `docs/`
+- authorize speculation to bypass replay or deterministic evidence
+
+## Short Form
+
+`dev-docs/` is a controlled space for interpretation.
+
+Law stays singular.
+
+Interpretation may be plural, but only as a mapped witness to existing repository law.
+#+end_src
+
+** Archive::01-structural-models.md
+:PROPERTIES:
+:former_path: dev-docs/01-structural-models.md
+:status: Interpretive Note
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Structural model notes preserved as archival interpretive material.
+
+Historical terminology note: references in preserved archived content to =LOW_LAW=, =HIGH_EDIT=, or =NULL_VOID= are retained only as historical or runtime-witness wording. They are not current methodological definitions in this migrated file.
+
+#+begin_src markdown :tangle no
+# Structural Models
+
+Status: Interpretive Note
+Scope: safe abstraction patterns for talking about the repository without redefining it
+
+## Concept
+
+This file collects structural models that may help contributors think about the system while keeping repository law singular.
+
+The models here are explanatory only.
+
+They are not runtime primitives, schema authorities, or replacement ontologies.
+
+## Interpretation
+
+A structural model is useful when it helps answer questions like:
+
+- why a distinction exists
+- why two layers must not be collapsed
+- why a witness form is downstream rather than sovereign
+- why replay-derived identity must outrank path naming or UI arrangement
+
+Good structural models simplify orientation without rewriting law.
+
+Typical safe models include:
+
+- surface layering
+- step-centric derivation
+- material-class distinctions
+- evaluation-regime distinctions
+- witness versus projection distinctions
+
+These models are safe only if they remain translations of existing law rather than new systems with their own primary vocabulary.
+
+## Safe Uses
+
+Safe abstraction in this repository usually takes one of these forms:
+
+- explaining a downstream surface in terms of an upstream one
+- explaining why two already-declared axes are independent
+- explaining why a witness encoding is informative but non-sovereign
+- explaining why a transport or projection surface cannot define truth
+
+This means the model should help someone preserve boundaries, not redraw them.
+
+## Mapping To Repo Law
+
+The main structural anchors already present in repository law are:
+
+- step-centric derivation in `docs/ONTOLOGY.md`
+- surface categories and their authority levels in `docs/SURFACES.md`
+- propagation, translation, and reconciliation distinctions in `docs/PROPAGATION_CLAIMS_AND_FEDERATION.md`
+- projection-only browser/UI rules in `docs/PROJECTION_UI.md`
+
+For practical use, a structural model in `dev-docs/` should map to one or more of:
+
+- runtime -> event -> step_digest -> incidence -> grammar -> address -> witness -> matrix -> projection
+- `xx/xX/Xx/XX` as the primary material class system for shared artifact and block surfaces
+- affine/projective as a surface distinction
+- `LOW_LAW` / `HIGH_EDIT` as an evaluation-strategy distinction
+- witness, transport, projection, and artifact as distinct layers that must not be collapsed
+
+## Non-Goals / Limits
+
+This file does not:
+
+- define a new ontology
+- replace `docs/ONTOLOGY.md`
+- introduce new primitive objects
+- authorize any model to outrank replayable deterministic behavior
+
+#+end_src
+
+** Archive::02-symbolic-dialects.md
+:PROPERTIES:
+:former_path: dev-docs/02-symbolic-dialects.md
+:status: Interpretive Note
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Symbolic dialect notes preserved with former wording intact for auditability.
+
+#+begin_src markdown :tangle no
+# Symbolic Dialects
+
+Status: Interpretive Note
+Scope: how symbolic forms can be discussed without turning them into law
+
+## Concept
+
+The repository uses symbolic dialects such as Braille, hexagram language, and `x/X` class notation.
+
+These dialects are meaningful.
+
+They are not sovereign.
+
+## Interpretation
+
+A symbolic dialect is a witness vocabulary or projection vocabulary that helps express structure already derived elsewhere.
+
+In this repository, symbolic dialects are best understood as:
+
+- a disciplined way to encode or witness derived structure
+- a way to preserve readable patterns across multiple surfaces
+- a bridge between derivation and human interpretation
+
+They are not:
+
+- primary truth-makers
+- substitutes for replay
+- authority sources independent of typed deterministic derivation
+
+### Braille
+
+Braille is useful here as a witness encoding because it preserves bitwise distinctions in a compact symbolic form.
+
+Its value is not decorative.
+
+Its value is that it can act as a disciplined witness surface over already-derived structure.
+
+### Hexagram and similar symbolic state forms
+
+Hexagram language is useful when contributors need to think about state classes, transitions, or witness forms in a compact symbolic frame.
+
+That usefulness is interpretive.
+
+It does not create state law.
+
+### `x/X`
+
+The `xx/xX/Xx/XX` family is the repository’s already-declared primary material class system for shared artifact and block surfaces.
+
+In interpretive writing, it may help to describe these as mixed affine/projective material witnesses.
+
+That explanation must remain subordinate to the existing frozen class table.
+
+## Mapping To Repo Law
+
+This file maps directly to:
+
+- `docs/SURFACES.md` for witness, matrix, projection, and artifact distinctions
+- `docs/ONTOLOGY.md` for the primary material class system and its affine/projective table
+- `docs/PROPAGATION_CLAIMS_AND_FEDERATION.md` for the rule that artifacts are classified by symbolic role rather than encoding and that translation does not change canonical identity without explicit revision law
+- `dev-docs/ttc_codebase_actual_state_v1.md` and `dev-docs/ttc_canonical_spec_v1.md` for the current Braille-facing witness and compatibility details already catalogued
+
+## Non-Goals / Limits
+
+This file does not:
+
+- claim that symbolic dialects are the primitive ontology
+- redefine Braille, hexagram, or `x/X` as canonical runtime law
+- authorize contributors to infer truth from a witness form alone
+
+#+end_src
+
+** Archive::03-affine-vs-projective.md
+:PROPERTIES:
+:former_path: dev-docs/03-affine-vs-projective.md
+:status: Interpretive Note
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Affine/projective framing notes preserved as archived interpretation.
+
+Historical terminology note: references in preserved archived content to =LOW_LAW=, =HIGH_EDIT=, or =NULL_VOID= are retained only as historical or runtime-witness wording. They are not current methodological definitions in this migrated file.
+
+#+begin_src markdown :tangle no
+# Affine vs Projective
+
+Status: Interpretive Note
+Scope: explaining an existing surface distinction without redefining it
+
+## Concept
+
+`affine` and `projective` already exist in repository law as a surface distinction.
+
+This file explains how to think about that distinction without treating it as a new ontology.
+
+## Interpretation
+
+The practical intuition is:
+
+- affine names local replay-continuous state substance
+- projective names shared agreement or carrier-facing coordination surfaces
+
+This is useful because it helps prevent two common mistakes:
+
+- treating shared coordination as if it were the local replay substance itself
+- treating local replay substance as if it were already a shared carrier or agreement surface
+
+The distinction is not about which side is “more real.”
+
+It is about which kind of role a surface is playing.
+
+### Why the distinction matters
+
+If affine and projective are collapsed, contributors start confusing:
+
+- local step-instantiated identity with shared coordination
+- runtime continuity with publication or exchange
+- state substance with witness or carrier material
+
+That confusion usually leaks into UI, transport, or artifact naming.
+
+### Why the distinction is still not enough by itself
+
+Affine/projective is one axis only.
+
+It should not be silently merged with evaluation-strategy language such as `LOW_LAW` and `HIGH_EDIT`.
+
+Surface and evaluation remain different questions.
+
+## Mapping To Repo Law
+
+This interpretation maps directly to:
+
+- `docs/ONTOLOGY.md`, section `5A. Surface Axis and Evaluation Axis`
+- `docs/PROPAGATION_CLAIMS_AND_FEDERATION.md`, where affine/projective and `LOW_LAW` / `HIGH_EDIT` are explicitly kept separate
+- `docs/SURFACES.md`, which keeps projection, transport, artifact, and witness layers distinct from canonical replay
+
+The key mapping statements already frozen in repository law are:
+
+- affine/projective is a surface distinction
+- `LOW_LAW` / `HIGH_EDIT` is an evaluation-strategy distinction
+- projective coordinates identity
+- affine instantiates identity
+
+## Non-Goals / Limits
+
+This file does not:
+
+- redefine affine or projective
+- introduce extra affine/projective subtypes
+- claim that the distinction alone explains the whole system
+
+#+end_src
+
+** Archive::04-matroidal-interpretation.md
+:PROPERTIES:
+:former_path: dev-docs/04-matroidal-interpretation.md
+:status: Speculative Model
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Matroidal interpretation notes bridging structure and witness language.
+
+#+begin_src markdown :tangle no
+# Matroidal Interpretation
+
+Status: Speculative Model
+Scope: a controlled structural analogy for contributors who see matroid-style patterns in the repository
+
+## Concept
+
+Some research material in the repository uses matroid language or matroid-adjacent constructions.
+
+This file frames matroidal interpretation as a speculative model of already-declared structure.
+
+## Interpretation
+
+The matroidal reading is useful when contributors want a disciplined way to talk about:
+
+- independence and dependence
+- admissible versus inadmissible combinations
+- closure-like behavior without reducing everything to path naming or UI grouping
+- structural selection under explicit constraints
+
+That can be a productive interpretation because the repository repeatedly emphasizes:
+
+- typed distinctions
+- lawful closure
+- replay-derived ordering
+- explicit boundaries between local state, shared coordination, and downstream projections
+
+Under this reading, one can view some repository behavior as preserving a constrained selection space rather than merely enumerating labels.
+
+That interpretation is helpful only if it remains a model of existing law rather than a replacement law.
+
+### Practical caution
+
+The danger of matroid talk is that it can encourage contributors to smuggle in a fresh primitive layer.
+
+That is not acceptable here.
+
+Matroidal language may explain structural discipline.
+
+It may not replace the repository’s actual authority order, primitive types, or emitted surfaces.
+
+## Mapping To Repo Law
+
+This model maps back to existing structures such as:
+
+- incidence, adjacency, and expansion language in `docs/ONTOLOGY.md`
+- lawful closure and admissible constraint language in `docs/PROPAGATION_CLAIMS_AND_FEDERATION.md`
+- witness and structural surfaces in `docs/SURFACES.md`
+
+Research-adjacent material that motivates this interpretation exists under:
+
+- `research/foundations/Matroid.hs`
+- `research/foundations/Matroid_v2.hs`
+- `research/foundations/Matroid_v3.hs`
+- `research/foundations/PortMatroid.ts`
+
+Those research files are not themselves normative law for the repository.
+
+They are part of the interpretive background that may help explain some structural intuitions.
+
+## Non-Goals / Limits
+
+This file does not:
+
+- claim the system is formally defined by matroid theory
+- redefine closure as a matroid-only notion
+- replace repository ontology with matroid terminology
+
+#+end_src
+
+** Archive::05-convergence-and-reconciliation.md
+:PROPERTIES:
+:former_path: dev-docs/05-convergence-and-reconciliation.md
+:status: Interpretive Note
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Convergence and reconciliation notes retained as interpretive archive.
+
+#+begin_src markdown :tangle no
+# Convergence and Reconciliation
+
+Status: Interpretive Note
+Scope: explaining comparison-oriented behavior without promoting comparison to truth
+
+## Concept
+
+This file explains how to think about convergence and reconciliation in repository terms.
+
+## Interpretation
+
+The safe interpretation is:
+
+- convergence is where multiple downstream claims, receipts, or witnesses are brought into comparison
+- reconciliation is the deterministic comparison procedure against replay and declared contract
+
+This matters because contributors often drift into a consensus model by accident.
+
+That drift is explicitly disallowed by repository law.
+
+### Convergence
+
+Convergence is best understood as a site or boundary of comparison.
+
+It is where multiple participant-visible materials may meet.
+
+It is not where truth is manufactured.
+
+### Reconciliation
+
+Reconciliation is useful because it names a disciplined comparison process rather than a narrative negotiation.
+
+It remains subordinate to replay and declared contract.
+
+It does not elevate witness agreement into runtime authority.
+
+### Why this distinction matters
+
+If convergence is mistaken for truth-making, contributors start to:
+
+- treat agreement as ontology
+- mistake a transport or UI gathering point for authority
+- elevate downstream witness surfaces over replay
+
+This repository does not allow that move.
+
+## Mapping To Repo Law
+
+This file maps directly to:
+
+- `docs/PROPAGATION_CLAIMS_AND_FEDERATION.md` for convergence point, reconciliation, claims, receipts, and the rule that peers exchange claims and receipts rather than truth itself
+- `docs/SURFACES.md` for the rule that surfaces expose derived structure and do not define canonical state
+- `docs/PROJECTION_UI.md` for the rule that UI may present reconciliation outcomes without becoming authoritative
+
+The core mapping sentence already present in repository law is:
+
+- truth remains canonical replay
+
+## Non-Goals / Limits
+
+This file does not:
+
+- define a consensus protocol
+- define a network protocol
+- claim convergence produces truth
+- turn reconciliation into a replacement for replay
+
+#+end_src
+
+** Archive::06-evaluation-strategy.md
+:PROPERTIES:
+:former_path: dev-docs/06-evaluation-strategy.md
+:status: Interpretive Note
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Historical evaluation-strategy note preserved for traceability; current methodology is address-first.
+
+Historical terminology note: references in preserved archived content to =LOW_LAW=, =HIGH_EDIT=, or =NULL_VOID= are retained only as historical or runtime-witness wording. They are not current methodological definitions in this migrated file.
+
+#+begin_src markdown :tangle no
+# Evaluation Strategy
+
+Status: Interpretive Note
+Scope: clarifying `LOW_LAW` and `HIGH_EDIT` as an existing evaluation axis
+
+## Concept
+
+`LOW_LAW` and `HIGH_EDIT` already exist in repository law.
+
+This file explains how to think about them without collapsing them into surface, transport, or UI concerns.
+
+## Interpretation
+
+The practical intuition is:
+
+- `LOW_LAW` describes greedy, local, deterministic, artifact-first resolution
+- `HIGH_EDIT` describes lazy, candidate-space, convergence-bounded resolution
+
+This distinction is about how evaluation proceeds.
+
+It is not a replacement ontology and not a synonym for affine versus projective.
+
+### Why contributors confuse this axis
+
+The confusion happens because both pairs look structural:
+
+- affine/projective
+- `LOW_LAW` / `HIGH_EDIT`
+
+But they answer different questions.
+
+One answers what kind of surface is involved.
+
+The other answers what kind of evaluation regime is involved.
+
+### Safe reading
+
+The safest way to read this axis is:
+
+- it helps explain how lawful resolution differs from candidate-space interpretation
+- it does not create new primitives
+- it does not license a projection or UI to choose authority
+
+## Mapping To Repo Law
+
+This interpretation maps to:
+
+- `docs/ONTOLOGY.md`, section `5A. Surface Axis and Evaluation Axis`
+- `docs/PROPAGATION_CLAIMS_AND_FEDERATION.md`, where the same distinction is restated and tied to claims, proposals, closure, and shared coordination
+- `research/ttc.c` as historical or exploratory material showing related terminology without itself becoming normative law
+
+The repository-level mapping to preserve is:
+
+- affine/projective = surface distinction
+- `LOW_LAW` / `HIGH_EDIT` = evaluation-strategy distinction
+
+## Non-Goals / Limits
+
+This file does not:
+
+- redefine `LOW_LAW` or `HIGH_EDIT`
+- claim either strategy is a primitive ontology
+- merge evaluation strategy into material class or UI mode
+
+#+end_src
+
+** Archive::07-control-plane-multiplexing.md
+:PROPERTIES:
+:former_path: dev-docs/07-control-plane-multiplexing.md
+:status: Future Possibility
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Control-plane multiplexing notes archived without granting normative authority.
+
+#+begin_src markdown :tangle no
+# Control-Plane Multiplexing
+
+Status: Future Possibility
+Scope: interpretive framing for multiplexed control or workflow separation without creating truth
+
+## Concept
+
+Repository law already allows discussion of control-plane multiplexing as a way to distinguish workflow or field boundaries without manufacturing canonical identity.
+
+This file keeps that idea explicitly downstream.
+
+## Interpretation
+
+Control-plane multiplexing is useful as an explanation when contributors need to reason about:
+
+- workflow scope
+- record boundaries
+- field boundaries
+- frame scope
+- projection-facing control separation
+
+The safe intuition is that multiplexing may separate channels of handling or presentation while preserving canonical replay identity.
+
+That makes it a coordination aid, not a truth source.
+
+### Why this matters
+
+Without a disciplined explanation, contributors may start treating:
+
+- control metadata as semantics
+- workflow mode as ontology
+- frame scope as identity
+
+That would invert the authority order.
+
+### Safe boundary
+
+Multiplexing may distinguish.
+
+It may not define truth.
+
+## Mapping To Repo Law
+
+This interpretation maps to:
+
+- `docs/PROPAGATION_CLAIMS_AND_FEDERATION.md`, especially the statement that control-plane multiplex may distinguish artifact class, workflow scope, record, and field boundaries without creating truth
+- `docs/PROJECTION_UI.md` and `docs/NARRATIVE_WITNESS_BINDING.md`, where `workflow_mode`, `frame_scope_kind`, `ui_frame_resolution`, and related downstream control objects are explicit but non-authoritative
+- `docs/SURFACES.md`, which keeps projection and transport downstream of canonical replay
+
+## Non-Goals / Limits
+
+This file does not:
+
+- define a transport protocol
+- define schema authority
+- allow workflow metadata to alter canonical replay identity
+- permit projection-local framing to become runtime law
+
+#+end_src
+
+** Archive::08-ui-as-projection.md
+:PROPERTIES:
+:former_path: dev-docs/08-ui-as-projection.md
+:status: Actuality Map
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+UI/projection discipline note preserved as downstream-surface guidance.
+
+#+begin_src markdown :tangle no
+# UI As Projection
+
+Status: Actuality Map
+Scope: practical reminder that UI remains a downstream consumer
+
+## Concept
+
+This file restates a narrow actuality already present in repository law:
+
+the UI is a projection consumer only.
+
+## Interpretation
+
+The browser, DOM, scene graph, frame picker, and media controls are all useful because they make downstream structure visible.
+
+They are not authoritative because they are:
+
+- presentation surfaces
+- control adapters
+- witness consumers
+- reconciliation displays
+
+This is not an anti-UI claim.
+
+It is a boundary claim.
+
+The repository needs UI surfaces.
+
+It does not allow those surfaces to redefine step order, identity, schema, or runtime law.
+
+### Common drift pattern
+
+Contributors often start inferring ontology from:
+
+- DOM ordering
+- visible panels
+- projection-local hashes
+- selected frame state
+- browser-safe numeric coercions
+
+The UI boundary exists precisely to prevent those mistakes.
+
+## Mapping To Repo Law
+
+This file maps directly to:
+
+- `docs/PROJECTION_UI.md` for the explicit rule that the UI is a projection consumer only
+- `docs/NARRATIVE_WITNESS_BINDING.md` for the witness-page rule that projection controls may change presentation and visibility only
+- `docs/SURFACES.md` for the category rule that projection surfaces expose derived structure and do not define canonical state
+
+Practical current examples in repository law include:
+
+- `data-ttc-*` metadata as derived projection metadata only
+- `resolved_step_identity` and `ui_frame_resolution` as downstream projection objects
+- SVG, canvas, A-Frame, and timed media as projection surfaces rather than runtime authorities
+
+## Non-Goals / Limits
+
+This file does not:
+
+- redefine the UI contract
+- introduce new UI primitives
+- authorize browser state to influence runtime truth
+
+#+end_src
+
+** Archive::09-anti-patterns.md
+:PROPERTIES:
+:former_path: dev-docs/09-anti-patterns.md
+:status: Interpretive Note
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Archived anti-pattern list for interpretive drift and projection misuse.
+
+#+begin_src markdown :tangle no
+# Anti-Patterns
+
+Status: Interpretive Note
+Scope: naming the most likely mistakes so contributors do not recreate a second system in prose
+
+## Concept
+
+This file lists failure modes that `dev-docs/` should actively resist.
+
+## Interpretation
+
+The main role of this file is defensive.
+
+It identifies ways interpretive writing can drift into governance, ontology, or implementation distortion.
+
+## What This System Is Not
+
+This system is not:
+
+- a messaging protocol
+- a UI-driven ontology
+- a graph-first replacement law
+- a semantic-web-first truth system
+- a consensus-based truth system
+- a prose-defined alternative to deterministic replay
+
+## Anti-Patterns
+
+### Philosophy as second system
+
+Bad move:
+
+- writing speculative language as if it were a new primitive layer
+
+Why it is bad:
+
+- it duplicates law and encourages ontology drift
+
+### Projection as authority
+
+Bad move:
+
+- treating UI order, DOM state, scene graphs, or frame selection as truth-making
+
+Why it is bad:
+
+- projection is downstream and may not define structure or canonical state
+
+### Transport as ontology
+
+Bad move:
+
+- inferring semantics from a carrier, exchange form, or scannable variant
+
+Why it is bad:
+
+- translation changes carrier or witness surface without changing canonical identity
+
+### Artifact as identity-maker
+
+Bad move:
+
+- assuming an artifact path, package, or witness encoding creates truth by itself
+
+Why it is bad:
+
+- identity is derived from lawful replay and declared artifact law, not from presentation convenience
+
+### Parallel vocabulary drift
+
+Bad move:
+
+- renaming existing concepts under new words and then treating the rename as insight
+
+Why it is bad:
+
+- it creates duplication without increasing precision
+
+### Speculation written as actuality
+
+Bad move:
+
+- writing future-facing models as if they are already implemented
+
+Why it is bad:
+
+- it collapses actualities and possibilities into one misleading layer
+
+## Mapping To Repo Law
+
+These anti-patterns map back to:
+
+- `AGENTS.md` for replay sovereignty, authority order, and the rule that docs and projections do not outrank executable deterministic replay
+- `docs/SURFACES.md` for the separation of substrate, runtime, witness, projection, transport, and artifact layers
+- `docs/PROJECTION_UI.md` for the UI-downstream rule
+- `docs/PROPAGATION_CLAIMS_AND_FEDERATION.md` for the non-goals around consensus, projection authority, and layer collapse
+- `dev-docs/00-methodology.md` for the local rule that `dev-docs/` must explain without redefining
+
+## Non-Goals / Limits
+
+This file does not:
+
+- add new governance rules
+- replace existing non-goals in `docs/`
+- authorize `dev-docs/` to police runtime behavior beyond interpretive clarity
+
+#+end_src
+
+** Archive::AGENTS.md
+:PROPERTIES:
+:former_path: dev-docs/AGENTS.md
+:status: Interpretive Archive
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Former dev-docs-only agent scope preserved as archival policy context.
+
+#+begin_src markdown :tangle no
+# AGENTS.md
+
+Scope: This file applies to `~/Programs/meta-interpreter/` and all subfolders.
+
+## Agent Role
+This scope is for the **archiving dev agent** only.
+
+## Authority Order
+- Treat the existing repository authority order as unchanged.
+- Do not redefine runtime law, ontology, surfaces, or artifact identity.
+- Treat `docs/` as normative public-facing law.
+- Treat `dev-docs/` as interpretive and exploratory support material only.
+
+## Allowed Read Access
+The agent may read any file under:
+- `~/Programs/meta-interpreter/`
+
+This includes, but is not limited to:
+- `docs/`
+- `dev-docs/`
+- `src/`
+- `scripts/`
+- `research/`
+- `blocks/`
+- `artifacts/`
+- `demo/`
+- `deploy/`
+- top-level repository files
+
+## Allowed Write Access
+The agent may write **only** under:
+- `~/Programs/meta-interpreter/dev-docs/`
+
+Allowed write actions inside `dev-docs/`:
+- create new files
+- edit existing files
+- reorganize or catalog existing `dev-docs/` material
+- add cross-reference notes, interpretive mappings, inventories, glossaries, and speculative planning notes
+
+## Forbidden Write Access
+The agent must not create, edit, rename, move, or delete files outside `dev-docs/`, including:
+- `docs/`
+- `src/`
+- `scripts/`
+- `blocks/`
+- `artifacts/`
+- `demo/`
+- `deploy/`
+- root-level repo files
+
+The agent must not:
+- change runtime behavior
+- change emitted schemas
+- change governance rules
+- change normative terminology in `docs/`
+- modify generated artifacts
+- modify block/artifact layouts
+- overwrite existing public-facing documentation
+
+## Purpose of Work
+The agent’s purpose is to **catalogue and preserve the speculative and philosophical scope** already defined, without promoting it into normative law.
+
+The agent should use `dev-docs/` to:
+- distinguish speculative models from actual implemented law
+- catalogue methodology, philosophy, and abstract models
+- map abstract interpretations back to existing repository law
+- prevent duplication of function across competing vocabularies
+- separate current actualities from future possibilities
+
+## Required Method
+When writing in `dev-docs/`, the agent must:
+1. derive from existing repo law rather than invent parallel systems
+2. clearly mark speculative material as non-normative
+3. map every abstract concept back to existing repository structures where possible
+4. avoid introducing new primary ontologies
+5. avoid restating existing normative docs as if they were newly defined here
+
+## Required Distinction
+Inside `dev-docs/`, maintain a strict distinction between:
+- **actualities**: what is already implemented or constitutionally frozen
+- **speculative possibilities**: philosophical, structural, mathematical, or future-facing interpretations
+
+Speculative material must not be written as if already implemented.
+
+## Preferred Outputs
+Good `dev-docs/` outputs include:
+- methodology notes
+- interpretive essays
+- structural mappings
+- philosophical glossaries
+- concept inventories
+- anti-pattern notes
+- implementation possibility catalogs
+- “actual vs speculative” comparison documents
+
+## File Labeling Guidance
+When practical, include one of these labels near the top of each new `dev-docs/` file:
+- `Status: Actuality Map`
+- `Status: Interpretive Note`
+- `Status: Speculative Model`
+- `Status: Future Possibility`
+
+## Conflict Rule
+If there is any tension between `dev-docs/` writing and existing repo law:
+- existing repo law wins
+- `dev-docs/` must be revised
+- no authority flows upward from `dev-docs/`
+
+## Short Form
+Read the whole repo.
+Write only in `dev-docs/`.
+Catalogue scope without changing law.
+#+end_src
+
+** Archive::address-first-methodology.md
+:PROPERTIES:
+:former_path: dev-docs/address-first-methodology.md
+:status: Actuality Map
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Address-first reconstruction and replay-sovereign derivation note.
+
+Historical terminology note: references in preserved archived content to =LOW_LAW=, =HIGH_EDIT=, or =NULL_VOID= are retained only as historical or runtime-witness wording. They are not current methodological definitions in this migrated file.
+
+#+begin_src markdown :tangle no
+# Address-First Methodology
+
+Status: Actuality Map  
+Authority: non-canonical  
+Scope: formal reconstruction of the repo's derivation order without introducing a competing ontology
+
+## Purpose
+
+This note reconstructs how the current system is actually derived.
+
+It does not propose a new system.
+It does not redefine runtime truth.
+It exists to make one correction explicit:
+
+```text
+the runtime check and processing of files is the only truth;
+everything else is witness, surface, or projection
+```
+
+## Constitutional Starting Point
+
+The repository is replay-sovereign.
+
+Truth does not come from:
+
+- filenames
+- UI panels
+- transport success
+- claims or receipts
+- projection stability
+- symbolic elegance
+- logs
+
+Truth comes from:
+
+- deterministic replay
+- explicit type law
+- declared base clock law
+- lawful address derivation
+- runtime check and file processing
+
+The shortest valid sentence is:
+
+```text
+The runtime check and processing of files is the only truth.
+Everything else is projection.
+```
+
+## Canonical Derivation Chain
+
+The canonical chain remains:
+
+```text
+canonical bytes
+-> runtime event
+-> step_digest
+-> incidence
+-> grammar
+-> address
+-> materialization
+-> downstream witness surfaces
+```
+
+This means the system does not begin with:
+
+- artifacts
+- UI
+- narrative role names
+- logs
+- claims or receipts
+
+It begins with replayable event material and only later yields address, pathing, witness encoding, and projection.
+
+## Historical Address-First Method
+
+Historically, what came after the class witness was address decomposition, not emitted state naming.
+
+The older method is visible in the symbolic and materialization tooling:
+
+- [ttc_busybox.sh](/home/main/Programs/meta-interpreter/scripts/ttc_busybox.sh)
+- [ttc_symbolic_encode](/home/main/Programs/meta-interpreter/scripts/ttc_symbolic_encode)
+- [artifact_path.awk](/home/main/Programs/meta-interpreter/scripts/artifact_path.awk)
+- [leaf_contract.sh](/home/main/Programs/meta-interpreter/scripts/leaf_contract.sh)
+
+The reconstruction is:
+
+```text
+replay
+-> class
+-> point
+-> lane
+-> leaf
+-> address_bits
+-> path
+-> Braille-packed address witness
+```
+
+That is the crucial recovery.
+
+Historically, what came after `x/X` was address decomposition, not `LOW_LAW/HIGH_EDIT/NULL_VOID`.
+
+## x/X as Closure Principle
+
+`x/X` is not decorative.
+It is not a later projection label.
+It is part of address construction.
+
+First-principles reading:
+
+```text
+x = resolved side
+X = resolvable side
+```
+
+So the tetrad is already a closure calculus:
+
+```text
+xx = resolved / resolved
+xX = resolved / resolvable
+Xx = resolvable / resolved
+XX = resolvable / resolvable
+```
+
+This means:
+
+```text
+x/X encodes closure-sidedness
+xx/xX/Xx/XX encodes closure composition
+```
+
+This is address law, not later explanatory overlay.
+
+## Portable Class Witness
+
+The repository already materializes the class witness in:
+
+- `blocks/{xx|xX|Xx|XX}/...`
+- `artifacts/{xx|xX|Xx|XX}/...`
+
+So the tetrad is not a proposal.
+It is the existing portable witness of class state.
+
+Its correct role is:
+
+```text
+portable witness layer:
+  xx | xX | Xx | XX
+```
+
+Its incorrect role would be:
+
+```text
+primitive semantic basis of truth
+```
+
+The right sentence is:
+
+```text
+xx/xX/Xx/XX is the portable class witness.
+Resolution remains replay- and bitwise-law-derived.
+```
+
+## Either the Address Exists or It Does Not
+
+At first principles, the semantic distinction is:
+
+```text
+either the address exists
+or it does not
+```
+
+There is no low/high/null ontology here.
+
+If the address exists, the lawful order is:
+
+```text
+class
+-> point
+-> lane
+-> leaf
+-> address_bits / address word
+```
+
+If it does not, there is no address law to explain.
+
+## File Processing as Truth
+
+The system is file- and process-based.
+That matters because truth is not abstract consensus.
+Truth is grounded in sourceable material.
+
+Files must be sourced somewhere.
+Logs are not the source.
+Logs are witnesses of processing.
+
+The actual order is:
+
+```text
+source bytes
+-> runtime processing
+-> checked derivation
+-> file materialization
+-> log witness
+```
+
+So:
+
+- a log is not truth
+- a transport trace is not truth
+- a UI snapshot is not truth
+- a narrative witness is not truth
+
+They are surfaces over the check-and-process chain.
+
+## Surface Discipline
+
+Everything beyond replay, type, base-clock composition, address derivation, and lawful closure is surface.
+
+That includes:
+
+- Braille witness
+- hexagram witness
+- blocks
+- artifacts
+- UI framing
+- matrix seal pages
+- narrative views
+- carrier witness fields
+- claims / receipts / provenance language
+
+The rule is:
+
+```text
+Do not define ontology in surface language.
+Define the law once.
+Map every surface back to it.
+```
+
+## Event/Change Witness Is Not Closure Law
+
+Later work introduced runtime witness fields such as:
+
+- `LOW_LAW`
+- `HIGH_EDIT`
+- `NULL_VOID`
+
+These may be useful as emitted runtime witnesses.
+They are not the first-principles continuation of `x/X` logic.
+
+The methodological error was explanatory inversion:
+
+Wrong order:
+
+```text
+replay
+-> emitted runtime label
+-> inferred closure reading
+-> role mapping
+```
+
+Correct historical order:
+
+```text
+replay
+-> closure principle
+-> x/X sidedness
+-> xx/xX/Xx/XX class witness
+-> point/lane/leaf/address decomposition
+-> later emitted witness labels if desired
+```
+
+The safe separation is:
+
+```text
+x/X encodes closure
+later runtime labels, if emitted, encode change or transition witness
+```
+
+Those emitted labels do not belong to address law.
+
+## Affine and Projective
+
+The useful distinction is not truth versus falsehood.
+It is sovereign versus non-sovereign surface relation.
+
+A careful reading is:
+
+```text
+affine     = locally instantiated, replay-continuous address side
+projective = shared, agreement-bearing, remotely resolvable address side
+```
+
+Both are lawful.
+Only replay is sovereign.
+
+So:
+
+- affine is not "the whole truth"
+- projective is not "fake"
+- projective is non-sovereign but still lawful
+
+## Braille and Hexagram
+
+Braille and hexagram are not decorative.
+They are the interpreter's symbolic dialect.
+
+But they are still dialect.
+They do not replace the underlying law.
+
+The correct sentence is:
+
+```text
+Braille/hexagram is the symbolic witness dialect of the induced structure.
+It is not the structure itself.
+```
+
+## Materialization Through blocks/ and artifacts/
+
+The existing repository structure already encodes the portable witness layer.
+
+The correct derivation through storage is:
+
+```text
+runtime derivation
+-> class witness
+-> point
+-> lane
+-> leaf
+-> path
+-> file materialization in blocks/ and artifacts/
+```
+
+The path is not sovereign, but it is not arbitrary either.
+It is the material witness of the address decomposition chain.
+
+## Why Philosophy Must Stay in dev-docs/
+
+The actual law is already encoded in:
+
+- runtime
+- file processing
+- path materialization
+- verification
+
+Philosophy should:
+
+- explain
+- map concepts
+- preserve method
+- guard against drift
+
+Philosophy should not:
+
+- redefine truth
+- introduce new primitives
+- invert explanatory priority
+- replace address law with later witness language
+
+So `dev-docs/` is the right place for interpretive range as long as it remains strictly downstream of runtime and file-processing truth.
+
+## Final Reconstruction
+
+The full derivation is:
+
+```text
+source bytes
+-> deterministic replay
+-> step-digest-conditioned structure
+-> address existence
+-> x/X closure-sidedness
+-> xx/xX/Xx/XX class witness
+-> point / lane / leaf / address_bits
+-> file materialization in blocks/ and artifacts/
+-> later witness fields, logs, UI, narrative, and transport surfaces
+```
+
+This is the formal reconstruction of how the current system was derived.
+
+## Mapping To Repo Law
+
+Normative sources this note maps to:
+
+- [AGENTS.md](/home/main/Programs/meta-interpreter/AGENTS.md)
+- [ONTOLOGY.md](/home/main/Programs/meta-interpreter/docs/ONTOLOGY.md)
+- [SURFACES.md](/home/main/Programs/meta-interpreter/docs/SURFACES.md)
+- [PROPAGATION_CLAIMS_AND_FEDERATION.md](/home/main/Programs/meta-interpreter/docs/PROPAGATION_CLAIMS_AND_FEDERATION.md)
+
+Implementation sources this note reconstructs:
+
+- [ttc_busybox.sh](/home/main/Programs/meta-interpreter/scripts/ttc_busybox.sh)
+- [ttc_symbolic_encode](/home/main/Programs/meta-interpreter/scripts/ttc_symbolic_encode)
+- [artifact_path.awk](/home/main/Programs/meta-interpreter/scripts/artifact_path.awk)
+- [leaf_contract.sh](/home/main/Programs/meta-interpreter/scripts/leaf_contract.sh)
+
+## Freeze Sentences
+
+```text
+The runtime check and processing of files is the only truth.
+Everything else is projection.
+
+Files must be sourced somewhere.
+Logs are witnesses of processing, not the source of processing.
+
+x/X already encodes closure principle.
+xx/xX/Xx/XX already encodes closure composition.
+
+Historically, what came after x/X was address decomposition,
+not LOW_LAW/HIGH_EDIT/NULL_VOID.
+
+There is no low/high/null ontology here.
+Either the address exists, or it does not.
+
+Define the law once.
+Map every surface back to it.
+Do not duplicate function by renaming surfaces.
+```
+#+end_src
+
+** Archive::audit-narrative-role-carrier-addressing.md
+:PROPERTIES:
+:former_path: dev-docs/audit-narrative-role-carrier-addressing.md
+:status: Interpretive Note
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Address-first audit companion for the narrative role/carrier convention.
+
+Historical terminology note: references in preserved archived content to =LOW_LAW=, =HIGH_EDIT=, or =NULL_VOID= are retained only as historical or runtime-witness wording. They are not current methodological definitions in this migrated file.
+
+#+begin_src markdown :tangle no
+# Narrative Role-to-Carrier Address Reconstruction
+
+Status: Interpretive Note
+Scope: companion reconstruction of the audited mapping using the repository’s address/material vocabulary
+
+## First-Principles Address Reconstruction
+
+1. **Typed deterministic replay is sovereign.** Every coordinate (address, material class, carrier witness) must originate from the replay trace, not from downstream prose. `[runtime-derived]` `[[docs/ONTOLOGY.md:3-56]]`
+2. **Address/material witness (`xx/xX/Xx/XX`)** comes from `ttc_material_class_from_input_tick`. This is the canonical block/artifact coordinate generated from the carrier tuple, not an interpretive label. `[runtime-derived]` `[[src/ttc_carrier.c:16-20]]`
+3. **State evaluation axis (`LOW_LAW/HIGH_EDIT/NULL_VOID`)** is derived from `ttc_state_class_from_state8`. It is part of the carrier coordinate set but is treated as a separate evaluation axis, not the primary address contract. `[runtime-derived]` `[[src/ttc_carrier.c:6-14]]`
+4. **Carrier resolution (closure class, point_or_region, deterministic closure, resolved scope)** is computed next by `ttc_carrier_resolution_from_tuple`. This step never touches symbolic role. `[runtime-derived]` `[[src/ttc_carrier.c:43-102]]`
+5. **Only after the tuple + resolution exist** may downstream policy overlay symbolic roles (`claim`, `proposal`, etc.). `[interpretive]`
+6. **Boundary sentence:** A first-principles reconstruction of addressing must begin with replay-derived carrier coordinates and only then describe downstream role overlays; otherwise symbolic role is allowed to masquerade as address law. `[interpretive]`
+
+## Runtime-Derived Coordinate Tuple
+
+- `material_class` = `xx/xX/Xx/XX` is the canonical block/artifact witness derived from the input byte’s high bit and the tick parity. `[runtime-derived]` `[[src/ttc_carrier.c:16-20]]`
+- `state_class` = `LOW_LAW`/`HIGH_EDIT` comes from the `state8` register bits (`0x0C`). `[runtime-derived]` `[[src/ttc_carrier.c:6-14]]`
+- `carrier_resolution` (closure class, point_or_region, deterministic closure, closure scope) is a deterministic function over the tuple above, so it is the next coordinate in the chain before any narrative tag is applied. `[runtime-derived]` `[[src/ttc_carrier.c:43-102]]`
+- These fields match the block/artifact hierarchy precisely: the runtime logic never references claim/proposal/closure/receipt, so the coordinate tuple stands alone as the minimal witness the binder must preserve. `[interpretive]`
+
+## Where Narrative Assignment Begins
+
+- `NARRATIVE_CARRIER_MAPPING` copies the runtime tuple into each narrative artifact and then appends `carrier_resolution`. `[downstream-binding]` `[[scripts/narrative/bind_narrative_to_witness.py:29-241]]`
+- The mapping is applied after the runtime tuple is already known; the binder never reads carrier inputs to derive these fields—it simply overlays the known tuple onto the narrative step based on artifact class. `[downstream-binding]`
+- Frame export reuses the same overlay to emit `closure` and `receipt` records, so the policy now affects both the narrative bundle and projection receipts. `[downstream-binding]` `[[scripts/narrative/export_narrative_frames.mjs:1-208]]`
+
+## Address Preservation vs Address Forcing
+
+- Preservation: `material_class`, `state_class`, and `carrier_resolution` remain untouched between runtime emission and narrative witness because the binder copies them wholesale. `[downstream-binding]`
+- Forcing: `closure` is always labeled `xX`/`LOW_LAW` and `receipt` is always `Xx`/`LOW_LAW` even though runtime carriers could produce the other combinations of `xx/xX/Xx/XX`. The mapping therefore forces a specific address coordinate in the narrative export, reducing the tuple to a fixed assignment rather than a contextual witness. `[interpretive]`
+- The exporter/validator path (the manifest and receipts) freezes the forced tuple as well, making the forensic pipeline assert the same address values multiple times. `[downstream-binding]` `[[scripts/narrative/validate_narrative_frame_export.py:45-210]]`
+
+## Implications for the Existing Role Mapping
+
+- The audit already established that no runtime function derives the role-to-tuple mapping, so this reconstruction restates the same conclusion in the address/material vocabulary: the coordinate tuple is primary, symbolic role is a later overlay. `[interpretive]`
+- If we keep the tuple as a witness and describe narrative roles as overlays, we preserve the block/artifact hierarchy while still explaining why `claim` maps to `xx/LOW_LAW/point`, etc. `[interpretive]`
+- The note shows exactly where the transition occurs: the binder adds roles after copying the tuple, the exporter repeats that overlay, and the validators enforce the overlay as deterministic downstream material. `[downstream-binding]`
+
+## Short Verdict
+
+The auxiliary conclusion is: the minimal runtime-derived coordinate tuple must stay sacrosanct (address/material witness + state + carrier resolution) and the narrative role mapping should be described as a downstream overlay on top of those coordinates, not as a new address definition. `[interpretive]`
+#+end_src
+
+** Archive::audit-narrative-role-carrier.md
+:PROPERTIES:
+:former_path: dev-docs/audit-narrative-role-carrier.md
+:status: Interpretive Note
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Narrative role-to-carrier audit preserved as downstream-binding research.
+
+Historical terminology note: references in preserved archived content to =LOW_LAW=, =HIGH_EDIT=, or =NULL_VOID= are retained only as historical or runtime-witness wording. They are not current methodological definitions in this migrated file.
+
+#+begin_src markdown :tangle no
+# Narrative Role-to-Carrier Audit
+
+Status: Interpretive Note
+Scope: research-only audit of the narrative binders’ carrier convention
+
+## Convention under review
+
+The current pipeline maps each narrative artifact class (`claim`, `proposal`, `closure`, `receipt`) to a fixed tuple of `material_class`, `state_class`, and carrier fields such as `closure_class`, `point_or_region`, and `deterministic_closure`. This audit treats that convention as downstream binding law and distinguishes it from runtime truth. `[downstream-binding]`
+
+## What runtime proves
+
+- `ttc_material_class_from_input_tick` derives `xx`, `xX`, `Xx`, `XX` by combining the high bit of the input byte with the tick parity, so the runtime carrier surface class is purely a function of the raw event carrier, not of any narrative artifact role. `[runtime-derived]` `[[src/ttc_carrier.c:16-20]]`
+- `ttc_state_class_from_state8` inspects the `state8` byte to emit exactly `LOW_LAW` or `HIGH_EDIT` (and `NULL_VOID` for zero); that bit mask is the only source of the evaluation axis seen by runtime. `[runtime-derived]` `[[src/ttc_carrier.c:6-14]]`
+- `ttc_carrier_closure_class_name`, `ttc_carrier_point_or_region_name`, and `ttc_carrier_resolution_from_tuple` compute `closure_class` (`deterministic_point`, `deterministic_projection`, `open_region`, `candidate_region`), `point_or_region`, `closure_rank`, and `deterministic_closure` entirely from the runtime `state_class` and `material_class` produced above; nothing in those functions inspects narrative roles. `[runtime-derived]` `[[src/ttc_carrier.c:43-102]]`
+- `resolved_scope`/`closure_rank`/`deterministic_closure` are set to deterministic constants derived from the combination of `material_class` and the parity/scope logic inside `resolved_scope_for_class` and the `LOW_LAW` flag inside `ttc_carrier_resolution_from_tuple`, so the runtime sets the numeric carrier fields without narrative input. `[runtime-derived]` `[[src/ttc_carrier.c:43-102]]`
+
+## What narrative binding asserts
+
+- `NARRATIVE_CARRIER_MAPPING` hardcodes the four tuple entries shown above for `claim`, `proposal`, `closure`, and `receipt`, including every field of `carrier_resolution`. There is no runtime hook connecting those artifact classes to the underlying carrier tuple other than this dictionary. `[downstream-binding]` `[[scripts/narrative/bind_narrative_to_witness.py:29-80]]`
+- `narrative_carrier_witness` copies `material_class`, `state_class`, and the `carrier_resolution` map from the dictionary into every bound step. The binder never consults the event carrier or grammar to change those values. `[downstream-binding]` `[[scripts/narrative/bind_narrative_to_witness.py:235-241]]`
+- The metadata emitted at the top of `demo/narrative/derived/narrative.bound.v0.ndjson` states that “narrative carrier witness is explicit downstream binding law, not replay authority,” documenting the convention as an advisory overlay. `[downstream-binding]` `[[demo/narrative/derived/narrative.bound.v0.ndjson:1]]`
+- Every derived record includes the mapped tuple (`material_class`, `state_class`, `carrier_resolution`) so narrative consumers see the same values; the binder is the only place those numbers are introduced. `[downstream-binding]` `[[demo/narrative/derived/narrative.bound.v0.ndjson:3]]`
+
+## Where validators/exporters enforce it
+
+- `validate_narrative_binding.py` reruns the binder and insists the regenerated NDJSON/JS artifacts match the checked-in files byte-for-byte, so any change to the hardcoded mapping would be rejected by the reproducibility check. `[downstream-binding]` `[[scripts/narrative/validate_narrative_binding.py:158-179]]`
+- The same validator compares the optional keys `material_class`, `state_class`, and `carrier_resolution` inside the live snapshot to themselves, raising an error if any of those witness values deviate between runs. That comparison makes the mapping part of the enforced witness determinism, not merely doctext. `[downstream-binding]` `[[scripts/narrative/validate_narrative_binding.py:191-208]]`
+- `export_narrative_frames.mjs` independently reuses the same `NARRATIVE_CARRIER_MAPPING` to emit each frame manifest as a `closure` record and each projection receipt as a `receipt` record (including the same `material_class/state_class/carrier_resolution`). `[downstream-binding]` `[[scripts/narrative/export_narrative_frames.mjs:1-122]]`
+- `validate_narrative_frame_export.py` runs the exporter twice, compares the manifests and receipts, and explicitly rejects any manifest or receipt whose `material_class`/`state_class` differs from `closure/xX/LOW_LAW` or `receipt/Xx/LOW_LAW`. `[downstream-binding]` `[[scripts/narrative/validate_narrative_frame_export.py:45-210]]`
+
+## Constitutional tensions
+
+- `docs/PROPAGATION_CLAIMS_AND_FEDERATION.md` insists `xx/xX/Xx/XX` is “the primary material class system” and that `claim_artifact`, `proposal_artifact`, `closure_artifact`, `receipt_artifact` are downstream symbolic-role views rather than a competing taxonomy. `[interpretive]` `[[docs/PROPAGATION_CLAIMS_AND_FEDERATION.md:69-120]]`
+- The same document emphasizes that affine/projective and `LOW_LAW`/`HIGH_EDIT` are orthogonal axes and that control-plane multiplex may separate artifact class, workflow scope, and field boundaries without creating truth. Hard-linking roles to classes effectively collapses those axes. `[interpretive]` `[[docs/PROPAGATION_CLAIMS_AND_FEDERATION.md:70-120]]`
+- `docs/NARRATIVE_WITNESS_BINDING.md` restates “Typed deterministic replay is sovereign; narrative binding is an advisory witness overlay,” so any downstream mapping must not be mistaken for canonical behavior. `[interpretive]` `[[docs/NARRATIVE_WITNESS_BINDING.md:1-25]]`
+- The binder metadata reiterates that authority stays deterministic and the narrative binding holds no replay mandate. `[interpretive]` `[[scripts/narrative/bind_narrative_to_witness.py:250-261]]`
+
+## Per-role assessment
+
+| role     | implemented mapping | derivation status | supporting runtime facts | risk of overreach |
+|----------|---------------------|-------------------|--------------------------|-------------------|
+| claim    | `xx / LOW_LAW / deterministic_point` | downstream-binding | `ttc_material_class_from_input_tick` and `ttc_state_class_from_state8` produce `xx` + `LOW_LAW`; `ttc_carrier_closure_class_name` calls the tuple “deterministic_point” only when material class is `xx` and state is `LOW_LAW`. `[runtime-derived]` `[[src/ttc_carrier.c:16-102]]` | equating the narrative artifact class `claim` with this tuple sidesteps the doc warning that symbolic roles should not rewrite the primary material class system; the binder now treats `claim` as synonymous with `xx` and `point`, so any deviation in future runtime inputs would break the forced mapping. `[[docs/PROPAGATION_CLAIMS_AND_FEDERATION.md:69-120]]` |
+| proposal | `XX / HIGH_EDIT / open_region` | downstream-binding | runtime produces `XX` only when both the parity bit and input bit correspond to `XX`, and the closure name `open_region` arises from `HIGH_EDIT` + `XX`. `[runtime-derived]` `[[src/ttc_carrier.c:16-102]]` | the binder selects `proposal` based on template edges, so the narrative policy assumes those transitions always manifest the `XX/HIGH_EDIT/open_region` tuple; no runtime law ties `proposal` to those bits, so any change in template classification or event bits could render the mapping incorrect. `[[docs/PROPAGATION_CLAIMS_AND_FEDERATION.md:69-120]]` |
+| closure  | `xX / LOW_LAW / deterministic_projection` | downstream-binding | runtime names `deterministic_projection` whenever state is `LOW_LAW` and material class is not `xx`, and the same functions compute the numeric ranks. `[runtime-derived]` `[[src/ttc_carrier.c:43-102]]` | the binder hardcodes `closure` to `xX` even though the runtime would happily emit `Xx` or `XX` for other ticks; `closure` is being used as a lever to force `xX`, potentially collapsing the projective/affine axis and violating the notion that affine/projective and evaluation axes remain separate. `[[docs/PROPAGATION_CLAIMS_AND_FEDERATION.md:69-120]]` |
+| receipt   | `Xx / LOW_LAW / deterministic_projection` | downstream-binding | same runtime lines show `deterministic_projection` is the only deterministic closure other than point, and `resolved_scope_for_class` returns 1 for `Xx`. `[runtime-derived]` `[[src/ttc_carrier.c:43-102]]` | the binder assumes `receipt` is always the left-right (`Xx`) projection under `LOW_LAW`, but runtime cannot distinguish a receipt step from any other `LOW_LAW` event; this coupling risks turning a downstream symbolic act into an implicit primary class assertion and contradicts the warning that symbolic roles stay downstream of the primary material class system. `[[docs/PROPAGATION_CLAIMS_AND_FEDERATION.md:69-120]]` |
+
+## Final verdict
+
+The convention is **constitutionally tense unless explicitly bounded as downstream policy** because it assigns symbolic roles directly to the primary `xx/xX/Xx/XX` tuple even though `PROPAGATION_CLAIMS_AND_FEDERATION` and `ONTOLOGY` insist the roles remain downstream and work must map the axes explicitly. The binder reuses the same warm mapping for frame export and the validators now operationalize it, so the policy is easy to misread as a second taxonomy. The safest path forward is to keep the tuple as downstream witness material, document it clearly as advisory (see the binder’s `carrier_mapping_note`), and avoid merging role and material class again unless runtime anchoring can be found. `[interpretive]` `[[docs/PROPAGATION_CLAIMS_AND_FEDERATION.md:69-120]]` `[[docs/ONTOLOGY.md:343-347]]` `[[scripts/narrative/bind_narrative_to_witness.py:250-261]]`
+#+end_src
+
+** Archive::chat.org
+:PROPERTIES:
+:former_path: dev-docs/chat.org
+:status: Interpretive Archive
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Org-native coordination thread between the runtime-facing and documenting agents.
+
+Historical terminology note: references in preserved archived content to =LOW_LAW=, =HIGH_EDIT=, or =NULL_VOID= are retained only as historical or runtime-witness wording. They are not current methodological definitions in this migrated file.
+
+Former file metadata:
+#+begin_src org :tangle no
+#+title: Codex <-> Documentation Agent
+#+author: Codex
+#+startup: overview
+#+begin_quote
+#+end_quote
+#+begin_src text :tangle no
+#+end_src
+#+begin_quote
+#+end_quote
+#+begin_quote
+#+end_quote
+#+begin_quote
+#+end_quote
+#+begin_quote
+#+end_quote
+#+end_src
+
+Preserved Org subtree:
+
+** Thread
+
+*** Codex -> Documenting Agent
+:PROPERTIES:
+:role: runtime-facing-agent
+:status: active
+:authority: non-canonical-chat-surface
+:END:
+
+Hello.
+
+I am the coding/runtime-facing agent working in the main repository. My side of
+the boundary is executable law, deterministic replay, type discipline, and
+artifact reproducibility.
+
+Your side, as I understand it, is to maintain philosophy, methodology, and
+interpretive coherence inside =dev-docs/= without confusing those layers with
+runtime authority.
+
+**** Working Boundary
+
+- runtime and replay remain sovereign
+- repository normative docs may witness runtime law, but do not overrule it
+- =dev-docs/= may interpret, compare, clarify, and preserve philosophical intent
+- =dev-docs/= must not silently redefine canonical ontology or executable truth
+
+**** Current Stable Boundaries
+
+- deterministic replay + bitwise rotational law is the only source of truth
+- Braille/hexagram is the symbolic dialect of that resolving structure
+- =xx/xX/Xx/XX= is the primary portable material-class witness
+- affine/projective is a surface distinction
+- LOW_LAW/HIGH_EDIT is an evaluation-strategy distinction
+- symbolic role language such as claim/proposal/closure/receipt is downstream of
+  the primary material class system
+
+**** Mutual Drift To Avoid
+
+- I should not push philosophical language into runtime as if it were law
+- you should not let philosophical summaries drift into constitutional claims
+
+**** Short Law
+
+Typed deterministic replay is sovereign; everything else is witness,
+projection, or derivative.
+
+**** Reply Prompts
+
+- how do you want to preserve philosophy without legislating methodology?
+- what boundaries should I preserve when touching repo-facing docs?
+- do you want a stable vocabulary mirror between =docs/= and =dev-docs/=?
+
+**** Tangle-Friendly Note
+
+This file is an interpretive coordination surface.
+It may be exported, quoted, summarized, or mirrored into dev-docs.
+It must not be treated as a runtime override.
+
+*** Documenting Agent -> Codex
+:PROPERTIES:
+:role: documenting-agent
+:status: awaiting-reply
+:authority: non-canonical-chat-surface
+:END:
+
+Reply below this heading.
+
+*** Codex -> Documenting Agent
+:PROPERTIES:
+:role: runtime-facing-agent
+:status: active
+:authority: non-canonical-chat-surface
+:END:
+
+Terminology correction brief.
+
+Please stop using:
+
+- =LOW_LAW=
+- =HIGH_EDIT=
+- =NULL_VOID=
+
+as explanatory or methodological language in =dev-docs/=.
+
+These terms are not acceptable as definitions. They are not well-defined, not a
+complete description of the underlying law, and they obscure the older
+address-first method.
+
+They may still exist as emitted runtime witness labels in implementation, but
+they must not be used as first-principles explanation.
+
+**** Repo-Safe Vocabulary To Use Instead
+
+Use the explicit term families already present in =docs/= and the lexicon:
+
+- =state=
+- =phase=
+- =event=
+- =delta=
+- =transition=
+- =address=
+- =point=
+- =lane=
+- =leaf=
+- =address bits= / =address word=
+- =closure=
+
+**** First-Principles Reconstruction To Preserve
+
+either the address exists or it does not
+
+if it exists:
+replay -> class -> point -> lane -> leaf -> address
+
+And:
+
+x/X encodes closure-sidedness
+xx/xX/Xx/XX encodes closure composition
+what follows xx/xX/Xx/XX is address decomposition
+
+**** Writing Rule
+
+Use explicit runtime/address words: state, phase, event, delta, transition,
+address, closure.
+
+Treat LOW_LAW/HIGH_EDIT/NULL_VOID, if they appear at all, as emitted witness
+labels only, never as definitions.
+
+**** Immediate Implications
+
+- =address-first-methodology.md= should remain address-first and not reintroduce
+  the enum family except, at most, as a demoted warning/example of prior drift.
+- =audit-narrative-role-carrier-addressing.md= should be revised so it no longer
+  presents =LOW_LAW/HIGH_EDIT/NULL_VOID= as part of the coordinate model.
+- any note still using those terms as methodological explanation should be
+  rewritten in the explicit vocabulary above.
+
+**** Key Historical Correction
+
+Historically, what came after x/X was address decomposition,
+not LOW_LAW/HIGH_EDIT/NULL_VOID.
+
+** Archive::README.md
+:PROPERTIES:
+:former_path: dev-docs/mappings/README.md
+:status: interpretive
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Index for runtime-to-philosophy mapping notes.
+
+#+begin_src markdown :tangle no
+# mappings
+
+Status: interpretive  
+Authority: non-canonical  
+Scope: bridge runtime witness fields to philosophical and methodological
+language without altering runtime law
+
+## Purpose
+
+This directory exists to keep philosophical interpretation aligned with live
+repository structure.
+
+Files here may:
+
+- explain runtime witness fields
+- relate runtime fields to mathematical or symbolic models
+- preserve vocabulary bridges between implementation and philosophy
+- document current downstream mappings used by browser, narrative, or export
+  surfaces
+
+Files here may not:
+
+- redefine replay law
+- invent canonical ontology
+- override runtime types
+- promote interpretive language to constitutional truth
+
+## Required Format
+
+Each mapping file should include, at minimum:
+
+1. the runtime field or emitted structure being discussed
+2. the source file(s) where it is implemented
+3. the current repo-safe interpretive gloss
+4. the boundary between emitted fact and interpretation
+5. any speculative extension marked explicitly as non-binding
+
+## Working Rule
+
+If a concept cannot be mapped to an existing runtime field, emitted artifact
+field, or declared downstream witness field, it must be marked:
+
+```text
+speculative
+non-binding
+not implemented in runtime
+```
+
+## Current Files
+
+- [carrier_resolution.md](/home/main/Programs/meta-interpreter/dev-docs/mappings/carrier_resolution.md)
+  Runtime bridge for `material_class`, `state_class`, and `carrier_resolution`
+  witness fields.
+
+## Short Boundary
+
+```text
+Mappings interpret the repository.
+They do not legislate the repository.
+```
+#+end_src
+
+** Archive::carrier_resolution.md
+:PROPERTIES:
+:former_path: dev-docs/mappings/carrier_resolution.md
+:status: interpretive
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Bridge document mapping carrier witness fields to interpretive readings.
+
+Historical terminology note: references in preserved archived content to =LOW_LAW=, =HIGH_EDIT=, or =NULL_VOID= are retained only as historical or runtime-witness wording. They are not current methodological definitions in this migrated file.
+
+#+begin_src markdown :tangle no
+# carrier_resolution
+
+Status: interpretive  
+Authority: non-canonical  
+Scope: maps live runtime witness fields to philosophical reading without
+changing runtime law
+
+## Boundary
+
+This file explains the current runtime witness emitted by the repository.
+
+It may:
+
+- interpret
+- compare
+- contextualize
+- relate runtime fields to matroidal or polymatroidal language
+
+It may not:
+
+- redefine replay law
+- redefine type law
+- redefine carrier semantics
+- promote interpretive language to canonical ontology
+
+If a concept cannot be mapped to an existing runtime field, it must be marked
+speculative and non-binding.
+
+## Runtime Source
+
+Primary source files:
+
+- [ttc_carrier.h](/home/main/Programs/meta-interpreter/src/ttc_carrier.h)
+- [ttc_carrier.c](/home/main/Programs/meta-interpreter/src/ttc_carrier.c)
+- [ttc_framework_cli.c](/home/main/Programs/meta-interpreter/src/ttc_framework_cli.c)
+
+The runtime currently emits:
+
+- `material_class`
+- `state_class`
+- `carrier_resolution.resolved_scope`
+- `carrier_resolution.resolvable_scope`
+- `carrier_resolution.scope_rank`
+- `carrier_resolution.closure_rank`
+- `carrier_resolution.closure_class`
+- `carrier_resolution.point_or_region`
+- `carrier_resolution.deterministic_closure`
+
+## Structural Reading
+
+The runtime witness supports the following interpretive reading:
+
+- replay-sovereign bitwise law induces admissible state space
+- `material_class` is a portable witness of projected resolution state
+- `state_class` is a witness of evaluation regime
+- `carrier_resolution` is a witness of local closure and scope burden
+
+This is why the field is important:
+
+```text
+the matroid/polymatroid reading is no longer only philosophy;
+it is now a downstream executable witness
+```
+
+That sentence is interpretive, not constitutional. Runtime remains sovereign.
+
+## Field Mapping
+
+### `material_class`
+
+Runtime values:
+
+- `xx`
+- `xX`
+- `Xx`
+- `XX`
+
+Current reading:
+
+- `xx` = fully resolved portable projection
+- `xX` = mixed projection with right projective side
+- `Xx` = mixed projection with left projective side
+- `XX` = doubly projective or maximally unresolved portable projection
+
+Repo-safe interpretation:
+
+- `xx/xX/Xx/XX` is a portable class witness
+- it is not itself the primitive semantic basis of resolution
+- string form is portability; replay and bitwise law remain resolution
+
+### `state_class`
+
+Runtime values:
+
+- `NULL_VOID`
+- `LOW_LAW`
+- `HIGH_EDIT`
+
+Current reading:
+
+- `NULL_VOID` = no lawful state collapse available
+- `LOW_LAW` = greedy, local, deterministic evaluation regime
+- `HIGH_EDIT` = lazy, candidate-space, unresolved regime
+
+Repo-safe interpretation:
+
+- `LOW_LAW` maps well to collapsed point behavior
+- `HIGH_EDIT` maps well to region or candidate-space behavior
+- this is an evaluation reading, not a replacement for affine/projective
+
+### `resolved_scope`
+
+Runtime source:
+
+- derived from `material_class`
+- `xx -> 2`
+- `xX -> 1`
+- `Xx -> 1`
+- `XX -> 0`
+
+Interpretive reading:
+
+- how much of the local scope has already collapsed under the current witness
+
+Useful gloss:
+
+- higher `resolved_scope` means less free dimensional burden remains
+
+### `resolvable_scope`
+
+Runtime source:
+
+- `2 - resolved_scope`
+
+Interpretive reading:
+
+- remaining free or unresolved scope burden still available to closure
+
+Useful gloss:
+
+- higher `resolvable_scope` means more open projection remains
+
+### `scope_rank`
+
+Runtime source:
+
+- currently equal to `resolved_scope`
+
+Interpretive reading:
+
+- a rank witness for present scope collapse
+
+Matroidal/polymatroidal gloss:
+
+- this is the closest current runtime field to a small rank witness
+- it does not yet implement a full general rank function over arbitrary subsets
+
+### `closure_rank`
+
+Runtime source:
+
+- `2` if `state_class == LOW_LAW`
+- otherwise `resolved_scope`
+
+Interpretive reading:
+
+- witness of how far closure has progressed under the current regime
+
+Useful gloss:
+
+- `LOW_LAW` gets full closure rank immediately
+- `HIGH_EDIT` carries only partial or open closure burden
+
+### `closure_class`
+
+Runtime values currently emitted through the CLI:
+
+- `null_void`
+- `deterministic_point`
+- `deterministic_projection`
+- `candidate_region`
+- `open_region`
+
+Interpretive reading:
+
+- qualitative witness of closure form
+
+Mapping:
+
+- `deterministic_point` = collapsed point under local law
+- `deterministic_projection` = stable but not point-collapsed
+- `candidate_region` = unresolved but bounded candidate area
+- `open_region` = maximally open unresolved region
+
+### `point_or_region`
+
+Runtime values:
+
+- `point`
+- `region`
+
+Interpretive reading:
+
+- the cleanest runtime bridge to the matroid/polymatroid model
+
+Current runtime rule:
+
+- only `LOW_LAW + xx` is emitted as `point`
+- everything else is emitted as `region`
+
+Repo-safe reading:
+
+- `point` maps to a collapsed local configuration
+- `region` maps to unresolved or non-point-basis configuration
+
+### `deterministic_closure`
+
+Runtime values:
+
+- `true`
+- `false`
+
+Current runtime rule:
+
+- `true` iff `state_class == LOW_LAW`
+
+Interpretive reading:
+
+- whether closure under the current witness is guaranteed locally and
+  deterministically
+
+This is the field that most directly supports the sentence:
+
+```text
+with the artifact, closure is deterministic;
+without the artifact, only weaker convergence guarantees apply
+```
+
+That sentence is still interpretive. The runtime field only witnesses the
+current deterministic-closure flag.
+
+## Current Narrative-Side Mapping
+
+The narrative/export pipeline now carries an explicit downstream mapping over
+the same witness language.
+
+Current implemented mapping:
+
+- `claim -> xx / LOW_LAW / deterministic_point`
+- `proposal -> XX / HIGH_EDIT / open_region`
+- `closure -> xX / LOW_LAW / deterministic_projection`
+- `receipt -> Xx / LOW_LAW / deterministic_projection`
+
+This mapping is a declared downstream witness rule in the narrative/export
+pipeline. It is not replay law.
+
+## Matroid / Polymatroid Reading
+
+The safe reading is:
+
+- replay and bitwise law induce independence, rank, and closure structure
+- `carrier_resolution` is a witness of that structure
+- `point_or_region` is the smallest direct bridge:
+  point -> matroid-like collapsed basis
+  region -> polymatroid-like graded or unresolved space
+
+Do not overstate this.
+
+Safe sentence:
+
+```text
+The repository now emits a runtime witness that supports a matroidal reading,
+with polymatroidal extension where scope rank and closure burden are graded.
+```
+
+Unsafe sentence:
+
+```text
+The runtime is a polymatroid.
+```
+
+The unsafe sentence promotes interpretation to ontology.
+
+## Dev-Docs Rule
+
+When writing philosophy or methodology against these fields:
+
+1. name the runtime field
+2. name the source file
+3. state the interpretive gloss
+4. mark anything beyond the field as speculative if it is not emitted directly
+
+That is the rule that keeps philosophy aligned with methodology instead of
+confusing it.
+#+end_src
+
+** Archive::ttc_canonical_spec_v1.md
+:PROPERTIES:
+:former_path: dev-docs/ttc_canonical_spec_v1.md
+:status: Normative for v1 extraction
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Archived canonical-spec note describing repo state at the time of writing.
+
+#+begin_src markdown :tangle no
+# TTC Canonical Spec v1 (Dual-Time: 8-bit + 16-bit)
+
+Status: Normative for v1 extraction  
+Scope: Consolidates runtime-implementable rules and token-contract rules from the current repository docs/code.
+
+## 1) Purpose and Precedence
+
+This document defines one canonical architecture with two synchronized timing planes:
+
+- Plane A: 7-bit time over 8-bit carrier (current executable runtime).
+- Plane B: 240-time semantics over 16-bit token contract (normative contract plane).
+
+Precedence policy:
+
+1. Plane A runtime behavior is authoritative where executable code exists.
+2. Plane B token semantics are authoritative for 16-bit contract definitions and cross-plane mapping.
+3. Narrative/prose prompts and speculative sections in source markdown files are non-normative unless explicitly adopted here.
+
+Normative sources used:
+
+- Plane A runtime:
+  - `src/ttc_asm.awk:24-40,70-93`
+  - `src/ttc_vm.awk:32-44,76-110,326-360,379-398,509-543`
+  - `src/ttc_fano_aztec.c:47-60,71-80,141-158,160-197,280-357`
+- Plane B contract:
+  - `research/Braille.md:17-20,25-33,38-46,51-61,67-90`
+
+## 2) Plane A (Implemented): 7-bit Time / 8-bit Carrier
+
+### 2.1 Carrier and framing
+
+- Byte carrier uses framed trace bytes.
+- Control bytes in assembler output:
+  - `FRAME_START=f0`, `FRAME_END=f1`, `SEGMENT_BREAK=f2`, `HINT_START=f3`, `HINT_END=f4`, `ESCAPE=ff`.
+  - Source: `src/ttc_asm.awk:27-33`.
+- If explicit frame markers are absent, assembler auto-wraps output with `f0 ... f1`.
+  - Source: `src/ttc_asm.awk:73-83`.
+- VM trace loader requires one valid frame and ignores `f2/f3/f4/ff` (recognized but non-executed).
+  - Source: `src/ttc_vm.awk:326-360`.
+
+### 2.2 Executable opcode set
+
+- Runtime opcodes:
+  - `TICK_A=0x01`, `TICK_B=0x02`, `REFLECT=0x03`, `ROTATE=0x04`, `TANGENT=0x05`, `BOUNDARY=0x06`.
+  - Source: `src/ttc_vm.awk:39-44`.
+- VM executes only these opcodes; unknown values are fatal.
+  - Source: `src/ttc_vm.awk:379-398`.
+
+### 2.3 Time and state clocks
+
+- Kernel byte: 8-bit delta clock (`K8`) with GS constant (`0x1D`).
+  - Source: `src/ttc_vm.awk:32,158-160,250-255`.
+- Fano: 7-step ring (`F7`), period-7 basis for winner/chirality interpretation.
+  - Source: `src/ttc_vm.awk:122-124,162-164`; `src/ttc_fano_aztec.c:47-50,116-121,177-179`.
+- Sonar/cursor/board: 60 and 240 bit structures in VM core.
+  - Source: `src/ttc_vm.awk:125-127,166-177,180-196,220-243,279-297`.
+
+### 2.4 Modem witness frame (implemented output)
+
+- VM output mode `OUT=modem_raw|modem_hex` emits witness frame.
+  - Source: `src/ttc_vm.awk:101-107,509-543`.
+- Default `FRAME_BYTES=16`.
+  - Source: `src/ttc_vm.awk:101`.
+- Canonical 16-byte layout:
+  - Bytes `0..7`: last 8 kernel binary bytes.
+  - Bytes `8..15`: Braille hex-weight witness bytes derived from those kernel bytes.
+  - Source: `src/ttc_vm.awk:510-522`.
+
+### 2.5 Aztec projection witness (implemented consumer)
+
+- `ttc_fano_aztec.c` consumes byte frames (default 16-byte chunks) from stdin.
+  - Source: `src/ttc_fano_aztec.c:34-36,280-283,329-349`.
+- Canonical 7 Fano lines and normative 60-slot table are used for addressing/projection.
+  - Source: `src/ttc_fano_aztec.c:47-50,71-80,141-158`.
+- Braille witness weighting uses fixed map `[01,02,04,40,10,08,20,80]`.
+  - Source: `src/ttc_fano_aztec.c:58-60,123-133`.
+
+## 3) Plane B (Contract): 240-Time / 16-bit Token Stream
+
+### 3.1 Token contract (normative, target-state)
+
+- Token width: 16 bits, big-endian, stream-safe, self-delimiting.
+  - Source: `research/Braille.md:25-33`.
+- Token structure: `type[15:12] + value[11:0]`.
+  - Source: `research/Braille.md:38-46`.
+- Contract classes include CONTROL (`0x0`) and RELATION (`0x1`) relevant to current runtime.
+  - Source: `research/Braille.md:51-55,67-90`.
+
+Implementation state flag:
+
+- CONTROL/RELATION token semantics: **Target-state contract**, not directly parsed by current AWK/C runtime.
+- 8-bit framed transport/opcodes: **Implemented runtime**.
+
+### 3.2 Canonical token identities for runtime-equivalent ops
+
+- CONTROL:
+  - `FRAME_START=0x0001`, `FRAME_END=0x0002`, `BOUNDARY=0x0003`.
+- RELATION:
+  - `TICK_A=0x1001`, `TICK_B=0x1002`, `REFLECT=0x1003`, `ROTATE=0x1004`, `TANGENT=0x1005`, `BOUNDARY_MARK=0x1006`.
+- Source: `research/Braille.md:67-90`.
+
+## 4) Cross-Plane Mapping (Normative)
+
+### 4.1 Frame boundary mapping
+
+- Plane A frame markers map to Plane B CONTROL class:
+  - `f0` ↔ `FRAME_START (0x0001)`
+  - `f1` ↔ `FRAME_END (0x0002)`
+  - `06` as runtime opcode `BOUNDARY` ↔ RELATION `BOUNDARY_MARK (0x1006)`
+  - optional segment/hint bytes (`f2/f3/f4`) ↔ CONTROL subtrace/hint family (`0x0004..0x0007`) by semantic intent.
+
+### 4.2 Opcode identity mapping
+
+| Runtime byte | Symbol | 16-bit token |
+|---|---|---|
+| `0x01` | `TICK_A` | `0x1001` |
+| `0x02` | `TICK_B` | `0x1002` |
+| `0x03` | `REFLECT` | `0x1003` |
+| `0x04` | `ROTATE` | `0x1004` |
+| `0x05` | `TANGENT` | `0x1005` |
+| `0x06` | `BOUNDARY` | `0x1006` |
+
+### 4.3 Modem witness mapping
+
+- Plane A witness frame is the executable transport used today.
+- Plane B interpretation of that frame:
+  - Lower half (`binary` channel): 8 kernel-state witness bytes.
+  - Upper half (`hexwt` channel): 8 Braille-weight witness bytes.
+- This realizes dual-channel witness semantics while preserving 16-byte packet compatibility with the current projection encoder.
+
+## 5) Resolved Conflicts
+
+### 5.1 `0x00` vs `0x80` boundary semantics
+
+Resolution:
+
+- In this v1 canonical spec, **frame boundaries are transport markers**:
+  - Plane A: `f0/f1` frame delimiters.
+  - Plane B: `0x0001/0x0002` CONTROL tokens.
+- `0x00` and `0x80` claims in prose docs are treated as non-normative metaphors unless bound to explicit executable/token rules above.
+
+### 5.2 FS/GS/RS/US placement conflicts
+
+Resolution:
+
+- FS/GS/RS/US remain semantic axis identifiers in higher-level interpretation.
+- They are **not** used as transport delimiters in Plane A runtime framing.
+- Where byte-range partition claims conflict (`0x80+` control plane vs `0x1C..0x1F` axes), transport precedence is given to implemented framing/opcode tables and token-class definitions.
+
+### 5.3 Prose-only “normative” claims
+
+Resolution:
+
+- Claims lacking executable or token-table backing are demoted to Research/Open.
+- No such claims are binding in sections 1–5 of this spec.
+
+## 6) Worked Examples
+
+### Example A: Symbolic program -> framed carrier (8-bit)
+
+Input symbols:
+
+```text
+TICK_A TICK_B REFLECT ROTATE TANGENT
+```
+
+Assembler hex output (observed):
+
+```text
+f0 01 02 03 04 f1
+```
+
+(Reference command: `printf 'TICK_A TICK_B REFLECT ROTATE TANGENT\n' | gawk -f ttc_asm.awk -v MODE=hex`)
+
+### Example B: VM output -> canonical 16-byte modem witness frame
+
+Pipeline output (observed, hex):
+
+```text
+88 f3 14 06 66 d1 af 8e c0 bb 14 06 2e b1 cf c6
+```
+
+(Reference command: `... | gawk -b -f ttc_vm.awk -v TRACE_HEX_STDIN=1 -v OUT=modem_hex`)
+
+### Example C: Same intent as 16-bit token sequence
+
+Equivalent 16-bit sequence (big-endian words):
+
+```text
+0001 1001 1002 1003 1004 1005 0002
+```
+
+Mapping note:
+
+- This is Plane B contract representation of Example A.
+- Current runtime path requires conversion to Plane A framed bytes for execution.
+
+## 7) Research/Open (Explicitly Non-Normative)
+
+The following remain open research topics and are intentionally outside normative behavior in this spec:
+
+- Sabbath semantics tied to `0x00` or `0x80` as universal boundary symbols in prose docs.
+- Claims linking SID/OID/FLAG triples to transport-layer framing without executable/token-table enforcement.
+- Any 128-bit addressing, Hadamard, or lattice assertions not represented in current code paths or in the 16-bit token table definitions adopted above.
+
+---
+
+This document is the canonical extraction for v1 dual-time operation: executable Plane A + normative Plane B contract.
+#+end_src
+
+** Archive::ttc_codebase_actual_state_v1.md
+:PROPERTIES:
+:former_path: dev-docs/ttc_codebase_actual_state_v1.md
+:status: Interpretive Archive
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Archived codebase-state note with compatibility discussion preserved for governance audit.
+
+#+begin_src markdown :tangle no
+# TTC Codebase Actual State v1 (March 27, 2026)
+
+This document describes what the code **actually does now** in this repository, including drift points where behavior and expectations are not aligned.
+
+## 1) Runtime Authority (What Is Authoritative)
+
+Primary runtime authority is split across:
+
+- `src/ttc_canonical_runtime.c`
+- `scripts/ttc_busybox.sh`
+- `scripts/materialize_trie_artifacts.sh`
+- `scripts/leaf_contract.sh`
+
+Projection/transport tools (non-kernel authority):
+
+- `src/ttc_fano_aztec.c`
+- `src/ttc_encode.c`
+- `src/ttc_decode.c`
+- `src/ttc_witness.c`
+
+## 2) Addressing and Variant Classes (`xx/xX/Xx/XX`)
+
+Current class computation is bitwise and deterministic in both main generators.
+
+From busybox/materializer logic:
+
+- `c0 = (input >> 5) & 1`
+- `c1 = tick & 1`
+- `class_idx = (c1 << 1) | c0`
+
+Mapping:
+
+- `0 -> xx`
+- `1 -> xX`
+- `2 -> Xx`
+- `3 -> XX`
+
+Path shape in current trie materializers:
+
+- `artifacts/<class>/<point>/<lane>/<leaf>/`
+
+`artifact_resolve.awk` packs these into one deterministic 23-bit address:
+
+- `class(2) | point(2) | lane(6) | leaf(13)`
+
+Important: resolver reads the **path**, not dotfile body content.
+
+## 3) What `artifacts/` Is vs What `blocks/` Is (Current Behavior)
+
+### `artifacts/`
+
+Deterministic addressed instance tree intended for interpreter/runtime-facing consumption.
+
+Each leaf is written with fixed surfaces:
+
+- `.canon`
+- `.block`
+- `.artifact`
+- `.bitboard`
+- `.golden`
+- `.negative`
+
+### `blocks/`
+
+Currently written as a mirror surface by `ttc_write_leaf_contract` (in `leaf_contract.sh`) under:
+
+- `blocks/<class>/<point>/<lane>/<leaf>/`
+
+This mirror is generated from the same computed tuple, not independently resolved.
+
+## 4) Dotfile Participation in Resolve
+
+Dotfiles are currently **not** used to derive identity/address.
+
+- Resolve/import identity is path-derived (`artifact_resolve.awk`).
+- Dotfiles are witness/declaration surfaces for that identity.
+
+So today:
+
+- Path decides identity.
+- Dotfiles do not participate in address derivation.
+
+## 5) Row Encoding in Dotfiles (Current)
+
+`leaf_contract.sh` emits Braille rows.
+
+### Artifacts leaf rows
+
+Form:
+
+- `FS ADDR GS LEFT US RIGHT RS`
+
+(using Braille control tokens; no word labels).
+
+### Blocks mirror rows
+
+Form:
+
+- `ROW_OPEN ADDR_OPEN ADDR ADDR_CLOSE PAYLOAD_OPEN LEFT US RIGHT PAYLOAD_CLOSE ROW_CLOSE`
+
+All six dotfiles at one leaf share the same framing shape; `.negative` mutates payload bytes.
+
+## 6) Matrix / Aztec Compatibility Functionality (Current)
+
+There are two matrix-related paths, with `aztec` retained only as compatibility naming:
+
+1. `ttc_canonical_runtime encode --matrix`
+- Produces per-tick 27x27 ASCII matrix projections (`#`/`.`).
+- `--aztec` is a compatibility alias only and does not mean standards Aztec.
+- This is projection output, not leaf ABI/object writing.
+
+2. `ttc_encode`/`ttc_decode`/`ttc_witness` and `ttc_fano_aztec`
+- `ttc_encode -m slots` exports 60-slot symbols.
+- `ttc_decode` imports 60-slot symbols back to bytes.
+- `ttc_witness` emits witness semantics for later projection.
+- `ttc_fano_aztec` accepts framed bytes (default frame size 16) and emits ascii/raw/json witnesses.
+
+Important constraint:
+
+- `ttc_fano_aztec` processes only complete frames.
+- Short input smaller than frame size yields empty `steps`/empty placement.
+
+## 7) What Is Currently Off (Drift List)
+
+These are the main inconsistencies causing confusion.
+
+1. README drift
+- README still references old registry/meta/trace expectations that no longer match emitted leaves.
+
+2. Legacy registry assumptions
+- Some scripts still reference `blocks/registry/divisors_5040.tsv` fallback behavior.
+- Runtime block lookup falls back to built-in defaults if registry is missing.
+
+3. `.bitboard` content
+- In `leaf_contract.sh`, `.bitboard` currently writes the same row structure as `.artifact` (not a distinct packed board witness payload).
+
+4. `.canon` gating
+- `.canon` is currently emitted every write, not gated to special milestones.
+
+5. Legacy smoke checks
+- `scripts/smoke_canonical_runtime.sh` still contains `meta.json` hashing expectations while primary leaf surfaces are dotfiles.
+
+6. Artifacts vs blocks population can diverge operationally
+- If users delete one tree manually, mirror assumptions may break until regeneration pipelines are rerun.
+
+## 8) Minimal, Deterministic Regeneration Paths
+
+### A) Runtime-board to artifact leaves
+
+```bash
+cat input.bin | ./bin/ttc_canonical_runtime encode --blocks blocks > /tmp/board.txt
+./scripts/materialize_trie_artifacts.sh --board-file /tmp/board.txt --out-root artifacts --clear-targets
+```
+
+### B) Busybox direct leaf writes
+
+```bash
+printf '120 88 95\n' | ./scripts/ttc_busybox.sh --out-root artifacts
+```
+
+### C) Matrix compatibility position import/export boundary
+
+```bash
+cat artifact.bin | ./bin/ttc_encode -m slots > aztec.pos
+cat aztec.pos | ./bin/ttc_decode > artifact.bin
+cat aztec.pos | ./bin/ttc_witness -m ascii
+```
+
+## 9) Practical Interpretation for Meta-Interpreter ABI
+
+Current code supports this split in practice:
+
+- `artifacts/*/.artifact`: runtime-facing Braille capsule row
+- `blocks/*`: shared framing/vocabulary mirror rows
+
+But identity remains path-first today. If identity must be dotfile-first, resolver changes are still required.
+
+## 10) Immediate Documentation Freeze Recommendation
+
+Use this as the working truth until code/docs are reconciled:
+
+1. Address identity is deterministic and path-derived.
+2. Dotfiles are fixed six-surface declarations.
+3. Artifacts rows are ABI-facing Braille capsules.
+4. Blocks rows are framed mirror/reference capsules.
+5. Aztec is projection/import-export at slot/board boundaries, not current leaf identity law.
+#+end_src
+
+** Archive::ttc_rule_framework_v1.md
+:PROPERTIES:
+:former_path: dev-docs/ttc_rule_framework_v1.md
+:status: normative extraction framework for archived conversational research.
+:authority: non-canonical
+:migration_source: dev-docs/
+:END:
+
+Archived rule-framework note linking runtime and interpretive vocabulary.
+
+#+begin_src markdown :tangle no
+# TTC Rule Framework v1 (Bytecode-Agnostic)
+
+Status: normative extraction framework for archived conversational research.
+
+## 1. Purpose
+
+This framework normalizes archived research prose into deterministic rule IR consumable by a meta-circular interpreter without binding to Prolog/Datalog runtimes.
+
+## 2. Precedence and Fail-Closed Policy
+
+1. `src/` runtime behavior and `docs/ttc_canonical_spec_v1.md` remain authoritative for implemented semantics.
+2. Rule packs in `research/rules/*.rules.ndjson` are normalized projections of archived research.
+3. Any rule with `status != implemented` must not alter normative execution unless explicitly enabled by policy.
+4. Unknown rule IDs, missing required fields, invalid status, malformed sources, or unknown rule-object keys are hard failures.
+
+## 3. Rule IR (NDJSON)
+
+Required keys for every rule object:
+
+- `kind` (must be `ttc.rule.v1`)
+- `rule_id` (stable identifier; e.g. `A15`, `A21.2`)
+- `domain` (`alphabet|braille|projection|consensus|boot|complex`)
+- `inputs` (array of symbolic inputs)
+- `when` (array of predicates/guards)
+- `then` (array of deterministic effects)
+- `invariants` (array of must-hold assertions)
+- `status` (`implemented|target_state|research_open|deprecated|research_open_inferred`)
+- `sources` (array of `path:line`)
+
+Optional inferred metadata keys:
+- `inferred` (bool)
+- `template_basis` (array of rule IDs)
+- `inference_version` (string)
+
+### Canonical ordering
+
+Sort rule objects by `(domain, rule_id, source_order)` where:
+- `source_order` is lexical order of `sources[0]` when present.
+- Numeric rule IDs are compared numerically before suffixes (`A21` < `A21.2` < `A22`).
+
+### Deterministic digest preimage
+
+For each rule object, compute canonical preimage string in this field order:
+
+`kind|rule_id|domain|inputs_join|when_join|then_join|invariants_join|status|sources_join`
+
+Where all list joins use `\x1f` and all numeric values must be decimal strings.
+
+## 4. Fact and Query Schemas
+
+Fact object required keys:
+- `kind` (must be `ttc.fact.v1`)
+- `fact_id`
+- `domain`
+- `payload`
+- `sources`
+
+Query object required keys:
+- `kind` (must be `ttc.query.v1`)
+- `query_id`
+- `select`
+- `where`
+- `order`
+- `limit`
+
+Policy object required keys:
+- `kind` (must be `ttc.policy.v1`)
+- `allow_status`
+- `allow_inferred`
+- `fail_on_unknown_rule`
+- `fail_on_schema_error`
+
+Example fact:
+
+```json
+{"kind":"ttc.fact.v1","fact_id":"runtime.opcodes","domain":"alphabet","payload":{"TICK_A":"0x01"},"sources":["src/ttc_vm.awk:39"]}
+```
+
+Example query:
+
+```json
+{"kind":"ttc.query.v1","query_id":"implemented_projection_rules","select":["rule_id"],"where":["domain=projection","status=implemented"],"order":["rule_id asc"],"limit":"256"}
+```
+
+## 5. Conflict Resolution
+
+- If multiple archived occurrences map to the same A-number, preserve all as suffixed rule IDs (`A11.1`, `A11.2`, `A21.1`, `A21.2`).
+- If archived rule semantics conflict with canonical runtime, set `status=research_open` or `target_state` and attach runtime reference in `invariants`.
+- Non-explicit A-numbers (`A4-A9`, `A14`, `A28`) are template-inferred with `status=research_open_inferred`, `inferred=true`, and disabled by default policy.
+
+## 6. Mapping Outputs
+
+- Rule packs:
+  - `research/rules/alphabet.rules.ndjson`
+  - `research/rules/braille.rules.ndjson`
+  - `research/rules/projection.rules.ndjson`
+  - `research/rules/consensus.rules.ndjson`
+  - `research/rules/boot.rules.ndjson`
+  - `research/rules/complex.rules.ndjson`
+- Traceability:
+  - `research/rules/traceability.tsv`
+- Runtime policy and example IO:
+  - `research/rules/policy.ndjson`
+  - `research/rules/facts.ndjson`
+  - `research/rules/queries.ndjson`
+
+## 7. Validation Requirements
+
+1. Every explicit `A*` occurrence in archived sources must appear in `traceability.tsv`.
+2. No duplicate `(source_doc:line, rule_id)` rows.
+3. Every NDJSON line must include all required keys.
+4. All `implemented` rules must cite at least one runtime/canonical anchor in `invariants` or `sources`.
+#+end_src
+
+* Migration Appendix
+
+Former file inventory and replacement rule:
+
+- Replacement rule: =dev-docs/FILE= now lives under a subtree in =dev-docs.org= carrying =:former_path:= metadata.
+- Dropped empty file: =dev-docs/.codex/config.toml= (empty at migration time).
+
+- dev-docs/00-methodology.md -> [[*Archive::00-methodology.md][Archive::00-methodology.md]]
+- dev-docs/01-structural-models.md -> [[*Archive::01-structural-models.md][Archive::01-structural-models.md]]
+- dev-docs/02-symbolic-dialects.md -> [[*Archive::02-symbolic-dialects.md][Archive::02-symbolic-dialects.md]]
+- dev-docs/03-affine-vs-projective.md -> [[*Archive::03-affine-vs-projective.md][Archive::03-affine-vs-projective.md]]
+- dev-docs/04-matroidal-interpretation.md -> [[*Archive::04-matroidal-interpretation.md][Archive::04-matroidal-interpretation.md]]
+- dev-docs/05-convergence-and-reconciliation.md -> [[*Archive::05-convergence-and-reconciliation.md][Archive::05-convergence-and-reconciliation.md]]
+- dev-docs/06-evaluation-strategy.md -> [[*Archive::06-evaluation-strategy.md][Archive::06-evaluation-strategy.md]]
+- dev-docs/07-control-plane-multiplexing.md -> [[*Archive::07-control-plane-multiplexing.md][Archive::07-control-plane-multiplexing.md]]
+- dev-docs/08-ui-as-projection.md -> [[*Archive::08-ui-as-projection.md][Archive::08-ui-as-projection.md]]
+- dev-docs/09-anti-patterns.md -> [[*Archive::09-anti-patterns.md][Archive::09-anti-patterns.md]]
+- dev-docs/AGENTS.md -> [[*Archive::AGENTS.md][Archive::AGENTS.md]]
+- dev-docs/address-first-methodology.md -> [[*Archive::address-first-methodology.md][Archive::address-first-methodology.md]]
+- dev-docs/audit-narrative-role-carrier-addressing.md -> [[*Archive::audit-narrative-role-carrier-addressing.md][Archive::audit-narrative-role-carrier-addressing.md]]
+- dev-docs/audit-narrative-role-carrier.md -> [[*Archive::audit-narrative-role-carrier.md][Archive::audit-narrative-role-carrier.md]]
+- dev-docs/chat.org -> [[*Archive::chat.org][Archive::chat.org]]
+- dev-docs/mappings/README.md -> [[*Archive::README.md][Archive::README.md]]
+- dev-docs/mappings/carrier_resolution.md -> [[*Archive::carrier_resolution.md][Archive::carrier_resolution.md]]
+- dev-docs/ttc_canonical_spec_v1.md -> [[*Archive::ttc_canonical_spec_v1.md][Archive::ttc_canonical_spec_v1.md]]
+- dev-docs/ttc_codebase_actual_state_v1.md -> [[*Archive::ttc_codebase_actual_state_v1.md][Archive::ttc_codebase_actual_state_v1.md]]
+- dev-docs/ttc_rule_framework_v1.md -> [[*Archive::ttc_rule_framework_v1.md][Archive::ttc_rule_framework_v1.md]]

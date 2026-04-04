@@ -188,6 +188,26 @@ def assert_identical_identity(left: dict[str, object], right: dict[str, object])
             )
 
 
+def assert_same_resolved_identity(left: dict[str, object], right: dict[str, object]) -> None:
+    if left.get("resolved_step_identity") != right.get("resolved_step_identity"):
+        raise SystemExit(
+            "narrative binding check failed: resolved step identity drift: "
+            f"{left.get('resolved_step_identity')!r} != {right.get('resolved_step_identity')!r}"
+        )
+    if left.get("ui_frame_resolution") != right.get("ui_frame_resolution"):
+        raise SystemExit(
+            "narrative binding check failed: ui frame resolution drift: "
+            f"{left.get('ui_frame_resolution')!r} != {right.get('ui_frame_resolution')!r}"
+        )
+    optional_keys = ["material_class", "state_class", "carrier_resolution"]
+    for key in optional_keys:
+        if key in left and key in right and left.get(key) != right.get(key):
+            raise SystemExit(
+                f"narrative binding check failed: optional carrier witness drift for {key}: "
+                f"{left.get(key)!r} != {right.get(key)!r}"
+            )
+
+
 def assert_text_stability(snapshot: dict[str, object]) -> None:
     for key in ("chapter_id", "scene_id", "template_id"):
         value = snapshot.get(key)
@@ -205,6 +225,7 @@ def assert_text_stability(snapshot: dict[str, object]) -> None:
 def assert_svg_determinism(chromium: str, port: int, **params: str) -> dict[str, object]:
     first = load_snapshot(chromium, port, **params)
     second = load_snapshot(chromium, port, **params)
+    assert_same_resolved_identity(first, second)
     if first.get("scene_json") != second.get("scene_json"):
         raise SystemExit("narrative binding check failed: normalized scene drift for identical input")
     if first.get("scene_hash") != second.get("scene_hash"):
@@ -255,6 +276,7 @@ def assert_interpolation_determinism(
         interpolate_from_step=from_step,
         transition_t="0.500",
     )
+    assert_same_resolved_identity(first, second)
     if first.get("scene_json") != second.get("scene_json"):
         raise SystemExit("narrative binding check failed: interpolated scene drift for identical input")
     if first.get("scene_hash") != second.get("scene_hash"):
@@ -270,8 +292,9 @@ def assert_interpolation_determinism(
     interpolation = first.get("interpolation")
     if not isinstance(interpolation, dict) or interpolation.get("t") != 0.5:
         raise SystemExit("narrative binding check failed: interpolation metadata missing or incorrect")
-    if first.get("step") != to_step:
-        raise SystemExit("narrative binding check failed: interpolation altered selected target step identity")
+    resolved = first.get("resolved_step_identity") or {}
+    if resolved.get("target_step") != to_step or resolved.get("source_step") != from_step:
+        raise SystemExit("narrative binding check failed: interpolation altered resolved source/target identity")
     quarter = load_snapshot(
         chromium,
         port,
@@ -284,6 +307,8 @@ def assert_interpolation_determinism(
         interpolate_from_step=from_step,
         transition_t="0.250",
     )
+    if first.get("resolved_step_identity") != quarter.get("resolved_step_identity"):
+        raise SystemExit("narrative binding check failed: interpolation progress altered resolved step identity")
     if first.get("svg_markup") == quarter.get("svg_markup"):
         raise SystemExit("narrative binding check failed: interpolation progress does not affect projection")
     if first.get("canvas_data_url") == quarter.get("canvas_data_url"):
@@ -295,6 +320,7 @@ def assert_interpolation_determinism(
 def assert_aframe_determinism(chromium: str, port: int, **params: str) -> dict[str, object]:
     first = load_aframe_snapshot(chromium, port, **params)
     second = load_aframe_snapshot(chromium, port, **params)
+    assert_same_resolved_identity(first, second)
     if first.get("scene_json") != second.get("scene_json"):
         raise SystemExit("narrative binding check failed: A-Frame source scene drift for identical input")
     if first.get("scene_hash") != second.get("scene_hash"):
@@ -352,6 +378,8 @@ def assert_aframe_presentation_only_variants(
     )
     assert_identical_identity(narrow, expand)
     assert_identical_identity(narrow, more)
+    assert_same_resolved_identity(narrow, expand)
+    assert_same_resolved_identity(narrow, more)
     if narrow.get("aframe_scene_json") == expand.get("aframe_scene_json"):
         raise SystemExit("narrative binding check failed: A-Frame attention change did not affect projection")
     if narrow.get("aframe_scene_json") == more.get("aframe_scene_json"):
@@ -396,6 +424,7 @@ def assert_aframe_interpolation_determinism(
         interpolate_from_step=from_step,
         transition_t="0.500",
     )
+    assert_same_resolved_identity(first, second)
     if first.get("aframe_scene_json") != second.get("aframe_scene_json"):
         raise SystemExit("narrative binding check failed: interpolated A-Frame scene drift for identical input")
     if first.get("aframe_scene_hash") != second.get("aframe_scene_hash"):
@@ -407,8 +436,9 @@ def assert_aframe_interpolation_determinism(
     interpolation = first.get("interpolation")
     if not isinstance(interpolation, dict) or interpolation.get("t") != 0.5:
         raise SystemExit("narrative binding check failed: A-Frame interpolation metadata missing or incorrect")
-    if first.get("step") != to_step:
-        raise SystemExit("narrative binding check failed: A-Frame interpolation altered selected target step identity")
+    resolved = first.get("resolved_step_identity") or {}
+    if resolved.get("target_step") != to_step or resolved.get("source_step") != from_step:
+        raise SystemExit("narrative binding check failed: A-Frame interpolation altered resolved source/target identity")
 
 
 def assert_presentation_only_variants(
@@ -453,6 +483,8 @@ def assert_presentation_only_variants(
 
     assert_identical_identity(narrow, expand)
     assert_identical_identity(narrow, more)
+    assert_same_resolved_identity(narrow, expand)
+    assert_same_resolved_identity(narrow, more)
 
     if narrow.get("svg_markup") == expand.get("svg_markup"):
         raise SystemExit("narrative binding check failed: attention change did not affect SVG presentation")
@@ -540,6 +572,10 @@ def main() -> int:
 
         summary = [
             {
+                "resolved_step_identity": snapshot["resolved_step_identity"],
+                "artifact_class": snapshot["artifact_class"],
+                "workflow_mode": snapshot["workflow_mode"],
+                "ui_frame_resolution": snapshot["ui_frame_resolution"],
                 "chapter_id": snapshot["chapter_id"],
                 "step": snapshot["step"],
                 "scene_id": snapshot["scene_id"],
@@ -552,6 +588,10 @@ def main() -> int:
         ]
         summary.extend(
             {
+                "resolved_step_identity": snapshot["resolved_step_identity"],
+                "artifact_class": snapshot["artifact_class"],
+                "workflow_mode": snapshot["workflow_mode"],
+                "ui_frame_resolution": snapshot["ui_frame_resolution"],
                 "aframe_chapter_id": snapshot["chapter_id"],
                 "aframe_scene_id": snapshot["scene_id"],
                 "aframe_step": snapshot["step"],

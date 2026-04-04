@@ -16,6 +16,7 @@ VM := $(SRC_DIR)/ttc_vm.awk
 
 RUNTIME_SRC := $(SRC_DIR)/ttc_runtime.c
 INCIDENCE_SRC := $(SRC_DIR)/ttc_incidence.c
+CARRIER_SRC := $(SRC_DIR)/ttc_carrier.c
 GRAMMAR_SRC := $(SRC_DIR)/ttc_grammar.c
 ADDRESS_SRC := $(SRC_DIR)/ttc_address.c
 WITNESS_SRC := $(SRC_DIR)/ttc_witness.c
@@ -25,6 +26,7 @@ AZTEC_SRC := $(SRC_DIR)/ttc_aztec.c
 
 RUNTIME_OBJ := $(BIN_DIR)/ttc_runtime.o
 INCIDENCE_OBJ := $(BIN_DIR)/ttc_incidence.o
+CARRIER_OBJ := $(BIN_DIR)/ttc_carrier.o
 GRAMMAR_OBJ := $(BIN_DIR)/ttc_grammar.o
 ADDRESS_OBJ := $(BIN_DIR)/ttc_address.o
 WITNESS_OBJ := $(BIN_DIR)/ttc_witness_lib.o
@@ -61,6 +63,9 @@ $(RUNTIME_OBJ): $(RUNTIME_SRC) $(SRC_DIR)/ttc_runtime.h | $(BIN_DIR)
 $(INCIDENCE_OBJ): $(INCIDENCE_SRC) $(SRC_DIR)/ttc_incidence.h | $(BIN_DIR)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+$(CARRIER_OBJ): $(CARRIER_SRC) $(SRC_DIR)/ttc_carrier.h | $(BIN_DIR)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
 $(GRAMMAR_OBJ): $(GRAMMAR_SRC) $(SRC_DIR)/ttc_grammar.h | $(BIN_DIR)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
@@ -82,7 +87,7 @@ $(AZTEC_OBJ): $(AZTEC_SRC) $(SRC_DIR)/ttc_aztec.h | $(BIN_DIR)
 $(RUNTIME_LIB): $(RUNTIME_OBJ)
 	ar rcs $@ $<
 
-$(WITNESS_LIB): $(INCIDENCE_OBJ) $(GRAMMAR_OBJ) $(ADDRESS_OBJ) $(WITNESS_OBJ)
+$(WITNESS_LIB): $(INCIDENCE_OBJ) $(CARRIER_OBJ) $(GRAMMAR_OBJ) $(ADDRESS_OBJ) $(WITNESS_OBJ)
 	ar rcs $@ $^
 
 $(MATRIX_LIB): $(MATRIX_OBJ)
@@ -91,7 +96,7 @@ $(MATRIX_LIB): $(MATRIX_OBJ)
 $(AZTEC_LIB): $(MATRIX_OBJ) $(AZTEC_OBJ)
 	ar rcs $@ $^
 
-$(FRAMEWORK_LIB): $(RUNTIME_OBJ) $(INCIDENCE_OBJ) $(GRAMMAR_OBJ) $(ADDRESS_OBJ) $(WITNESS_OBJ) $(PROJECTION_OBJ) $(MATRIX_OBJ) $(AZTEC_OBJ)
+$(FRAMEWORK_LIB): $(RUNTIME_OBJ) $(INCIDENCE_OBJ) $(CARRIER_OBJ) $(GRAMMAR_OBJ) $(ADDRESS_OBJ) $(WITNESS_OBJ) $(PROJECTION_OBJ) $(MATRIX_OBJ) $(AZTEC_OBJ)
 	ar rcs $@ $^
 
 $(ENC_BIN): $(SRC_DIR)/ttc_fano_aztec.c $(FRAMEWORK_LIB) $(SRC_DIR)/ttc_witness.h | $(BIN_DIR)
@@ -255,7 +260,7 @@ pipe: $(ENC_BIN) | $(ARTIFACT_DIR)
 
 clean:
 	rm -f $(ENC_BIN) $(CAN_ENC_BIN) $(CAN_DEC_BIN) $(WIT_BIN) $(CAN_RUNTIME_BIN) $(FRAMEWORK_BIN)
-	rm -f $(RUNTIME_OBJ) $(INCIDENCE_OBJ) $(GRAMMAR_OBJ) $(ADDRESS_OBJ) $(WITNESS_OBJ) $(PROJECTION_OBJ) $(MATRIX_OBJ) $(AZTEC_OBJ) $(RUNTIME_LIB) $(WITNESS_LIB) $(MATRIX_LIB) $(AZTEC_LIB) $(FRAMEWORK_LIB)
+	rm -f $(RUNTIME_OBJ) $(INCIDENCE_OBJ) $(CARRIER_OBJ) $(GRAMMAR_OBJ) $(ADDRESS_OBJ) $(WITNESS_OBJ) $(PROJECTION_OBJ) $(MATRIX_OBJ) $(AZTEC_OBJ) $(RUNTIME_LIB) $(WITNESS_LIB) $(MATRIX_LIB) $(AZTEC_LIB) $(FRAMEWORK_LIB)
 	rm -f $(ARTIFACT_DIR)/*.txt $(ARTIFACT_DIR)/*.json $(ARTIFACT_DIR)/*.pgm $(ARTIFACT_DIR)/*.ndjson $(ARTIFACT_DIR)/*.bin
 	find $(ARTIFACT_DIR)/xx $(ARTIFACT_DIR)/xX $(ARTIFACT_DIR)/Xx $(ARTIFACT_DIR)/XX -type f \( -name "trace.log" -o -name "state.bin" -o -name "board.txt" -o -name "aztec.txt" -o -name "meta.json" -o -name ".canon" -o -name ".block" -o -name ".artifact" -o -name ".bitboard" -o -name ".golden" -o -name ".negative" -o -name ".vs_overlay" \) 2>/dev/null | xargs -r rm -f
 	find blocks/xx blocks/xX blocks/Xx blocks/XX -type f \( -name ".canon" -o -name ".block" -o -name ".artifact" -o -name ".bitboard" -o -name ".golden" -o -name ".negative" \) 2>/dev/null | xargs -r rm -f

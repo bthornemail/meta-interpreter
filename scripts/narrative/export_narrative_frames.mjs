@@ -8,6 +8,61 @@ const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..",
 const BUNDLE = path.join(ROOT, "demo", "narrative", "derived", "narrative_bound_bundle.js");
 const SCENE_MODULE = pathToFileURL(path.join(ROOT, "demo", "browser", "narrative", "ttc_narrative_scene.js")).href;
 
+const NARRATIVE_CARRIER_MAPPING = {
+  claim: {
+    material_class: "xx",
+    state_class: "LOW_LAW",
+    carrier_resolution: {
+      resolved_scope: 2,
+      resolvable_scope: 0,
+      scope_rank: 2,
+      closure_rank: 2,
+      closure_class: "deterministic_point",
+      point_or_region: "point",
+      deterministic_closure: true,
+    },
+  },
+  proposal: {
+    material_class: "XX",
+    state_class: "HIGH_EDIT",
+    carrier_resolution: {
+      resolved_scope: 0,
+      resolvable_scope: 2,
+      scope_rank: 0,
+      closure_rank: 0,
+      closure_class: "open_region",
+      point_or_region: "region",
+      deterministic_closure: false,
+    },
+  },
+  closure: {
+    material_class: "xX",
+    state_class: "LOW_LAW",
+    carrier_resolution: {
+      resolved_scope: 1,
+      resolvable_scope: 1,
+      scope_rank: 1,
+      closure_rank: 2,
+      closure_class: "deterministic_projection",
+      point_or_region: "region",
+      deterministic_closure: true,
+    },
+  },
+  receipt: {
+    material_class: "Xx",
+    state_class: "LOW_LAW",
+    carrier_resolution: {
+      resolved_scope: 1,
+      resolvable_scope: 1,
+      scope_rank: 1,
+      closure_rank: 2,
+      closure_class: "deterministic_projection",
+      point_or_region: "region",
+      deterministic_closure: true,
+    },
+  },
+};
+
 function usage() {
   console.error(
     "usage: node scripts/narrative/export_narrative_frames.mjs " +
@@ -54,6 +109,15 @@ function stableStringify(value) {
 
 function frameFileName(index) {
   return `frame_${String(index).padStart(3, "0")}.svg`;
+}
+
+function narrativeCarrierWitness(artifactClass) {
+  const mapping = NARRATIVE_CARRIER_MAPPING[artifactClass];
+  return {
+    material_class: mapping.material_class,
+    state_class: mapping.state_class,
+    carrier_resolution: { ...mapping.carrier_resolution },
+  };
 }
 
 async function main() {
@@ -121,9 +185,30 @@ async function main() {
     const sceneJson = stableStringify(scene);
     const aframeSceneJson = stableStringify(aframeScene);
     const name = frameFileName(index);
+    const resolvedStepIdentity = sceneLib.resolveNarrativeSceneStepIdentity(scene);
+    const receiptCarrier = narrativeCarrierWitness("receipt");
+    const uiFrameResolution = {
+      artifact_class: "receipt",
+      workflow_mode: "verify",
+      step_identity: resolvedStepIdentity,
+      frame_scope: {
+        kind: "event",
+        source_step: String(fromStep),
+        target_step: String(toStep),
+        receipt_event: `frame:${index}/${frameCount}`,
+        contract: "narrative.frame.export.verify.v1",
+      },
+    };
     fs.writeFileSync(path.join(framesDir, name), `${svgMarkup}\n`, "utf8");
     receipts.push({
       type: "projection_receipt",
+      material_class: receiptCarrier.material_class,
+      state_class: receiptCarrier.state_class,
+      carrier_resolution: receiptCarrier.carrier_resolution,
+      artifact_class: "receipt",
+      workflow_mode: "verify",
+      frame_scope_kind: "event",
+      frame_scope_ref: uiFrameResolution.frame_scope,
       chapter_id: scene.chapter_id,
       from_step: String(fromStep),
       to_step: String(toStep),
@@ -133,6 +218,8 @@ async function main() {
       controls,
       scene_id: scene.scene_id,
       target_step: scene.step,
+      resolved_step_identity: resolvedStepIdentity,
+      ui_frame_resolution: uiFrameResolution,
       interpolation: scene.interpolation || null,
       scene_hash: sceneLib.projectionHash(sceneJson),
       svg_hash: sceneLib.projectionHash(svgMarkup),
@@ -142,9 +229,22 @@ async function main() {
     });
   }
 
+  const manifestCarrier = narrativeCarrierWitness("closure");
+
   const manifest = {
     type: "narrative_frame_export",
     version: 1,
+    material_class: manifestCarrier.material_class,
+    state_class: manifestCarrier.state_class,
+    carrier_resolution: manifestCarrier.carrier_resolution,
+    artifact_class: "closure",
+    workflow_mode: "apply",
+    frame_scope_kind: "constraint",
+    frame_scope_ref: {
+      kind: "constraint",
+      closure_scope: `frame_window:${fromStep}->${toStep}`,
+      contract: "narrative.frame.export.window.v1",
+    },
     chapter_id: args.chapter,
     chapter_title: chapterEntry.chapter.title,
     template_id: chapterEntry.chapter.template_id,

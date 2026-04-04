@@ -205,6 +205,44 @@
         "\\btranslation\\b.*\\bmutates?\\s+canonical\\s+(?:replay\\s+)?identity\\b"
       ]
     },
+    "role taxonomy -> primary replacement": {
+      "term": "claim|proposal|closure|receipt",
+      "expected": "invalid",
+      "patterns": [
+        "\\bclaim(?:_artifact)?\\b.*\\breplaces?\\b.*\\b(?:xx|xX|Xx|XX)\\b",
+        "\\bproposal(?:_artifact)?\\b.*\\breplaces?\\b.*\\b(?:xx|xX|Xx|XX)\\b",
+        "\\bclosure(?:_artifact)?\\b.*\\breplaces?\\b.*\\b(?:xx|xX|Xx|XX)\\b",
+        "\\breceipt(?:_artifact)?\\b.*\\breplaces?\\b.*\\b(?:xx|xX|Xx|XX)\\b",
+        "\\bclaim/proposal/closure/receipt\\b.*\\bprimary\\b"
+      ]
+    },
+    "affine/projective collapsed into state class": {
+      "term": "affine|projective|LOW_LAW|HIGH_EDIT",
+      "expected": "invalid",
+      "patterns": [
+        "\\baffine\\b.*\\bis\\s+LOW_LAW\\b",
+        "\\bprojective\\b.*\\bis\\s+HIGH_EDIT\\b",
+        "\\bLOW_LAW/HIGH_EDIT\\b.*\\breplaces?\\b.*\\baffine/projective\\b"
+      ]
+    },
+    "projective -> local replay substance": {
+      "term": "projective",
+      "expected": "invalid",
+      "patterns": [
+        "\\bprojective\\b.*\\bis\\s+local\\s+replay\\s+substance\\b",
+        "\\bprojective\\b.*\\bdefines?\\s+local\\s+state\\b",
+        "\\bprojective\\b.*\\bis\\s+actual\\s+local\\s+state\\b"
+      ]
+    },
+    "affine -> mere carrier": {
+      "term": "affine",
+      "expected": "invalid",
+      "patterns": [
+        "\\baffine\\b.*\\bis\\s+merely\\s+a\\s+shareable\\s+carrier\\s+surface\\b",
+        "\\baffine\\b.*\\bis\\s+only\\s+a\\s+carrier\\b",
+        "\\baffine\\b.*\\bis\\s+only\\s+agreement\\b"
+      ]
+    },
     "back-propagation -> runtime": {
       "term": "back-propagation",
       "expected": "invalid",

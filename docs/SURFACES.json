@@ -133,7 +133,44 @@
       "reversible": true,
       "authoritative": true,
       "notes": [
-        "identity_only"
+        "identity_only",
+        "xx_xX_Xx_XX_primary_material_class_system"
+      ]
+    },
+    "xx": {
+      "category": "artifact",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "affine_affine_material_class"
+      ]
+    },
+    "xX": {
+      "category": "artifact",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "affine_projective_material_class"
+      ]
+    },
+    "Xx": {
+      "category": "artifact",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "projective_affine_material_class"
+      ]
+    },
+    "XX": {
+      "category": "artifact",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "projective_projective_material_class"
       ]
     },
     "claim": {
@@ -145,6 +182,33 @@
         "downstream_assertion"
       ]
     },
+    "claim_artifact": {
+      "category": "artifact",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "point_artifact"
+      ]
+    },
+    "proposal_artifact": {
+      "category": "artifact",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "path_artifact"
+      ]
+    },
+    "closure_artifact": {
+      "category": "artifact",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "constraint_artifact"
+      ]
+    },
     "receipt": {
       "category": "artifact",
       "canonical": false,
@@ -152,6 +216,24 @@
       "authoritative": false,
       "notes": [
         "downstream_witness"
+      ]
+    },
+    "receipt_artifact": {
+      "category": "artifact",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "event_witness_artifact"
+      ]
+    },
+    "ui_frame_resolution": {
+      "category": "projection",
+      "canonical": false,
+      "reversible": true,
+      "authoritative": false,
+      "notes": [
+        "resolved_frame_witness"
       ]
     },
     "provenance": {
@@ -191,6 +273,30 @@
     "claim defines truth",
     "receipt defines truth",
     "federation defines truth",
-    "convergence defines truth"
-  ]
+    "convergence defines truth",
+    "encoding defines artifact type",
+    "scannable variant is an artifact class",
+    "claim/proposal/closure/receipt is the primary replacement for xx/xX/Xx/XX",
+    "projective is local replay substance",
+    "affine is merely a shareable carrier surface",
+    "runtime witness labels define address law"
+  ],
+  "address_first_reconstruction": {
+    "axiom": [
+      "either the address exists or it does not"
+    ],
+    "order": [
+      "class",
+      "point",
+      "lane",
+      "leaf",
+      "address_bits|address_word"
+    ],
+    "rules": [
+      "xx/xX/Xx/XX belongs to the address/materialization chain",
+      "xx/xX/Xx/XX is not a later runtime classification layer",
+      "runtime witness labels are downstream emitted summaries",
+      "runtime witness labels do not replace class -> point -> lane -> leaf -> address reconstruction"
+    ]
+  }
 }

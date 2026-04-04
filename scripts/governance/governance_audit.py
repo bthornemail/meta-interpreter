@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_ACTIVE = ["README.md", "docs", "dev-docs", "src", "scripts", "Makefile"]
+DEFAULT_ACTIVE = ["README.md", "docs", "dev-docs.org", "src", "scripts", "Makefile"]
 DEFAULT_HISTORICAL = ["archive", "research"]
 GOVERNANCE_META = {
     "docs/LEXICON.md",
@@ -41,6 +41,7 @@ TEXT_SUFFIXES = {
     ".tsv",
     ".ttl",
     ".xml",
+    ".org",
 }
 
 AZTEC_ALLOWED_CONTEXT = re.compile(
@@ -115,6 +116,45 @@ def iter_files(root: Path, entries):
 
 def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8", errors="replace")
+
+
+ORG_HEADING = re.compile(r"^(?P<stars>\*+)\s+")
+ORG_FORMER_PATH = re.compile(r"^:former_path:\s*(?P<path>\S.*?)\s*$", re.IGNORECASE)
+
+
+def org_virtual_paths(rel_path: str, lines):
+    if rel_path != "dev-docs.org":
+        return [rel_path] * len(lines)
+
+    virtual = []
+    stack = []
+    in_properties = False
+
+    for line in lines:
+        heading = ORG_HEADING.match(line)
+        if heading:
+            level = len(heading.group("stars"))
+            while stack and stack[-1]["level"] >= level:
+                stack.pop()
+            inherited = stack[-1]["former_path"] if stack else None
+            stack.append({"level": level, "former_path": inherited})
+            in_properties = False
+        elif line.strip() == ":PROPERTIES:":
+            in_properties = True
+        elif in_properties and line.strip() == ":END:":
+            in_properties = False
+        elif in_properties and stack:
+            former = ORG_FORMER_PATH.match(line.strip())
+            if former:
+                stack[-1]["former_path"] = former.group("path")
+
+        former_path = stack[-1]["former_path"] if stack else None
+        if former_path:
+            virtual.append(f"{rel_path}::{former_path}")
+        else:
+            virtual.append(rel_path)
+
+    return virtual
 
 
 def load_allowlist(path: Path):
@@ -203,6 +243,7 @@ def scan_file(path: Path, root: Path, group: str, severity: str, lexicon: dict, 
     records = []
     text = read_text(path)
     lines = text.splitlines()
+    virtual_paths = org_virtual_paths(rel, lines)
 
     forbidden = governance_rules.get("forbidden_collision_patterns", [])
     ontology_patterns = build_rule_patterns(governance_rules.get("ontology_violation_patterns", {}))
@@ -211,18 +252,19 @@ def scan_file(path: Path, root: Path, group: str, severity: str, lexicon: dict, 
 
     for idx, line in enumerate(lines, start=1):
         cited_by = None
+        line_rel = virtual_paths[idx - 1]
         if group == "historical":
-            cited_by = sorted(cited_refs.get(rel, []))
+            cited_by = sorted(cited_refs.get(line_rel, cited_refs.get(rel, [])))
 
         for phrase in forbidden:
-            if phrase in line and not allowed(allowlist, rel, "forbidden_collision", line):
-                add_record(records, rel, idx, phrase, None, "forbidden_collision", severity, line, cited_by)
+            if phrase in line and not allowed(allowlist, line_rel, "forbidden_collision", line):
+                add_record(records, line_rel, idx, phrase, None, "forbidden_collision", severity, line, cited_by)
 
         for rule in ontology_patterns:
-            if rule["pattern"].search(line) and not allowed(allowlist, rel, "ontology_violation", line):
+            if rule["pattern"].search(line) and not allowed(allowlist, line_rel, "ontology_violation", line):
                 add_record(
                     records,
-                    rel,
+                    line_rel,
                     idx,
                     rule["term"],
                     rule["expected"],
@@ -234,10 +276,10 @@ def scan_file(path: Path, root: Path, group: str, severity: str, lexicon: dict, 
                 )
 
         for rule in surface_patterns:
-            if rule["pattern"].search(line) and not allowed(allowlist, rel, "surface_misuse", line):
+            if rule["pattern"].search(line) and not allowed(allowlist, line_rel, "surface_misuse", line):
                 add_record(
                     records,
-                    rel,
+                    line_rel,
                     idx,
                     rule["term"],
                     rule["expected"],
@@ -254,12 +296,12 @@ def scan_file(path: Path, root: Path, group: str, severity: str, lexicon: dict, 
                 continue
             trigger_hit = any(re.search(pattern, line, re.IGNORECASE) for pattern in rule.get("trigger_patterns", []))
             marker_hit = any(marker in line for marker in rule.get("required_markers", []))
-            if trigger_hit and not marker_hit and not allowed(allowlist, rel, "missing_required_clarification", line):
-                add_record(records, rel, idx, term, rule["expected"], "missing_required_clarification", severity, line, cited_by)
+            if trigger_hit and not marker_hit and not allowed(allowlist, line_rel, "missing_required_clarification", line):
+                add_record(records, line_rel, idx, term, rule["expected"], "missing_required_clarification", severity, line, cited_by)
 
         if AZTEC_WORD.search(line):
-            if not AZTEC_ALLOWED_CONTEXT.search(line) and not allowed(allowlist, rel, "reserved_name_misuse", line):
-                add_record(records, rel, idx, "Aztec", lexicon["keywords"].get("Aztec"), "reserved_name_misuse", severity, line, cited_by)
+            if not AZTEC_ALLOWED_CONTEXT.search(line) and not allowed(allowlist, line_rel, "reserved_name_misuse", line):
+                add_record(records, line_rel, idx, "Aztec", lexicon["keywords"].get("Aztec"), "reserved_name_misuse", severity, line, cited_by)
 
     return records
 

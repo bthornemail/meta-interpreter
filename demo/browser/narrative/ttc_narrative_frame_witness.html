@@ -155,6 +155,30 @@
                   <dt class="mb-1 text-xs uppercase tracking-[0.2em] text-stone-500">Controls</dt>
                   <dd id="field-controls" class="font-mono text-stone-100"></dd>
                 </div>
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-[0.2em] text-stone-500">Artifact Class</dt>
+                  <dd id="field-artifact-class" class="font-mono text-amber-200"></dd>
+                </div>
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-[0.2em] text-stone-500">Workflow</dt>
+                  <dd id="field-workflow-mode" class="font-mono text-stone-100"></dd>
+                </div>
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-[0.2em] text-stone-500">Material Class</dt>
+                  <dd id="field-material-class" class="font-mono text-stone-100"></dd>
+                </div>
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-[0.2em] text-stone-500">State Class</dt>
+                  <dd id="field-state-class" class="font-mono text-stone-100"></dd>
+                </div>
+                <div class="sm:col-span-2">
+                  <dt class="mb-1 text-xs uppercase tracking-[0.2em] text-stone-500">Frame Scope</dt>
+                  <dd id="field-frame-scope" class="break-all font-mono text-xs text-stone-300"></dd>
+                </div>
+                <div class="sm:col-span-2">
+                  <dt class="mb-1 text-xs uppercase tracking-[0.2em] text-stone-500">Carrier Resolution</dt>
+                  <dd id="field-carrier-resolution" class="break-all font-mono text-xs text-stone-300"></dd>
+                </div>
               </dl>
             </article>
 
@@ -244,6 +268,12 @@
       const fieldTargetStep = document.getElementById("field-target-step");
       const fieldInterpolation = document.getElementById("field-interpolation");
       const fieldControls = document.getElementById("field-controls");
+      const fieldArtifactClass = document.getElementById("field-artifact-class");
+      const fieldWorkflowMode = document.getElementById("field-workflow-mode");
+      const fieldMaterialClass = document.getElementById("field-material-class");
+      const fieldStateClass = document.getElementById("field-state-class");
+      const fieldFrameScope = document.getElementById("field-frame-scope");
+      const fieldCarrierResolution = document.getElementById("field-carrier-resolution");
       const hashList = document.getElementById("hash-list");
       const manifestSummary = document.getElementById("manifest-summary");
       const snapshotNode = document.getElementById("ttc-narrative-frame-witness-snapshot");
@@ -401,6 +431,17 @@
 
       function updateSnapshot(receipt, frameUrl) {
         const showExpanded = attention === "expand";
+        const uiFrameResolution = receipt.ui_frame_resolution || {
+          artifact_class: receipt.artifact_class || "receipt",
+          workflow_mode: receipt.workflow_mode || "verify",
+          step_identity: receipt.resolved_step_identity || {
+            chapter_id: manifest.chapter_id,
+            step: receipt.target_step,
+            scene_id: receipt.scene_id,
+            template_id: manifest.template_id,
+          },
+          frame_scope: receipt.frame_scope_ref || { kind: receipt.frame_scope_kind || "event" },
+        };
         const visibleHashes = showExpanded
           ? {
               scene_hash: receipt.scene_hash,
@@ -420,6 +461,15 @@
             frame_index: receipt.frame_index,
             frame_total: receipt.frame_total,
             target_step: receipt.target_step,
+            material_class: receipt.material_class || null,
+            state_class: receipt.state_class || null,
+            carrier_resolution: receipt.carrier_resolution || null,
+            artifact_class: uiFrameResolution.artifact_class,
+            workflow_mode: uiFrameResolution.workflow_mode,
+            frame_scope_kind: uiFrameResolution.frame_scope?.kind || receipt.frame_scope_kind || "event",
+            frame_scope_ref: uiFrameResolution.frame_scope,
+            resolved_step_identity: receipt.resolved_step_identity || uiFrameResolution.step_identity,
+            ui_frame_resolution: uiFrameResolution,
             t: receipt.t,
             controls: receipt.controls,
             frame_url: frameUrl,
@@ -470,6 +520,12 @@
         fieldTargetStep.textContent = receipt.target_step;
         fieldInterpolation.textContent = receipt.interpolation ? `${receipt.interpolation.from_scene_id} → ${receipt.interpolation.to_scene_id} @ ${receipt.interpolation.t}` : "static target";
         fieldControls.textContent = `${receipt.controls.mode} · ${receipt.controls.frame} · ${receipt.controls.attention} · ${receipt.controls.depth}`;
+        fieldArtifactClass.textContent = receipt.artifact_class || "receipt";
+        fieldWorkflowMode.textContent = receipt.workflow_mode || "verify";
+        fieldMaterialClass.textContent = receipt.material_class || "n/a";
+        fieldStateClass.textContent = receipt.state_class || "n/a";
+        fieldCarrierResolution.textContent = receipt.carrier_resolution ? JSON.stringify(receipt.carrier_resolution) : "n/a";
+        fieldFrameScope.textContent = JSON.stringify(receipt.frame_scope_ref || { kind: receipt.frame_scope_kind || "event" });
         hashOverlay.innerHTML = [
           `<div class="mb-1 text-[10px] uppercase tracking-[0.24em] text-cyan-200/80">Integrity Overlay</div>`,
           `<div><span class="text-stone-500">scene</span> <span class="font-mono text-stone-100">${receipt.scene_hash}</span></div>`,

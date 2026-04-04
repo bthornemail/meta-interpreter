@@ -2,6 +2,7 @@
 #define TTC_FRAMEWORK_H
 
 #include "ttc_runtime.h"
+#include "ttc_carrier.h"
 #include "ttc_incidence.h"
 #include "ttc_grammar.h"
 #include "ttc_address.h"

@@ -62,6 +62,33 @@ bytes <-> transport
 bytes -> artifact
 ```
 
+## 3A. Primary Material Class System
+
+The primary material delineation for shared block and artifact surfaces is the existing four-class contract:
+
+```text
+xx/xX/Xx/XX
+```
+
+This class system is already materialized in:
+
+- `artifacts/{xx|xX|Xx|XX}/...`
+- `blocks/{xx|xX|Xx|XX}/...`
+- `scripts/leaf_contract.sh`
+
+Frozen class table:
+
+```text
+xx = affine / affine
+xX = affine / projective
+Xx = projective / affine
+XX = projective / projective
+```
+
+This is the primary material class system for shared artifact and block surfaces.
+
+Newer downstream symbolic-role language does not replace it.
+
 ## 4. Step-Centric Model
 
 ```text
@@ -106,6 +133,47 @@ projection must not influence check ordering
 transport must not influence check ordering
 artifact_hash must not influence check ordering
 ```
+
+## 5A. Address-First Reconstruction
+
+First-principles reconstruction begins with replay and address, not with emitted runtime labels.
+
+```text
+either the address exists
+or it does not
+```
+
+If the address exists, the lawful reconstruction order is:
+
+```text
+replay
+-> class
+-> point
+-> lane
+-> leaf
+-> address bits / address word
+-> witness materialization
+```
+
+Rules:
+
+```text
+x/X expresses closure-sided witness inside address construction
+xx/xX/Xx/XX expresses closure composition inside the primary material class system
+what follows xx/xX/Xx/XX is address decomposition, not runtime classification
+point, lane, leaf, and address words belong to address law
+```
+
+Surface reading:
+
+```text
+affine := locally instantiated address side
+projective := projected or shared address side
+```
+
+This distinction is carried first by x/X and then by xx/xX/Xx/XX.
+
+Emitted runtime witness labels may summarize later behavior, but they do not replace address law and they do not belong to first-principles ontology.
 
 ## 6. Structural Geometry
 
@@ -258,6 +326,27 @@ Invariant:
 
 ```text
 projection != canonical
+projection witnesses resolved structure; it does not define it
+```
+
+## 14. Downstream Symbolic Roles
+
+The following remain valid, but they are downstream symbolic-role views over the primary material class system:
+
+```text
+claim_artifact
+proposal_artifact
+closure_artifact
+receipt_artifact
+```
+
+Rules:
+
+```text
+claim_artifact, proposal_artifact, closure_artifact, and receipt_artifact are symbolic-role views over existing class surfaces, not a replacement taxonomy
+the role classes are orthogonal symbolic acts
+the four material classes are the primary surface and material contract
+future runtime and schema work must map role and material class explicitly rather than inferring one from the other
 ```
 
 ## 14. Transport Law
@@ -306,7 +395,7 @@ The downstream extension around the canonical stack is:
 canonical replay
 -> propagation
 -> witness
--> claim
+-> claim_artifact | proposal_artifact | closure_artifact | receipt_artifact
 -> carrier exchange
 -> provenance
 -> reconciliation
@@ -316,10 +405,14 @@ canonical replay
 Derived downstream relations:
 
 ```text
-derives(artifact + role + provenance, claim)
-carries(claim + carrier + receipt, federation_exchange)
+derives(witness + role + provenance, claim_artifact)
+derives(addressed_transition + role + provenance, proposal_artifact)
+derives(contract + role + provenance, closure_artifact)
+derives(event + validation + transfer, receipt_artifact)
+carries(artifact + carrier + translation, federation_exchange)
 compares(multiple_claims, reconciliation)
 classifies(reconciliation, accept | reject | defer | fork)
+derives(control_plane + step_identity + workflow, ui_frame_resolution)
 ```
 
 Rules:
@@ -331,6 +424,10 @@ federation does not create truth
 convergence does not create truth
 translation may change carrier, witness surface, transport form, or presentation form
 translation must not change canonical replay identity without explicit revision law
+artifacts are classified by symbolic role, not by encoding
+canonical embedding and scannable variants are translation forms of artifacts, not artifact types
+control-plane multiplex may distinguish artifact class, workflow scope, record, and field boundaries without creating truth
+ui_frame_resolution is downstream of replay and control resolution
 ```
 
 This extension is downstream of replay and does not replace the canonical flow.

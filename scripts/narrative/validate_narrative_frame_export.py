@@ -170,12 +170,23 @@ def main() -> int:
 
         if manifest.get("frame_total") != 8 or len(receipts) != 8:
             raise SystemExit("narrative frame export check failed: unexpected frame count")
+        if manifest.get("artifact_class") != "closure" or manifest.get("workflow_mode") != "apply":
+            raise SystemExit("narrative frame export check failed: manifest frame window resolution missing")
+        if manifest.get("material_class") != "xX" or manifest.get("state_class") != "LOW_LAW":
+            raise SystemExit("narrative frame export check failed: manifest carrier witness missing")
+        if not isinstance(manifest.get("carrier_resolution"), dict):
+            raise SystemExit("narrative frame export check failed: manifest carrier resolution missing")
         if receipts[0]["scene_hash"] == receipts[-1]["scene_hash"]:
             raise SystemExit("narrative frame export check failed: interpolation did not change scene hash")
         if receipts[0]["svg_hash"] == receipts[-1]["svg_hash"]:
             raise SystemExit("narrative frame export check failed: interpolation did not change SVG hash")
         if receipts[0]["aframe_scene_hash"] == receipts[-1]["aframe_scene_hash"]:
             raise SystemExit("narrative frame export check failed: interpolation did not change A-Frame scene hash")
+        for receipt in receipts:
+            if receipt.get("material_class") != "Xx" or receipt.get("state_class") != "LOW_LAW":
+                raise SystemExit("narrative frame export check failed: receipt carrier witness missing")
+            if not isinstance(receipt.get("carrier_resolution"), dict):
+                raise SystemExit("narrative frame export check failed: receipt carrier resolution missing")
 
         for index in range(8):
             frame_name = f"frame_{index:03d}.svg"
@@ -228,6 +239,14 @@ def main() -> int:
                 raise SystemExit("narrative frame export check failed: hero witness did not load")
             if snapshot.get("frame_index") != receipt["frame_index"]:
                 raise SystemExit("narrative frame export check failed: witness page frame index mismatch")
+            if snapshot.get("artifact_class") != "receipt" or snapshot.get("workflow_mode") != "verify":
+                raise SystemExit("narrative frame export check failed: witness page frame resolution mismatch")
+            if snapshot.get("material_class") != receipt.get("material_class"):
+                raise SystemExit("narrative frame export check failed: witness page material class mismatch")
+            if snapshot.get("state_class") != receipt.get("state_class"):
+                raise SystemExit("narrative frame export check failed: witness page state class mismatch")
+            if snapshot.get("carrier_resolution") != receipt.get("carrier_resolution"):
+                raise SystemExit("narrative frame export check failed: witness page carrier resolution mismatch")
             if snapshot.get("scene_hash") != receipt["scene_hash"]:
                 raise SystemExit("narrative frame export check failed: witness page scene hash mismatch")
             if snapshot.get("svg_hash") != receipt["svg_hash"]:
@@ -246,6 +265,10 @@ def main() -> int:
                 raise SystemExit("narrative frame export check failed: expand alone should not reveal operator detail")
             if expanded.get("scene_hash") != receipt["scene_hash"] or expanded.get("svg_hash") != receipt["svg_hash"]:
                 raise SystemExit("narrative frame export check failed: expand changed receipt identity")
+            if expanded.get("ui_frame_resolution") != receipt.get("ui_frame_resolution"):
+                raise SystemExit("narrative frame export check failed: expand changed ui frame resolution")
+            if expanded.get("carrier_resolution") != receipt.get("carrier_resolution"):
+                raise SystemExit("narrative frame export check failed: expand changed carrier resolution")
             if expanded.get("visible_hashes", {}).get("scene_hash") != receipt["scene_hash"]:
                 raise SystemExit("narrative frame export check failed: expand visible hashes mismatch")
 

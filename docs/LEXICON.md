@@ -15,6 +15,30 @@ Exception:
 
 `runtime -> timing -> incidence -> grammar -> address -> witness -> matrix -> projection -> transport -> barcode -> artifact`
 
+## Primary Material Class System
+
+The primary material class system for shared block and artifact surfaces is:
+
+```text
+xx/xX/Xx/XX
+```
+
+Frozen mapping from `scripts/leaf_contract.sh`:
+
+```text
+xx = affine / affine
+xX = affine / projective
+Xx = projective / affine
+XX = projective / projective
+```
+
+This four-class system is primary for:
+
+- `artifacts/{xx|xX|Xx|XX}/...`
+- `blocks/{xx|xX|Xx|XX}/...`
+
+Downstream symbolic-role terms do not replace it.
+
 ## Boundary
 
 Keywords:
@@ -59,6 +83,11 @@ Keywords:
 
 Definition:
 Canonical state evolution.
+
+Clarifications:
+- runtime may emit implementation-facing witness labels
+- emitted witness labels do not define address law
+- first-principles reconstruction begins with replay, class, point, lane, leaf, and address bits
 
 ## Timing
 
@@ -351,12 +380,26 @@ Placement:
 - `claim`, `receipt`, `provenance`, `contract`, `participant`, `peer`, `federation`, `reconciliation`, `convergence point` remain artifact-adjacent downstream terms
 - `translation` remains a downstream transport/projection/witness term
 
+Artifact classes:
+- `claim_artifact`: point artifact
+- `proposal_artifact`: path artifact
+- `closure_artifact`: constraint artifact
+- `receipt_artifact`: event witness artifact
+- `ui_frame_resolution`: downstream resolved frame object for projection consumers
+
 Rules:
 - claims do not create truth
 - receipts do not create truth
 - federation does not create truth
 - convergence does not create truth
 - translation may change carrier or presentation, but it must not silently change canonical replay identity
+- artifacts are classified by symbolic role, not by encoding
+- symbolic role remains downstream of the primary xx/xX/Xx/XX material class system
+- canonical embedding and scannable variants are translation forms of artifacts, not artifact types
+- UI framing is resolved from artifact class and canonical step identity, not from projection form
+- claim/proposal/closure/receipt is not the top-level constitutional split
+- affine/projective is the surface distinction
+- emitted runtime witness labels are downstream summaries, not ontology
 
 ## Critical Disambiguations
 
@@ -410,3 +453,7 @@ For structured data and process composition:
 - step_digest is the deterministic reduction of runtime event material used to seed incidence and structural expansion
 - peers exchange claims and receipts, not truth itself
 - truth remains canonical replay
+- claim_artifact = point artifact
+- proposal_artifact = path artifact
+- closure_artifact = constraint artifact
+- receipt_artifact = event witness artifact

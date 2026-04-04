@@ -118,6 +118,8 @@
     "JSON Canvas": "projection",
 
     "transport": "transport",
+    "affine": "transport",
+    "projective": "transport",
     "encode": "transport",
     "decode": "transport",
     "byte stream": "transport",
@@ -138,6 +140,10 @@
     "decoding camera": "barcode",
 
     "artifact": "artifact",
+    "xx": "artifact",
+    "xX": "artifact",
+    "Xx": "artifact",
+    "XX": "artifact",
     "package": "artifact",
     "payload": "artifact",
     "hash": "artifact",
@@ -147,6 +153,11 @@
     "verification": "artifact",
     "receipt": "artifact",
     "claim": "artifact",
+    "claim_artifact": "artifact",
+    "proposal_artifact": "artifact",
+    "closure_artifact": "artifact",
+    "receipt_artifact": "artifact",
+    "ui_frame_resolution": "projection",
     "provenance": "artifact",
     "contract": "artifact",
     "participant": "artifact",
@@ -204,6 +215,11 @@
     "rule": "These terms are downstream and do not revise the sovereign runtime-to-projection layer map.",
     "artifact_adjacent_terms": [
       "claim",
+      "claim_artifact",
+      "proposal_artifact",
+      "closure_artifact",
+      "receipt_artifact",
+      "ui_frame_resolution",
       "receipt",
       "provenance",
       "contract",
@@ -217,12 +233,19 @@
       "translation"
     ],
     "canonical_sentences": [
+      "xx/xX/Xx/XX is the primary material class system for shared artifact and block surfaces",
+      "either the address exists or it does not",
+      "first-principles reconstruction begins with replay, class, point, lane, leaf, and address bits",
       "claims do not create truth",
       "receipts do not create truth",
       "federation does not create truth",
       "convergence does not create truth",
       "translation must not change canonical replay identity without explicit revision law",
-      "peers exchange claims and receipts, not truth itself"
+      "peers exchange claims and receipts, not truth itself",
+      "artifacts are classified by symbolic role, not by encoding",
+      "symbolic role remains downstream of the primary xx/xX/Xx/XX material class system",
+      "canonical embedding and scannable variants are translation forms of artifacts, not artifact types",
+      "UI framing is resolved from artifact class and canonical step identity, not from projection form"
     ]
   }
 }

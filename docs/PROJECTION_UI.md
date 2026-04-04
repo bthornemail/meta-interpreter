@@ -29,6 +29,7 @@ It must never drive runtime or canonical decisions.
 
 Projection pages may present downstream claims, receipts, provenance notes, and reconciliation outcomes.
 Those displays remain non-authoritative witness surfaces only.
+UI framing is resolved from artifact class and canonical step identity, not from projection form.
 
 ## What The UI Surfaces Are
 
@@ -92,8 +93,16 @@ Frozen fields:
 - `data-ttc-incidence-layer`
 - `data-ttc-incidence-coords`
 - `data-ttc-incidence-coeff`
+- `data-ttc-artifact-class`
+- `data-ttc-workflow-mode`
+- `data-ttc-frame-scope-kind`
 
 These are derived from canonical runtime output. They are not canonical themselves.
+
+Shared projection snapshots also publish:
+
+- `resolved_step_identity`
+- `ui_frame_resolution`
 
 ## Shared Renderer
 
@@ -113,6 +122,7 @@ Responsibilities:
 - render the canvas surface
 - render the SVG witness surface
 - publish a projection-local snapshot for automated equivalence checking
+- publish the resolved frame object for difference-first checking
 
 Non-responsibilities:
 
@@ -232,7 +242,7 @@ That check loads:
 It asserts one downstream invariant:
 
 ```text
-same step -> same metadata -> same canvas
+same resolved frame -> same metadata -> same canvas
 ```
 
 And it additionally checks that SVG generated from the same selected step:

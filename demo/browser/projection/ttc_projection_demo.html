@@ -56,6 +56,16 @@
               data-ttc-incidence-layer="4"
               data-ttc-incidence-coords="3,0,1"
               data-ttc-incidence-coeff="4"
+              data-ttc-address="0x2E1D"
+              data-ttc-address-lane="14"
+              data-ttc-address-channel="2"
+              data-ttc-address-slot="29"
+              data-ttc-material-class="xx"
+              data-ttc-state-class="HIGH_EDIT"
+              data-ttc-carrier-resolution='{"resolved_scope":2,"resolvable_scope":0,"scope_rank":2,"closure_rank":2,"closure_class":"candidate_region","point_or_region":"region","deterministic_closure":false}'
+              data-ttc-artifact-class="claim"
+              data-ttc-workflow-mode="inspect"
+              data-ttc-frame-scope-kind="point"
             >
               <div class="flex items-start justify-between gap-3">
                 <div>
@@ -98,6 +108,16 @@
               data-ttc-incidence-layer="1"
               data-ttc-incidence-coords="1,0,0"
               data-ttc-incidence-coeff="1"
+              data-ttc-address="0x2E1D"
+              data-ttc-address-lane="14"
+              data-ttc-address-channel="2"
+              data-ttc-address-slot="29"
+              data-ttc-material-class="Xx"
+              data-ttc-state-class="LOW_LAW"
+              data-ttc-carrier-resolution='{"resolved_scope":1,"resolvable_scope":1,"scope_rank":1,"closure_rank":2,"closure_class":"deterministic_projection","point_or_region":"region","deterministic_closure":true}'
+              data-ttc-artifact-class="claim"
+              data-ttc-workflow-mode="inspect"
+              data-ttc-frame-scope-kind="point"
             >
               <div class="flex items-start justify-between gap-3">
                 <div>
@@ -140,6 +160,16 @@
               data-ttc-incidence-layer="13"
               data-ttc-incidence-coords="7,4,2"
               data-ttc-incidence-coeff="25740"
+              data-ttc-address="0x2E0E"
+              data-ttc-address-lane="14"
+              data-ttc-address-channel="2"
+              data-ttc-address-slot="14"
+              data-ttc-material-class="xx"
+              data-ttc-state-class="HIGH_EDIT"
+              data-ttc-carrier-resolution='{"resolved_scope":2,"resolvable_scope":0,"scope_rank":2,"closure_rank":2,"closure_class":"candidate_region","point_or_region":"region","deterministic_closure":false}'
+              data-ttc-artifact-class="claim"
+              data-ttc-workflow-mode="inspect"
+              data-ttc-frame-scope-kind="point"
             >
               <div class="flex items-start justify-between gap-3">
                 <div>
@@ -191,6 +221,22 @@
 
             <div class="grid gap-3 sm:grid-cols-2">
               <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
+                <div class="mb-2 text-xs uppercase tracking-[0.24em] text-neutral-500">Artifact Class</div>
+                <div id="panel-artifact-class" class="font-mono text-base text-neutral-100">claim</div>
+              </div>
+              <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
+                <div class="mb-2 text-xs uppercase tracking-[0.24em] text-neutral-500">Workflow</div>
+                <div id="panel-workflow-mode" class="font-mono text-base text-neutral-100">inspect</div>
+              </div>
+              <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
+                <div class="mb-2 text-xs uppercase tracking-[0.24em] text-neutral-500">Material Class</div>
+                <div id="panel-material-class" class="font-mono text-base text-neutral-100">xx</div>
+              </div>
+              <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
+                <div class="mb-2 text-xs uppercase tracking-[0.24em] text-neutral-500">State Class</div>
+                <div id="panel-state-class" class="font-mono text-base text-neutral-100">HIGH_EDIT</div>
+              </div>
+              <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
                 <div class="mb-2 text-xs uppercase tracking-[0.24em] text-neutral-500">Triplet</div>
                 <div id="panel-triplet" class="font-mono text-base text-neutral-100"></div>
               </div>
@@ -215,6 +261,16 @@
                 coefficient:
                 <span id="panel-coeff" class="font-mono text-neutral-300"></span>
               </div>
+            </div>
+
+            <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
+              <div class="mb-2 text-xs uppercase tracking-[0.24em] text-neutral-500">Frame Scope</div>
+              <div id="panel-frame-scope" class="break-all font-mono text-xs text-neutral-300">{"kind":"point"}</div>
+            </div>
+
+            <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
+              <div class="mb-2 text-xs uppercase tracking-[0.24em] text-neutral-500">Carrier Resolution</div>
+              <div id="panel-carrier-resolution" class="break-all font-mono text-xs text-neutral-300">{"resolved_scope":2,"resolvable_scope":0,"scope_rank":2,"closure_rank":2,"closure_class":"candidate_region","point_or_region":"region","deterministic_closure":false}</div>
             </div>
           </div>
         </section>

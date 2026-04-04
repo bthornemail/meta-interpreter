@@ -123,7 +123,26 @@ def main() -> int:
         if not baseline or not projection or not media:
             raise SystemExit("media check failed: required snapshot(s) missing")
 
-        fields = ["step", "digest", "triplet", "order", "seq56", "layer", "coords", "coeff", "canvas_data_url"]
+        fields = [
+            "step",
+            "digest",
+            "triplet",
+            "order",
+            "seq56",
+            "layer",
+            "coords",
+            "coeff",
+            "material_class",
+            "state_class",
+            "carrier_resolution",
+            "artifact_class",
+            "workflow_mode",
+            "frame_scope_kind",
+            "frame_scope_ref",
+            "resolved_step_identity",
+            "ui_frame_resolution",
+            "canvas_data_url",
+        ]
         for field in fields:
             if projection.get(field) != baseline.get(field):
                 raise SystemExit(
@@ -158,6 +177,13 @@ def main() -> int:
             "layer": media["layer"],
             "coords": media["coords"],
             "coeff": media["coeff"],
+            "material_class": media["material_class"],
+            "state_class": media["state_class"],
+            "carrier_resolution": media["carrier_resolution"],
+            "artifact_class": media["artifact_class"],
+            "workflow_mode": media["workflow_mode"],
+            "frame_scope_kind": media["frame_scope_kind"],
+            "resolved_step_identity": media["resolved_step_identity"],
             "media_profile": media["media_profile"],
             "supported_constraints_count": media["supported_constraints_count"],
         }

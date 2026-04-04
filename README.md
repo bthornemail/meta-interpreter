@@ -75,6 +75,7 @@ Normative observable forms are frozen in:
 Governance audit policy and exemptions are driven by:
 - [GOVERNANCE_ALLOWLIST.json](/home/main/Programs/meta-interpreter/docs/GOVERNANCE_ALLOWLIST.json)
 - [GOVERNANCE_RULES.json](/home/main/Programs/meta-interpreter/docs/GOVERNANCE_RULES.json)
+- [PROPAGATION_CLAIMS_AND_FEDERATION.md](/home/main/Programs/meta-interpreter/docs/PROPAGATION_CLAIMS_AND_FEDERATION.md)
 
 All documentation and code comments are subject to lexical, structural, and relational validation against the lexicon, ontology, and governance audit.
 The audit engine is not an authority source; it executes machine-readable governance data from the lexicon, ontology, surfaces, and rule registries.
@@ -82,6 +83,28 @@ The audit engine is not an authority source; it executes machine-readable govern
 `step_digest` is the deterministic reduction of runtime event material used to seed incidence and structural expansion. It is not grammar and it is not artifact identity.
 
 Surfaces expose derived representations of the system; they do not define its canonical state.
+
+Primary material class system for shared block and artifact surfaces:
+- `xx` = affine / affine
+- `xX` = affine / projective
+- `Xx` = projective / affine
+- `XX` = projective / projective
+
+This existing four-class contract in `artifacts/` and `blocks/` is primary.
+`claim_artifact`, `proposal_artifact`, `closure_artifact`, and `receipt_artifact` remain downstream symbolic-role vocabulary over that material system.
+
+The runtime witness stream now also exposes a downstream carrier-resolution witness:
+- `material_class` = portable `xx|xX|Xx|XX` class witness
+- `state_class` = `NULL_VOID|LOW_LAW|HIGH_EDIT`
+- `carrier_resolution` = resolved/resolvable scope rank plus closure form
+
+These fields witness rank/closure over typed carriers. They do not alter stepping law.
+
+Downstream symbolic artifact classes are frozen as:
+- `claim_artifact` = point artifact
+- `proposal_artifact` = path artifact
+- `closure_artifact` = constraint artifact
+- `receipt_artifact` = event witness artifact
 
 ## Unified Framework
 

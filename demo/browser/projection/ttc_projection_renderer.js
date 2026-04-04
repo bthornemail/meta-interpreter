@@ -13,6 +13,24 @@ function parseList(raw) {
     .map((value) => Number(value));
 }
 
+function parseJson(raw, fallback) {
+  if (!raw) {
+    return fallback;
+  }
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
+
+function formatCarrierResolution(carrierResolution) {
+  if (!carrierResolution) {
+    return "n/a";
+  }
+  return JSON.stringify(carrierResolution);
+}
+
 function escapeXml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -72,6 +90,25 @@ function writeDataset(stepEl, step) {
     return;
   }
 
+  const resolvedStepIdentity = step.resolved_step_identity || {
+    step: String(step.tick ?? step.step ?? 0),
+    step_digest: String(step.step_digest ?? step.digest ?? 0),
+    address: String(step.address_word ?? step.address ?? "0x0000"),
+    lane: String(step.address_lane ?? 0),
+    channel: String(step.address_channel ?? 0),
+    slot: String(step.address_slot ?? 0),
+  };
+  const uiFrameResolution = step.ui_frame_resolution || {
+    artifact_class: String(step.artifact_class || "claim"),
+    workflow_mode: String(step.workflow_mode || "inspect"),
+    step_identity: resolvedStepIdentity,
+    frame_scope: {
+      kind: String(step.frame_scope_kind || "point"),
+      ...(step.frame_scope_ref || {}),
+    },
+  };
+  const carrierResolution = step.carrier_resolution || null;
+
   stepEl.dataset.ttcStep = String(step.tick ?? step.step ?? 0);
   stepEl.dataset.ttcDigest = String(step.step_digest ?? step.digest ?? 0);
   stepEl.dataset.ttcTriplet = (step.triplet || []).join(",");
@@ -90,6 +127,21 @@ function writeDataset(stepEl, step) {
   }
 
   stepEl.dataset.ttcIncidenceCoeff = String(step.incidence_coeff ?? step.coeff ?? 0);
+  stepEl.dataset.ttcAddress = String(resolvedStepIdentity.address || "0x0000");
+  stepEl.dataset.ttcAddressLane = String(resolvedStepIdentity.lane || 0);
+  stepEl.dataset.ttcAddressChannel = String(resolvedStepIdentity.channel || 0);
+  stepEl.dataset.ttcAddressSlot = String(resolvedStepIdentity.slot || 0);
+  stepEl.dataset.ttcMaterialClass = String(step.material_class || "");
+  stepEl.dataset.ttcStateClass = String(step.state_class || "");
+  stepEl.dataset.ttcCarrierResolution = carrierResolution ? JSON.stringify(carrierResolution) : "";
+  stepEl.dataset.ttcArtifactClass = String(uiFrameResolution.artifact_class || step.artifact_class || "claim");
+  stepEl.dataset.ttcWorkflowMode = String(uiFrameResolution.workflow_mode || step.workflow_mode || "inspect");
+  stepEl.dataset.ttcFrameScopeKind = String(
+    uiFrameResolution.frame_scope?.kind || step.frame_scope_kind || "point"
+  );
+  stepEl.dataset.ttcFrameScopeRef = JSON.stringify(uiFrameResolution.frame_scope || step.frame_scope_ref || { kind: "point" });
+  stepEl.dataset.ttcResolvedStepIdentity = JSON.stringify(resolvedStepIdentity);
+  stepEl.dataset.ttcUiFrameResolution = JSON.stringify(uiFrameResolution);
 }
 
 function readProjection(stepEl) {
@@ -102,6 +154,68 @@ function readProjection(stepEl) {
     layer: Number(stepEl.dataset.ttcIncidenceLayer),
     coords: parseList(stepEl.dataset.ttcIncidenceCoords),
     coeff: stepEl.dataset.ttcIncidenceCoeff,
+    address: stepEl.dataset.ttcAddress || "0x0000",
+    lane: stepEl.dataset.ttcAddressLane || "0",
+    channel: stepEl.dataset.ttcAddressChannel || "0",
+    slot: stepEl.dataset.ttcAddressSlot || "0",
+    material_class: stepEl.dataset.ttcMaterialClass || null,
+    state_class: stepEl.dataset.ttcStateClass || null,
+    carrier_resolution: parseJson(stepEl.dataset.ttcCarrierResolution, null),
+    artifact_class: stepEl.dataset.ttcArtifactClass || "claim",
+    workflow_mode: stepEl.dataset.ttcWorkflowMode || "inspect",
+    frame_scope_kind: stepEl.dataset.ttcFrameScopeKind || "point",
+    frame_scope_ref: parseJson(stepEl.dataset.ttcFrameScopeRef, { kind: "point" }),
+    resolved_step_identity: parseJson(stepEl.dataset.ttcResolvedStepIdentity, null),
+    ui_frame_resolution: parseJson(stepEl.dataset.ttcUiFrameResolution, null),
+  };
+}
+
+function resolveProjectionStepIdentity(projection) {
+  if (projection.resolved_step_identity) {
+    return projection.resolved_step_identity;
+  }
+  return {
+    step: String(projection.step),
+    step_digest: String(projection.digest),
+    address: String(projection.address || "0x0000"),
+    lane: String(projection.lane || "0"),
+    channel: String(projection.channel || "0"),
+    slot: String(projection.slot || "0"),
+  };
+}
+
+function resolveProjectionWorkflow(projection) {
+  if (projection.ui_frame_resolution?.workflow_mode) {
+    return projection.ui_frame_resolution.workflow_mode;
+  }
+  switch (projection.artifact_class) {
+    case "proposal":
+      return "evaluate";
+    case "closure":
+      return "apply";
+    case "receipt":
+      return "verify";
+    case "claim":
+    default:
+      return "inspect";
+  }
+}
+
+function resolveProjectionUiFrame(projection) {
+  if (projection.ui_frame_resolution) {
+    return projection.ui_frame_resolution;
+  }
+  const scopeKind = projection.frame_scope_kind || "point";
+  const baseScope = projection.frame_scope_ref || { kind: scopeKind };
+  let frameScope = { ...baseScope, kind: baseScope.kind || scopeKind };
+  if (frameScope.kind === "point" && !frameScope.point) {
+    frameScope.point = `p${projection.triplet[0] ?? 0}`;
+  }
+  return {
+    artifact_class: projection.artifact_class || "claim",
+    workflow_mode: resolveProjectionWorkflow(projection),
+    step_identity: resolveProjectionStepIdentity(projection),
+    frame_scope: frameScope,
   };
 }
 
@@ -146,6 +260,8 @@ function publishSnapshot(root, projection, canvas) {
     root.appendChild(snapshotEl);
   }
 
+  const resolvedStepIdentity = resolveProjectionStepIdentity(projection);
+  const uiFrameResolution = resolveProjectionUiFrame(projection);
   const snapshot = {
     step: String(projection.step),
     digest: String(projection.digest),
@@ -155,6 +271,15 @@ function publishSnapshot(root, projection, canvas) {
     layer: String(projection.layer),
     coords: `(${projection.coords.join(", ")})`,
     coeff: String(projection.coeff),
+    material_class: projection.material_class,
+    state_class: projection.state_class,
+    carrier_resolution: projection.carrier_resolution,
+    resolved_step_identity: resolvedStepIdentity,
+    artifact_class: uiFrameResolution.artifact_class,
+    workflow_mode: uiFrameResolution.workflow_mode,
+    frame_scope_kind: uiFrameResolution.frame_scope?.kind || projection.frame_scope_kind || "point",
+    frame_scope_ref: uiFrameResolution.frame_scope || projection.frame_scope_ref || { kind: "point" },
+    ui_frame_resolution: uiFrameResolution,
     canvas_data_url: canvas ? canvas.toDataURL() : null,
   };
 
@@ -232,6 +357,14 @@ export function readTtcProjection(stepEl) {
   return readProjection(stepEl);
 }
 
+export function resolveTtcProjectionStepIdentity(stepEl) {
+  return resolveProjectionStepIdentity(readProjection(stepEl));
+}
+
+export function resolveTtcProjectionUiFrame(stepEl) {
+  return resolveProjectionUiFrame(readProjection(stepEl));
+}
+
 export function renderTtcProjectionSvg(projection) {
   const highlightColor = "#38bdf8";
   const orderColors = ["#34d399", "#38bdf8", "#f472b6"];
@@ -285,6 +418,17 @@ export function renderTtcProjection(stepEl, step) {
   updatePanel(root, "#panel-coords", `(${projection.coords.join(", ")})`);
   updatePanel(root, "#panel-coeff", String(projection.coeff));
   updatePanel(root, "#panel-seq56-badge", `seq56 ${projection.seq56}`);
+  updatePanel(root, "#panel-material-class", projection.material_class || "n/a");
+  updatePanel(root, "#panel-state-class", projection.state_class || "n/a");
+  updatePanel(root, "#panel-carrier-resolution", formatCarrierResolution(projection.carrier_resolution));
+  const uiFrameResolution = resolveProjectionUiFrame(projection);
+  updatePanel(root, "#panel-artifact-class", uiFrameResolution.artifact_class);
+  updatePanel(root, "#panel-workflow-mode", uiFrameResolution.workflow_mode);
+  updatePanel(
+    root,
+    "#panel-frame-scope",
+    JSON.stringify(uiFrameResolution.frame_scope)
+  );
 
   if (canvas) {
     paintCanvas(canvas, projection);

@@ -40,12 +40,78 @@ static uint8_t *read_all_stdin(size_t *out_len) {
     return buf;
 }
 
+typedef enum {
+    TTC_ARTIFACT_CLASS_CLAIM = 0,
+    TTC_ARTIFACT_CLASS_PROPOSAL = 1,
+    TTC_ARTIFACT_CLASS_CLOSURE = 2,
+    TTC_ARTIFACT_CLASS_RECEIPT = 3
+} ttc_artifact_class_state;
+
+static const char *artifact_class_name(ttc_artifact_class_state cls) {
+    switch (cls) {
+        case TTC_ARTIFACT_CLASS_PROPOSAL: return "proposal";
+        case TTC_ARTIFACT_CLASS_CLOSURE: return "closure";
+        case TTC_ARTIFACT_CLASS_RECEIPT: return "receipt";
+        case TTC_ARTIFACT_CLASS_CLAIM:
+        default:
+            return "claim";
+    }
+}
+
+static const char *workflow_mode_name(ttc_artifact_class_state cls) {
+    switch (cls) {
+        case TTC_ARTIFACT_CLASS_PROPOSAL: return "evaluate";
+        case TTC_ARTIFACT_CLASS_CLOSURE: return "apply";
+        case TTC_ARTIFACT_CLASS_RECEIPT: return "verify";
+        case TTC_ARTIFACT_CLASS_CLAIM:
+        default:
+            return "inspect";
+    }
+}
+
+static const char *frame_scope_kind_name(ttc_artifact_class_state cls) {
+    switch (cls) {
+        case TTC_ARTIFACT_CLASS_PROPOSAL: return "path";
+        case TTC_ARTIFACT_CLASS_CLOSURE: return "constraint";
+        case TTC_ARTIFACT_CLASS_RECEIPT: return "event";
+        case TTC_ARTIFACT_CLASS_CLAIM:
+        default:
+            return "point";
+    }
+}
+
+static const char *contract_ref_name(ttc_artifact_class_state cls) {
+    switch (cls) {
+        case TTC_ARTIFACT_CLASS_PROPOSAL: return "control.gs.evaluate.v1";
+        case TTC_ARTIFACT_CLASS_CLOSURE: return "control.rs.apply.v1";
+        case TTC_ARTIFACT_CLASS_RECEIPT: return "control.us.verify.v1";
+        case TTC_ARTIFACT_CLASS_CLAIM:
+        default:
+            return "control.fs.inspect.v1";
+    }
+}
+
+static ttc_artifact_class_state class_from_grammar_role(ttc_grammar_role role, ttc_artifact_class_state prior) {
+    switch (role) {
+        case TTC_GRAMMAR_ROLE_FS: return TTC_ARTIFACT_CLASS_CLAIM;
+        case TTC_GRAMMAR_ROLE_GS: return TTC_ARTIFACT_CLASS_PROPOSAL;
+        case TTC_GRAMMAR_ROLE_RS: return TTC_ARTIFACT_CLASS_CLOSURE;
+        case TTC_GRAMMAR_ROLE_US: return TTC_ARTIFACT_CLASS_RECEIPT;
+        case TTC_GRAMMAR_ROLE_PAYLOAD:
+        case TTC_GRAMMAR_ROLE_ESC:
+        case TTC_GRAMMAR_ROLE_NULL:
+        default:
+            return prior;
+    }
+}
+
 static int cmd_runtime(int argc, char **argv) {
     ttc_runtime_config config;
     ttc_runtime rt;
     int i;
     int ch;
     uint8_t escape_depth = 0u;
+    ttc_artifact_class_state active_class = TTC_ARTIFACT_CLASS_CLAIM;
 
     ttc_runtime_config_default(&config);
     for (i = 0; i < argc; i++) {
@@ -65,6 +131,17 @@ static int cmd_runtime(int argc, char **argv) {
         ttc_incidence incidence;
         ttc_grammar_state grammar;
         ttc_address address;
+        ttc_carrier_resolution carrier_resolution;
+        ttc_artifact_class_state record_class;
+        const char *artifact_class;
+        const char *workflow_mode;
+        const char *frame_scope_kind;
+        const char *contract_ref;
+        const char *material_class;
+        const char *state_class;
+        const char *closure_class;
+        const char *point_or_region;
+        unsigned long long source_step;
         if (ttc_runtime_step(&rt, (uint8_t)ch, &ev) != 0) {
             return 1;
         }
@@ -74,7 +151,20 @@ static int cmd_runtime(int argc, char **argv) {
         if (ttc_address_from_structure(&incidence, &grammar, ev.winner, &address) != 0) {
             return 1;
         }
-        printf("{\"rule_version\":%d,\"tick\":%llu,\"input\":%u,\"state8\":%u,\"curr_state\":%llu,\"step_digest\":%llu,\"triplet\":[%u,%u,%u],\"order\":[%u,%u,%u],\"seq56\":%u,\"incidence_layer\":%u,\"incidence_x\":%u,\"incidence_y\":%u,\"incidence_z\":%u,\"incidence_coeff\":%u,\"grammar_role\":%u,\"escape_depth\":%u,\"address_slot\":%u,\"address_lane\":%u,\"address_channel\":%u}\n",
+        record_class = class_from_grammar_role(grammar.role, active_class);
+        active_class = record_class;
+        ttc_carrier_resolution_from_tuple(&ev, &grammar, &address, &carrier_resolution);
+        artifact_class = artifact_class_name(record_class);
+        workflow_mode = workflow_mode_name(record_class);
+        frame_scope_kind = frame_scope_kind_name(record_class);
+        contract_ref = contract_ref_name(record_class);
+        material_class = ttc_material_class_name(carrier_resolution.material_class);
+        state_class = ttc_state_class_name(carrier_resolution.state_class);
+        closure_class = ttc_carrier_closure_class_name(&carrier_resolution);
+        point_or_region = ttc_carrier_point_or_region_name(&carrier_resolution);
+        source_step = ev.tick > 0u ? (unsigned long long)(ev.tick - 1u) : 0ull;
+
+        printf("{\"rule_version\":%d,\"tick\":%llu,\"input\":%u,\"state8\":%u,\"curr_state\":%llu,\"step_digest\":%llu,\"triplet\":[%u,%u,%u],\"order\":[%u,%u,%u],\"seq56\":%u,\"incidence_layer\":%u,\"incidence_x\":%u,\"incidence_y\":%u,\"incidence_z\":%u,\"incidence_coeff\":%u,\"grammar_role\":%u,\"escape_depth\":%u,\"address_slot\":%u,\"address_lane\":%u,\"address_channel\":%u,\"address_orient\":%u,\"address_quadrant\":%u,\"address_word\":\"0x%04X\",\"material_class\":\"%s\",\"state_class\":\"%s\",\"carrier_resolution\":{\"resolved_scope\":%u,\"resolvable_scope\":%u,\"scope_rank\":%u,\"closure_rank\":%u,\"closure_class\":\"%s\",\"point_or_region\":\"%s\",\"deterministic_closure\":%s},\"artifact_class\":\"%s\",\"workflow_mode\":\"%s\",\"frame_scope_kind\":\"%s\",\"frame_scope_ref\":",
                (int)ev.rule_version, (unsigned long long)ev.tick, ev.input, ev.state8,
                (unsigned long long)ev.curr_state, (unsigned long long)ev.step_digest,
                (unsigned)ev.triplet[0], (unsigned)ev.triplet[1], (unsigned)ev.triplet[2],
@@ -82,7 +172,55 @@ static int cmd_runtime(int argc, char **argv) {
                (unsigned)ev.seq56,
                (unsigned)incidence.layer, (unsigned)incidence.x, (unsigned)incidence.y, (unsigned)incidence.z,
                incidence.trinomial_coeff, (unsigned)grammar.role, (unsigned)grammar.escape_depth,
-               (unsigned)address.slot, (unsigned)address.lane, (unsigned)address.channel);
+               (unsigned)address.slot, (unsigned)address.lane, (unsigned)address.channel,
+               (unsigned)address.orient, (unsigned)address.quadrant, (unsigned)address.addr_word, material_class, state_class,
+               (unsigned)carrier_resolution.resolved_scope, (unsigned)carrier_resolution.resolvable_scope, (unsigned)carrier_resolution.scope_rank,
+               (unsigned)carrier_resolution.closure_rank, closure_class, point_or_region,
+               carrier_resolution.deterministic_closure ? "true" : "false",
+               artifact_class, workflow_mode, frame_scope_kind);
+        switch (record_class) {
+            case TTC_ARTIFACT_CLASS_PROPOSAL:
+                printf("{\"kind\":\"path\",\"source_step\":\"%llu\",\"target_step\":\"%llu\",\"address\":\"0x%04X\",\"contract\":\"%s\"}",
+                       source_step, (unsigned long long)ev.tick, (unsigned)address.addr_word, contract_ref);
+                break;
+            case TTC_ARTIFACT_CLASS_CLOSURE:
+                printf("{\"kind\":\"constraint\",\"closure_scope\":\"lane:%u/channel:%u/slot:%u\",\"contract\":\"%s\"}",
+                       (unsigned)address.lane, (unsigned)address.channel, (unsigned)address.slot, contract_ref);
+                break;
+            case TTC_ARTIFACT_CLASS_RECEIPT:
+                printf("{\"kind\":\"event\",\"receipt_event\":\"tick:%llu:input:%u\",\"object_step\":\"%llu\",\"contract\":\"%s\"}",
+                       (unsigned long long)ev.tick, (unsigned)ev.input, (unsigned long long)ev.tick, contract_ref);
+                break;
+            case TTC_ARTIFACT_CLASS_CLAIM:
+            default:
+                printf("{\"kind\":\"point\",\"point\":\"p%u\",\"address\":\"0x%04X\"}",
+                       (unsigned)ev.winner, (unsigned)address.addr_word);
+                break;
+        }
+        printf(",\"resolved_step_identity\":{\"step\":\"%llu\",\"step_digest\":\"%llu\",\"address\":\"0x%04X\",\"lane\":\"%u\",\"channel\":\"%u\",\"slot\":\"%u\"},\"ui_frame_resolution\":{\"artifact_class\":\"%s\",\"workflow_mode\":\"%s\",\"step_identity\":{\"step\":\"%llu\",\"step_digest\":\"%llu\",\"address\":\"0x%04X\",\"lane\":\"%u\",\"channel\":\"%u\",\"slot\":\"%u\"},\"frame_scope\":",
+               (unsigned long long)ev.tick, (unsigned long long)ev.step_digest, (unsigned)address.addr_word,
+               (unsigned)address.lane, (unsigned)address.channel, (unsigned)address.slot,
+               artifact_class, workflow_mode,
+               (unsigned long long)ev.tick, (unsigned long long)ev.step_digest, (unsigned)address.addr_word,
+               (unsigned)address.lane, (unsigned)address.channel, (unsigned)address.slot);
+        switch (record_class) {
+            case TTC_ARTIFACT_CLASS_PROPOSAL:
+                printf("{\"kind\":\"path\",\"source_step\":\"%llu\",\"target_step\":\"%llu\",\"contract\":\"%s\"}}}\n",
+                       source_step, (unsigned long long)ev.tick, contract_ref);
+                break;
+            case TTC_ARTIFACT_CLASS_CLOSURE:
+                printf("{\"kind\":\"constraint\",\"closure_scope\":\"lane:%u/channel:%u/slot:%u\",\"contract\":\"%s\"}}}\n",
+                       (unsigned)address.lane, (unsigned)address.channel, (unsigned)address.slot, contract_ref);
+                break;
+            case TTC_ARTIFACT_CLASS_RECEIPT:
+                printf("{\"kind\":\"event\",\"receipt_event\":\"tick:%llu:input:%u\",\"contract\":\"%s\"}}}\n",
+                       (unsigned long long)ev.tick, (unsigned)ev.input, contract_ref);
+                break;
+            case TTC_ARTIFACT_CLASS_CLAIM:
+            default:
+                printf("{\"kind\":\"point\",\"point\":\"p%u\"}}}\n", (unsigned)ev.winner);
+                break;
+        }
     }
     return 0;
 }
