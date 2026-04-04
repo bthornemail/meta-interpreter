@@ -8,11 +8,15 @@
   </head>
   <body class="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(34,211,238,0.12),_transparent_28%),linear-gradient(180deg,_#09090b_0%,_#111827_56%,_#050816_100%)] text-stone-100">
     <!--
-      Narrative frame witness page
+      PROJECTION-ONLY SURFACE
 
-      This page is a projection witness over exported frame artifacts and
-      receipts. Canonical authority remains upstream; the page verifies and
-      presents, but does not define.
+      This page consumes derived export artifacts only:
+      - manifest.json
+      - projection_receipts.ndjson
+      - exported frame witnesses
+
+      It must not read canonical narrative sources directly.
+      It verifies and presents downstream projection artifacts, but does not define authority.
     -->
     <main class="relative mx-auto flex min-h-screen max-w-7xl flex-col gap-6 overflow-hidden px-4 py-6 sm:px-6 sm:py-8">
       <div aria-hidden="true" class="pointer-events-none absolute inset-0">

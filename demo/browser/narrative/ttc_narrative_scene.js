@@ -547,3 +547,9 @@ function roundRect(ctx, x, y, width, height, radius) {
   ctx.quadraticCurveTo(x, y, x + radius, y);
   ctx.closePath();
 }
+// PROJECTION-ONLY SCENE LAYER
+//
+// This module operates only on already-derived narrative witness data.
+// It must not read canonical narrative sources directly.
+// Its job is to normalize downstream scene state and render projection surfaces.
+// Scene identity is canonical for projection; renderers must agree on it.

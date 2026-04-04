@@ -17,6 +17,26 @@ Public package for the TTC unified framework.
 - `demo/samples/` reproducible sample inputs
 - `scripts/narrative/`, `scripts/projection/`, `scripts/governance/` role-grouped operational tooling
 
+## Narrative Lane
+
+The narrative lane is intentionally split by role:
+
+- `demo/narrative/canonical/` — authoritative narrative inputs
+- `demo/narrative/derived/` — reproducible downstream narrative artifacts
+- `demo/browser/narrative/` — projection-only witness surfaces
+
+This separation is strict:
+
+- canonical inputs define truth
+- derived artifacts reproduce and witness that truth downstream
+- browser pages verify and present; they do not define
+
+## Demo Artifact Resolution Rule
+
+Browser narrative/projection pages resolve exported artifacts relative to the demo root, not relative to the page file location.
+
+This keeps artifact loading stable across the browser lane after directory reorganization.
+
 ## Build
 
 ```bash
