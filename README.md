@@ -4,28 +4,28 @@ Public package for the TTC unified framework.
 
 ## Layout
 
-- `src/` framework sources
-- `docs/` canonical public spec
-- `research/` non-normative derivation material
-- `artifacts/` canonical trie outputs: `{xx|xX|Xx|XX}/{p0|p1|p2}/{lane}/{leaf}/`
-- `blocks/registry/` canonical block lookup tables
-- `blocks/archive/` archived legacy block sources
-- `bin/` compiled binaries (generated)
-- `demo/browser/` projection, narrative, and server witness surfaces
-- `demo/narrative/canonical/` authoritative narrative inputs
-- `demo/narrative/derived/` downstream narrative witness artifacts
-- `demo/samples/` reproducible sample inputs
-- `scripts/narrative/`, `scripts/projection/`, `scripts/governance/` role-grouped operational tooling
-- `deploy/nginx/`, `deploy/systemd/`, `deploy/scripts/` deployment assets for medium/large/small host materialization
-- `deploy/fano_service_topology.json` deployment responsibility/communication witness
+```
+runtime/           authoritative
+  kernel/          C/awk sources
+  blocks/          canonical block registry
+  contracts/        normative specs
+substrate/         execution support
+system-image/      deployment manifests
+surfaces/          downstream projections
+artifacts/         generated outputs
+scripts/           operational tooling
+docs/             descriptive only
+research/         experiments
+archive/           frozen legacy
+```
 
 ## Narrative Lane
 
 The narrative lane is intentionally split by role:
 
-- `demo/narrative/canonical/` — authoritative narrative inputs
-- `demo/narrative/derived/` — reproducible downstream narrative artifacts
-- `demo/browser/narrative/` — projection-only witness surfaces
+- `surfaces/narrative/canonical/` — authoritative narrative inputs
+- `surfaces/narrative/derived/` — reproducible downstream narrative artifacts
+- `surfaces/browser/narrative/` — projection-only witness surfaces
 
 This separation is strict:
 
@@ -90,7 +90,7 @@ Primary material class system for shared block and artifact surfaces:
 - `Xx` = projective / affine
 - `XX` = projective / projective
 
-This existing four-class contract in `artifacts/` and `blocks/` is primary.
+This existing four-class contract in `runtime/blocks/ is primary.
 `claim_artifact`, `proposal_artifact`, `closure_artifact`, and `receipt_artifact` remain downstream symbolic-role vocabulary over that material system.
 
 The runtime witness stream now also exposes a downstream carrier-resolution witness:
@@ -139,14 +139,14 @@ Active surfaces hard-fail. `archive/` and `research/` are warn-only in v1.
 
 Open the frozen projection demo at:
 
-- `demo/browser/projection/ttc_projection_demo.html`
+- `surfaces/browser/projection/ttc_projection_demo.html`
 
 It is a projection-only surface using embedded `data-ttc-*` metadata plus canvas rendering. It does not compute runtime state.
 
 Open the NDJSON adapter demo at:
 
-- `demo/browser/projection/ttc_projection_stream.html`
-- `demo/samples/ttc_runtime_sample.ndjson` is a real runtime-emitted sample the stream demo can consume unchanged.
+- `surfaces/browser/projection/ttc_projection_stream.html`
+- `surfaces/samples/ttc_runtime_sample.ndjson` is a real runtime-emitted sample the stream demo can consume unchanged.
 
 It consumes runtime NDJSON, updates the same frozen `data-ttc-*` contract, and reuses the projection renderer without computing runtime state.
 The projection demos are schema consumers, not schema definers.
@@ -158,12 +158,12 @@ See `docs/MATRIX_SEAL_PAGE_SPEC.md` for the generated matrix seal page specifica
 
 Open the live SSE demo at:
 
-- `demo/browser/projection/ttc_projection_live.html`
+- `surfaces/browser/projection/ttc_projection_live.html`
 
 Start the local bridge:
 
 ```bash
-python3 demo/browser/servers/ttc_runtime_stream_server.py --port 8000
+python3 surfaces/browser/servers/ttc_runtime_stream_server.py --port 8000
 ```
 
 Then open:
@@ -179,7 +179,7 @@ A-Frame is a downstream 3D projection consumer over the same normalized scene ob
 
 Open the timed media page at:
 
-- `demo/browser/projection/ttc_projection_media.html`
+- `surfaces/browser/projection/ttc_projection_media.html`
 
 It keeps canvas as the primary live surface while adding:
 - MSE-backed timed media playback
@@ -200,16 +200,16 @@ make media-check
 The narrative corpus can be bound into an advisory witness artifact without changing canonical chapter NDJSON.
 
 - primary public entry surface:
-  - `demo/browser/narrative/ttc_narrative_frame_witness.html`
+  - `surfaces/browser/narrative/ttc_narrative_frame_witness.html`
 - witness page:
-  - `demo/browser/narrative/ttc_narrative_witness.html`
+  - `surfaces/browser/narrative/ttc_narrative_witness.html`
 - 3D witness page:
-  - `demo/browser/narrative/ttc_narrative_aframe.html`
+  - `surfaces/browser/narrative/ttc_narrative_aframe.html`
 - binding spec:
   - `docs/NARRATIVE_WITNESS_BINDING.md`
 - derived artifacts:
-  - `demo/narrative/derived/narrative.bound.v0.ndjson`
-  - `demo/narrative/derived/narrative_bound_bundle.js`
+  - `surfaces/narrative/derived/narrative.bound.v0.ndjson`
+  - `surfaces/narrative/derived/narrative_bound_bundle.js`
 
 The narrative frame witness page is the primary public narrative entry surface.
 It consumes exported frame witnesses and projection receipts only. Canonical narrative chapters remain authoritative.
@@ -278,7 +278,7 @@ make seal-page INPUT=artifact.bin OUTPUT=artifacts/seal/matrix_seal_page.html
 Working sample:
 
 ```bash
-make seal-page INPUT=demo/samples/ttc_payload_sample.bin OUTPUT=artifacts/seal/matrix_seal_page.html
+make seal-page INPUT=surfaces/samples/ttc_payload_sample.bin OUTPUT=artifacts/seal/matrix_seal_page.html
 ```
 
 Optional overrides:
@@ -312,23 +312,13 @@ make pipe
 
 Host-targeted deployment assets are materialized in:
 
-- `deploy/nginx/medium/` — public nginx bootstrap and TLS configs
-- `deploy/nginx/small/` — download host nginx bootstrap and TLS configs
-- `deploy/systemd/ttc-runtime-sse.service` — SSE bridge unit for `large`
-- `deploy/scripts/deploy-medium.sh`
-- `deploy/scripts/deploy-large.sh`
-- `deploy/scripts/deploy-small.sh`
-
-Default host split:
-
-- `medium` serves the public browser lane at `universallifeprotocol.com`
-- `large` runs runtime-backed services such as SSE
-- `small` serves download/file artifacts at `matroid-garden.com`
-
-Deployment responsibility separation is also witnessed through a frozen Fano topology:
-
-- document: [DEPLOYMENT_FANO_TOPOLOGY.md](/home/main/Programs/meta-interpreter/docs/DEPLOYMENT_FANO_TOPOLOGY.md)
-- artifact: [fano_service_topology.json](/home/main/Programs/meta-interpreter/deploy/fano_service_topology.json)
+- `system-image/deploy/nginx/medium/` — public nginx bootstrap and TLS configs
+- `system-image/deploy/nginx/small/` — download host nginx bootstrap and TLS configs
+- `system-image/deploy/systemd/ttc-runtime-sse.service` — SSE bridge unit for `large`
+- `system-image/deploy/scripts/deploy-medium.sh`
+- `system-image/deploy/scripts/deploy-large.sh`
+- `system-image/deploy/scripts/deploy-small.sh`
+- artifact: [fano_service_topology.json](/home/main/Programs/meta-interpreter/system-image/deploy/fano_service_topology.json)
 
 This topology is downstream deployment/governance metadata only. It expresses lawful adjacency and separation of deployment roles, but it does not replace nginx, systemd, DNS, or runtime truth.
 
@@ -411,7 +401,7 @@ By default it also writes directly to trie leaf paths:
   - `.negative`
 
 And a deterministic blocks mirror leaf with the same fixed contract:
-- `blocks/{xx|xX|Xx|XX}/{p0|p1|p2}/{lane}/{leaf}/`
+- `runtime/blocks/{xx|xX|Xx|XX}/{p0|p1|p2}/{lane}/{leaf}/`
   - `.canon`
   - `.block`
   - `.artifact`
@@ -503,7 +493,7 @@ cat artifact.bin | ./bin/ttc_framework aztec-encode --ascii   # compatibility al
 
 BIP-32-style sparse radix trie materialization from bytes:
 - canonical path law: `artifacts/{xx|xX|Xx|XX}/{p0|p1|p2}/{00..3b}/{0000..13af}/`
-- lane namespace source: `blocks/registry/divisors_5040.tsv` (60 divisors of `5040`)
+- lane namespace source: `runtime/blocks/registry/divisors_5040.tsv` (60 divisors of `5040`)
 
 ```bash
 make factoradic-smoke

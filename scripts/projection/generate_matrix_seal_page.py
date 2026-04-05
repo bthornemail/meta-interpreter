@@ -504,7 +504,7 @@ def main() -> int:
         print(
             f"error: input payload not found: {input_path}\n"
             "Provide a path to canonical payload bytes, for example:\n"
-            "  make seal-page INPUT=demo/samples/ttc_payload_sample.bin OUTPUT=artifacts/seal/matrix_seal_page.html",
+            "  make seal-page INPUT=surfaces/samples/ttc_payload_sample.bin OUTPUT=artifacts/seal/matrix_seal_page.html",
             file=sys.stderr,
         )
         return 1

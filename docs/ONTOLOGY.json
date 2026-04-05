@@ -54,7 +54,7 @@
     },
     "material_surfaces": [
       "artifacts/{xx|xX|Xx|XX}/...",
-      "blocks/{xx|xX|Xx|XX}/..."
+      "runtime/blocks/{xx|xX|Xx|XX}/..."
     ],
     "rules": [
       "xx/xX/Xx/XX is the primary material class system for shared artifact and block surfaces",

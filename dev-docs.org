@@ -11,6 +11,21 @@
 - Boundary: may explain runtime law; may not replace it
 - Entry role: constitutional root for the Org conversation surface
 
+** Audit State
+
+- audit_scope: embedded corpus | live repo
+- audit_time: 2026-04-05
+- repo_state: post-cleanup
+- symlink_state: removed
+- execution_mode: executed
+- layout_status: pass
+- legacy_path_status: pass (canonical paths only)
+- symbolic_reference_status: present
+- symbolic_reference_count: 1
+- execution_scope: smoke
+- entrypoint_coverage: partial (22 items classified: 12 pass, 10 skip, 0 fail, 0 blocked, 0 missing)
+- repair_actions_applied: true
+
 This file is the maintained entrypoint for the framework conversation.
 It is conversational like an RFC, but it is still rule-bound.
 
@@ -63,9 +78,128 @@ Compile-mode sections in the role files SHOULD use these drawers:
 - =:convergence_class:= =DTIME|NTIME|PSPACE|EXPTIME|unknown=
 - =:convergence_behavior:= =deterministic|branching|bounded-search|exponential|unknown=
 - =:status:= =open|closed=
+- =:step_identity:= tree-derived semantic identity
+- =:derived_from:= prior step in promotion chain
+- =:promotes_to:= next step in promotion chain
+- =:receipt_for:= closure being receipted
 
 Complexity and convergence metadata describe feasibility and proof burden.
 They MUST NOT be treated as semantic ontology.
+
+** Execution Substrate Targets
+
+The implementation MUST declare its execution substrate. Core completion is
+measured first by conformance to that substrate.
+
+*** Target Order
+
+| Tier | Name | Description |
+|------|------|-------------|
+| 0 | substrate_core | BusyBox ash + POSIX sh + awk + core POSIX file/process model |
+| 1 | substrate_extended | POSIX system interface subset, Python helpers, browser demos |
+| 2 | substrate_speculative | Prolog/WordNet, semantic adapters, higher-order proof tooling |
+
+*** Compliance Model
+
+Use this ranking for test categories:
+
+1. Conformance - MUST pass on declared substrate
+2. Functional - SHOULD pass once conformance is met
+3. Stress - MAY pass once functional works
+4. Performance - MAY pass once stress is stable
+5. Speculative - experimental, separate from core
+
+Functional, stress, performance, and speculative behavior are secondary and
+MUST NOT redefine the conformance boundary.
+
+*** Short Freeze
+
+#+begin_quote
+We are done with the core when the system is conformant to the declared
+BusyBox/POSIX substrate. Everything beyond that is extension, optimization,
+or speculation.
+#+end_quote
+
+** Foundations Lineage
+
+The Haskell files in =research/foundations/= are the typed law-and-scope scaffold
+that the current C/gawk framework lowers from.
+
+| Stage | Tool | Purpose |
+|-------|------|---------|
+| Proof pressure | Coq | Test whether the law can be stated rigorously |
+| Scope definition | Haskell | Define real boundaries and executable law |
+| Surface language | EDSL/DSL | Shape expression and interfaces |
+| Interface boundary | ABI/EABI | Freeze lowering targets |
+| Substrate embodiment | C/gawk | Current target (substrate_core) |
+| Final kernel | pure bitwise | Intentional lowering when possible |
+
+These files show the explicit ladder:
+
+- =AtomicConstitution.hs= — constitutional alphabet, quotient test, delta law
+- =AtomicKernel.hs= — pure DSL with named algorithms, no hidden state
+- =Composition.hs= — delta law, replay, phase factorization, header packing
+- =ClosureRuntime.hs= — shaped for ABI/EABI lowering, deterministic scheduling
+- =Automaton_v2.hs/v3.hs= — canonical stream decoupler, point-set lifting
+- =Matroid_v2.hs/v3.hs= — ABI-oriented block design, bounded symbolic families
+- =Artifact.hs=, =Tetragrammaton.hs= — law/carrier split, simplex resolution
+- =PortMatroid.ts= — same law exported in TypeScript artifact form
+
+*** Post-Freeze Scoping
+
+After the core was frozen, the methodology ladder above is no longer needed for discovery.
+The new scoping tests are:
+
+1. Can it be a surface?
+2. Can it achieve POSIX compliance?
+
+These two questions replace the full methodology ladder as the boundary for new work.
+
+Typed scaffolds are acceptable when they are used to define scope and can later
+be lowered to the same replayable bitwise law.
+
+No scaffold is final unless removing it changes canonical replay.
+
+** Repository Authority Layout
+
+The repository is organized by authority boundary, not by historical growth.
+
+| Directory | Authority | Description |
+|-----------|-----------|-------------|
+| runtime/ | authoritative | canonical state evolution |
+| substrate/ | support | execution support (BusyBox, WordNet) |
+| system-image/ | deployment | deployment manifests |
+| surfaces/ | downstream | projections (browser, narrative) |
+| artifacts/ | outputs | generated outputs |
+| docs/ | descriptive | explanatory only |
+| archive/ | frozen | legacy |
+
+Within runtime/:
+
+- kernel/ - implementation of runtime law (C/awk sources)
+- contracts/ - normative definitions (LEXICON, ONTOLOGY, SURFACES)
+- blocks/ - canonical registries
+
+*** Compatibility Links
+
+Symlinks were removed as of 2026-04-05. Direct canonical paths now required:
+
+| Legacy | Canonical |
+|--------|-----------|
+| src/ | runtime/kernel/ |
+| blocks/ | runtime/blocks/ |
+| demo/ | surfaces/ |
+| deploy/ | system-image/deploy/ |
+| packages/ | substrate/ |
+
+** Repair Actions Applied
+
+The following corrections were applied during audit to achieve current state:
+
+- Makefile: SRC_DIR migrated from src to runtime/kernel
+- scripts/governance/validate_lexicon.sh: contract path updated from docs/ to runtime/contracts/
+- scripts/governance/validate_ontology.sh: contract path updated from docs/ to runtime/contracts/
+- scripts/README.md: terminology corrected from "Aztec transport" to "Aztec compat alias"
 
 * 112 Proof Matrix
 
@@ -177,7 +311,7 @@ This includes:
 - Prolog
 - recursive fixed-point discussion
 - WordNet-style semantic lattice overlays
-- the currently present package tree under [[file:org/packages/prologdb-5WN][org/packages/prologdb-5WN]]
+- the currently present substrate tree under [[file:substrate/prologdb-5WN][substrate/prologdb-5WN]]
 
 Normative rules:
 

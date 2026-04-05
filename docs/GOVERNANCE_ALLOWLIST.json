@@ -16,17 +16,9 @@
       "line_regex": "Matrix / Aztec Compatibility Functionality|--aztec|aztec\\.pos|Aztec is projection/import-export"
     },
     {
-      "path_regex": "^src/ttc_canonical_runtime\\.c$",
-      "conflict_class": "reserved_name_misuse",
-      "line_regex": "--aztec|OUT_AZTEC"
-    },
-    {
-      "path_regex": "^src/ttc_framework_cli\\.c$",
-      "conflict_class": "reserved_name_misuse",
-      "line_regex": "aztec-encode|aztec-decode"
-    },
-    {
-      "path_regex": "^src/ttc_aztec\\.(c|h)$",
+      "path_regex": "^runtime/kernel/ttc_canonical_runtime\\.c$",
+      "path_regex": "^runtime/kernel/ttc_framework_cli\\.c$",
+      "path_regex": "^runtime/kernel/ttc_aztec\\.(c|h)$",
       "conflict_class": "reserved_name_misuse",
       "line_regex": ".+"
     },

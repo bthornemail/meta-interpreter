@@ -21,6 +21,8 @@
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: open
+:step_identity: receipts.q1.projection
+:receipt_for: closure.q1.branch-reconciliation
 :END:
 
 *** Claim
@@ -56,6 +58,8 @@ Evidenced indirectly.
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: open
+:step_identity: receipts.q2.projection
+:receipt_for: closure.q2.branch-reconciliation
 :END:
 
 *** Claim
@@ -91,6 +95,8 @@ Evidenced indirectly.
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: open
+:step_identity: receipts.q3.projection
+:receipt_for: closure.q3.branch-reconciliation
 :END:
 
 *** Claim
@@ -126,7 +132,9 @@ Evidenced indirectly.
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: closed
-:END:
+:step_identity: receipts.q4.projection
+:receipt_for: closure.q4.branch-reconciliation
+:END;
 
 *** Claim
 Projection receipts MUST preserve meaning across text, graph, SVG, canvas, and media surfaces.
@@ -161,6 +169,8 @@ Executable now.
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: open
+:step_identity: receipts.q5.projection
+:receipt_for: closure.q5.branch-reconciliation
 :END:
 
 *** Claim
@@ -196,6 +206,8 @@ Evidenced indirectly.
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: open
+:step_identity: receipts.q6.projection
+:receipt_for: closure.q6.branch-reconciliation
 :END:
 
 *** Claim
@@ -231,6 +243,8 @@ Evidenced indirectly.
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: open
+:step_identity: receipts.q7.projection
+:receipt_for: closure.q7.branch-reconciliation
 :END:
 
 *** Claim
@@ -266,6 +280,8 @@ Evidenced indirectly.
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: open
+:step_identity: receipts.q8.projection
+:receipt_for: closure.q8.branch-reconciliation
 :END:
 
 *** Claim

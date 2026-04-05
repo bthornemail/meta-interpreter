@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT_DIR"
 
-doc="docs/ONTOLOGY.md"
+doc="runtime/contracts/ONTOLOGY.md"
 json_doc="docs/ONTOLOGY.json"
 
 if [[ ! -f "$doc" ]]; then

@@ -10,7 +10,7 @@ BEGIN {
     x_toggle = xor(x, X)   # 0x20
 
     split("0,1,3:0,2,5:0,4,6:1,2,4:1,5,6:2,3,6:3,4,5", lines, ":")
-    DIVS_FILE = (DIVS_FILE == "" ? "blocks/registry/divisors_5040.tsv" : DIVS_FILE)
+    DIVS_FILE = (DIVS_FILE == "" ? "runtime/blocks/registry/divisors_5040.tsv" : DIVS_FILE)
     nd = 0
     while ((getline line < DIVS_FILE) > 0) {
         if (line ~ /^#/ || line ~ /^[[:space:]]*$/) continue

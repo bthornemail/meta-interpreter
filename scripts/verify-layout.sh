@@ -27,10 +27,4 @@ check_dir system-image
 check_dir surfaces
 check_dir artifacts
 
-check_link src runtime/kernel
-check_link blocks runtime/blocks
-check_link demo surfaces
-check_link deploy system-image/deploy
-check_link packages substrate
-
 printf '%s\n' "ok layout"

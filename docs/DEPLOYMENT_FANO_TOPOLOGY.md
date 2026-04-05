@@ -81,7 +81,7 @@ Intended proxy paths:
 
 The machine-readable deployment topology artifact is:
 
-- [deploy/fano_service_topology.json](/home/main/Programs/meta-interpreter/deploy/fano_service_topology.json)
+- [system-image/deploy/fano_service_topology.json](/home/main/Programs/meta-interpreter/system-image/deploy/fano_service_topology.json)
 
 This artifact is downstream governance/deploy metadata only.
 It may support deploy claims, receipts, and provenance notes, but it is not routing authority.

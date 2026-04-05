@@ -45,7 +45,7 @@ def pair_key(a: str, b: str) -> tuple[str, str]:
 
 def main() -> int:
     if not TOPOLOGY.exists():
-        return fail("missing deploy/fano_service_topology.json")
+        return fail("missing system-image/deploy/fano_service_topology.json")
     if not DOC.exists():
         return fail("missing docs/DEPLOYMENT_FANO_TOPOLOGY.md")
 

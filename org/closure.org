@@ -21,6 +21,7 @@
 :convergence_class: PSPACE
 :convergence_behavior: branching
 :status: open
+:step_identity: closure.q1.branch-reconciliation
 :END:
 
 *** Claim
@@ -56,6 +57,7 @@ Evidenced indirectly.
 :convergence_class: PSPACE
 :convergence_behavior: branching
 :status: open
+:step_identity: closure.q2.branch-reconciliation
 :END:
 
 *** Claim
@@ -91,6 +93,7 @@ Evidenced indirectly.
 :convergence_class: PSPACE
 :convergence_behavior: branching
 :status: open
+:step_identity: closure.q3.branch-reconciliation
 :END:
 
 *** Claim
@@ -126,6 +129,7 @@ Evidenced indirectly.
 :convergence_class: PSPACE
 :convergence_behavior: branching
 :status: open
+:step_identity: closure.q4.branch-reconciliation
 :END:
 
 *** Claim
@@ -161,6 +165,7 @@ Evidenced indirectly.
 :convergence_class: PSPACE
 :convergence_behavior: branching
 :status: open
+:step_identity: closure.q5.branch-reconciliation
 :END:
 
 *** Claim
@@ -196,6 +201,7 @@ Evidenced indirectly.
 :convergence_class: PSPACE
 :convergence_behavior: branching
 :status: open
+:step_identity: closure.q6.branch-reconciliation
 :END:
 
 *** Claim
@@ -231,6 +237,7 @@ Evidenced indirectly.
 :convergence_class: PSPACE
 :convergence_behavior: branching
 :status: closed
+:step_identity: closure.q7.branch-reconciliation
 :END:
 
 *** Claim
@@ -266,6 +273,7 @@ Evidenced indirectly.
 :convergence_class: PSPACE
 :convergence_behavior: branching
 :status: open
+:step_identity: closure.q8.branch-reconciliation
 :END:
 
 *** Claim

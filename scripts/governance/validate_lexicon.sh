@@ -8,7 +8,7 @@ files=(
   README.md
   docs
   dev-docs.org
-  src
+  runtime/kernel
   scripts
 )
 
@@ -23,25 +23,26 @@ forbidden_patterns=(
 )
 
 required_layer_files=(
-  src/ttc_runtime.c
-  src/ttc_incidence.c
-  src/ttc_grammar.c
-  src/ttc_address.c
-  src/ttc_witness.c
-  src/ttc_matrix.c
-  src/ttc_projection.c
-  src/ttc_aztec.c
+  runtime/kernel/ttc_runtime.c
+  runtime/kernel/ttc_incidence.c
+  runtime/kernel/ttc_grammar.c
+  runtime/kernel/ttc_address.c
+  runtime/kernel/ttc_witness.c
+  runtime/kernel/ttc_matrix.c
+  runtime/kernel/ttc_projection.c
+  runtime/kernel/ttc_aztec.c
 )
 
 for pattern in "${forbidden_patterns[@]}"; do
   if rg -n "$pattern" "${files[@]}" \
-    -g '!docs/LEXICON.md' \
     -g '!docs/LEXICON.json' \
     -g '!docs/GOVERNANCE_ALLOWLIST.json' \
     -g '!docs/GOVERNANCE_RULES.json' \
+    -g '!runtime/contracts/LEXICON.md' \
     -g '!scripts/governance/validate_lexicon.sh' \
     -g '!scripts/governance/governance_audit.py' \
-    -g '!scripts/governance/validate_governance_audit.sh' >/tmp/ttc_lexicon_hits.txt 2>/dev/null; then
+    -g '!scripts/governance/validate_governance_audit.sh' \
+    -g '!scripts/run_audit.sh' >/tmp/ttc_lexicon_hits.txt 2>/dev/null; then
     echo "lexicon violation: forbidden phrase '$pattern'" >&2
     cat /tmp/ttc_lexicon_hits.txt >&2
     exit 1
@@ -55,7 +56,7 @@ for file in "${required_layer_files[@]}"; do
   fi
 done
 
-if ! rg -q "compat alias; not standards Aztec" src/ttc_framework_cli.c; then
+if ! rg -q "compat alias; not standards Aztec" runtime/kernel/ttc_framework_cli.c; then
   echo "lexicon violation: framework CLI must warn on aztec compatibility alias" >&2
   exit 1
 fi
@@ -125,8 +126,8 @@ then
   exit 1
 fi
 
-if ! rg -q "TTC Authoritative Lexicon v1" docs/LEXICON.md; then
-  echo "lexicon violation: docs/LEXICON.md missing" >&2
+if ! rg -q "TTC Authoritative Lexicon v1" runtime/contracts/LEXICON.md; then
+  echo "lexicon violation: runtime/contracts/LEXICON.md missing" >&2
   exit 1
 fi
 

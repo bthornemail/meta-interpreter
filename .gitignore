@@ -19,3 +19,7 @@
 *.swp
 *.tmp
 .DS_Store
+
+# Vendor Substrate
+substrate/busybox-1.32.0
+substrate/prologdb-5WN

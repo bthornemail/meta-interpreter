@@ -15,12 +15,13 @@
 :algorithm: Escape
 :authority: interpretive-over-runtime
 :surface: bounded intervention proposal
-:maps_to: docs/LEXICON.md, src/ttc_grammar.c
+:maps_to: docs/LEXICON.md, runtime/kernel/ttc_grammar.c
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: open
+:step_identity: proposals.q1.escape
 :END:
 
 *** Claim
@@ -33,7 +34,7 @@ Intervention remains lawful when it opens explicit scope and returns to the norm
 An intervention proposal that attempts to define truth without return MUST be rejected.
 
 *** Runtime Basis
-Grounded by escape-depth handling in =src/ttc_grammar.c= and intervention language in =docs/LEXICON.md=.
+Grounded by escape-depth handling in =runtime/kernel/ttc_grammar.c= and intervention language in =docs/LEXICON.md=.
 
 *** Surface Witness
 Proposals witness intervention intent; they MUST NOT become direct truth sources.
@@ -50,12 +51,15 @@ Evidenced indirectly.
 :algorithm: Escape
 :authority: interpretive-over-runtime
 :surface: bounded movement proposal
-:maps_to: src/ttc_grammar.c, docs/ONTOLOGY.md
+:maps_to: runtime/kernel/ttc_grammar.c, docs/ONTOLOGY.md
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: open
+:step_identity: proposals.q2.escape
+:derived_from: claims.q2.transition
+:promotes_to: closure.q2.branch-reconciliation
 :END:
 
 *** Claim
@@ -85,7 +89,7 @@ Evidenced indirectly.
 :algorithm: Escape
 :authority: interpretive-over-runtime
 :surface: access delimiter proposal
-:maps_to: src/ttc_grammar.c, docs/LEXICON.md
+:maps_to: runtime/kernel/ttc_grammar.c, docs/LEXICON.md
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
@@ -155,7 +159,7 @@ Evidenced indirectly.
 :algorithm: Escape
 :authority: interpretive-over-runtime
 :surface: intervention-with-return proposal
-:maps_to: src/ttc_grammar.c, docs/LEXICON.md
+:maps_to: runtime/kernel/ttc_grammar.c, docs/LEXICON.md
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
@@ -173,7 +177,7 @@ An explicit access introducer, finite scope, and return-to-data path preserve re
 Time-based closure, implicit closure, or open-ended access MUST be rejected.
 
 *** Runtime Basis
-Grounded by =src/ttc_grammar.c= and the repo’s escape vocabulary.
+Grounded by =runtime/kernel/ttc_grammar.c= and the repo’s escape vocabulary.
 
 *** Surface Witness
 Proposals and receipts may witness intervention; they MUST NOT replace deterministic return.
@@ -297,7 +301,7 @@ Evidenced indirectly.
 :algorithm: Fano Path
 :authority: interpretive-over-runtime
 :surface: emphasis proposal
-:maps_to: src/ttc_runtime.c, scripts/ttc_symbolic_encode
+:maps_to: runtime/kernel/ttc_runtime.c, scripts/ttc_symbolic_encode
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
@@ -315,7 +319,7 @@ The path-emphasis layer remains lawful when it is derived from deterministic sch
 If emphasis is promoted to the source of truth, the proposal MUST be rejected.
 
 *** Runtime Basis
-Grounded by Fano triplet generation in =src/ttc_runtime.c= and symbolic encode helpers.
+Grounded by Fano triplet generation in =runtime/kernel/ttc_runtime.c= and symbolic encode helpers.
 
 *** Surface Witness
 Path emphasis is surfaced as advisory selection only.
@@ -332,7 +336,7 @@ Evidenced indirectly.
 :algorithm: Fano Path
 :authority: interpretive-over-runtime
 :surface: horizon steering proposal
-:maps_to: src/ttc_runtime.c, src/ttc_witness.c
+:maps_to: runtime/kernel/ttc_runtime.c, runtime/kernel/ttc_witness.c
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
@@ -350,7 +354,7 @@ Horizon bias remains lawful when it selects among already lawful next emphases i
 An arbitrary jump outside the declared scheduler basis MUST fail.
 
 *** Runtime Basis
-Grounded by Fano triplet and winner logic in =src/ttc_runtime.c= and =src/ttc_witness.c=.
+Grounded by Fano triplet and winner logic in =runtime/kernel/ttc_runtime.c= and =runtime/kernel/ttc_witness.c=.
 
 *** Surface Witness
 Emphasis displays may change focus; they MUST NOT change underlying movement.
@@ -402,7 +406,7 @@ Evidenced indirectly.
 :algorithm: Fano Path
 :authority: interpretive-over-runtime
 :surface: focus-without-semantic-rewrite proposal
-:maps_to: docs/PROJECTION_UI.md, src/ttc_witness.c
+:maps_to: docs/PROJECTION_UI.md, runtime/kernel/ttc_witness.c
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
@@ -437,7 +441,7 @@ Evidenced indirectly.
 :algorithm: Fano Path
 :authority: interpretive-over-runtime
 :surface: next-horizon proposal
-:maps_to: src/ttc_witness.c, docs/LEXICON.md
+:maps_to: runtime/kernel/ttc_witness.c, docs/LEXICON.md
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
@@ -507,7 +511,7 @@ Evidenced indirectly.
 :algorithm: Fano Path
 :authority: interpretive-over-runtime
 :surface: origin-preserving branch proposal
-:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, src/ttc_witness.c
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, runtime/kernel/ttc_witness.c
 :constructive_complexity: NP
 :falsification_complexity: P
 :convergence_class: NTIME
@@ -542,7 +546,7 @@ Evidenced indirectly.
 :algorithm: Fano Path
 :authority: interpretive-over-runtime
 :surface: bounded openness proposal
-:maps_to: src/ttc_witness.c, docs/SURFACES.md
+:maps_to: runtime/kernel/ttc_witness.c, docs/SURFACES.md
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
@@ -849,3 +853,55 @@ The proposal surface opens discussion; the receipt surface closes accountability
 
 *** Coverage
 Evidenced indirectly.
+
+* Graph Validator
+:PROPERTIES:
+:mode: compile
+:artifact_role: proposal
+:algorithm: Proposal/Receipt
+:status: open
+:step_identity: proposals.graph-validator
+:maps_to: org/proposals.org, org/receipts.org, org/claims.org, org/closure.org
+:END:
+
+This block validates the promotion graph across all org files.
+
+#+NAME: validate-promotion-graph
+#+BEGIN_SRC emacs-lisp :tangle no
+(defun org-promotion-graph-validate ()
+  "Validate promotion edges across org files."
+  (let ((files '("org/claims.org" "org/proposals.org" "org/closure.org" "org/receipts.org"))
+        (errors nil))
+    (dolist (file files)
+      (with-temp-buffer
+        (insert-file-contents file)
+        (org-mode)
+        (goto-char (point-min))
+        (while (re-search-forward "^\\*+ " nil t)
+          (when (org-at-heading-p)
+            (let* ((props (org-entry-properties))
+                   (step-id (cdr (assoc "step_identity" props))))
+              (when step-id
+                (cond
+                 ((string-match "proposals\\." step-id)
+                  (unless (assoc "derived_from" props)
+                    (push (format "PROPOSAL missing derived_from: %s" step-id) errors))
+                  (unless (assoc "promotes_to" props)
+                    (push (format "PROPOSAL missing promotes_to: %s" step-id) errors)))
+                 ((string-match "receipts\\." step-id)
+                  (unless (assoc "receipt_for" props)
+                    (push (format "RECEIPT missing receipt_for: %s" step-id) errors)))
+                 ((string-match "closure\\." step-id)
+                  (when (string= (cdr (assoc "status" props)) "closed")
+                    (message "Closure %s would require receipt check" step-id))))))))))
+    (if errors
+        (progn (message "VALIDATION FAILED:\n%s" (mapconcat 'identity (reverse errors) "\n"))
+               nil)
+      (message "VALIDATION PASSED: Promotion graph consistent")
+      t)))
+
+(org-promotion-graph-validate)
+#+END_SRC
+
+*** Coverage
+Executable via M-x org-promotion-graph-validate in any org buffer.

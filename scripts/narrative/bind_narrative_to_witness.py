@@ -255,9 +255,9 @@ def build_bound_artifact(chapters: list[dict], templates: list[dict], hooks: lis
             "authority": "canonical narrative remains sovereign; witness binding is advisory only",
             "carrier_mapping_version": 1,
             "carrier_mapping_note": "narrative carrier witness is explicit downstream binding law, not replay authority",
-            "source": "demo/narrative/canonical/chapters/*.ndjson",
-            "templates_path": "demo/narrative/canonical/templates/character_progression_templates.json",
-            "hooks_path": "demo/narrative/canonical/witness_article_hooks.json",
+            "source": "surfaces/narrative/canonical/chapters/*.ndjson",
+            "templates_path": "surfaces/narrative/canonical/templates/character_progression_templates.json",
+            "hooks_path": "surfaces/narrative/canonical/witness_article_hooks.json",
         }
     ]
     bundle_chapters: list[dict] = []

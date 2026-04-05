@@ -15,12 +15,13 @@
 :algorithm: Transition
 :authority: interpretive-over-runtime
 :surface: canonical runtime claim
-:maps_to: src/ttc_runtime.c, scripts/validate_framework.sh, Makefile framework-check
+:maps_to: runtime/kernel/ttc_runtime.c, scripts/validate_framework.sh, Makefile framework-check
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: closed
+:step_identity: claims.q1.transition
 :END:
 
 *** Claim
@@ -33,7 +34,7 @@ The same typed input replayed through the canonical runtime and framework tools 
 Any direct overwrite that cannot be replayed from the same typed input MUST fail by mismatch in canonical emission or recovered bytes.
 
 *** Runtime Basis
-Grounded by =src/ttc_runtime.c= and =scripts/validate_framework.sh= through =make framework-check=.
+Grounded by =runtime/kernel/ttc_runtime.c= and =scripts/validate_framework.sh= through =make framework-check=.
 
 *** Surface Witness
 Canonical emission, runtime layer output, and artifact roundtrips witness the claim; logs and filenames MUST NOT redefine it.
@@ -50,12 +51,13 @@ Executable now.
 :algorithm: Transition
 :authority: interpretive-over-runtime
 :surface: canonical movement claim
-:maps_to: src/ttc_runtime.c, scripts/validate_framework.sh
+:maps_to: runtime/kernel/ttc_runtime.c, scripts/validate_framework.sh
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: closed
+:step_identity: claims.q2.transition
 :END:
 
 *** Claim
@@ -84,13 +86,14 @@ Executable now.
 :question: Q3
 :algorithm: Transition
 :authority: interpretive-over-runtime
-:surface: typed transition claim
-:maps_to: src/ttc_runtime.c, docs/LEXICON.md
+:surface: replay derivation claim
+:maps_to: runtime/kernel/ttc_runtime.c, docs/LEXICON.md
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
 :convergence_behavior: deterministic
-:status: open
+:status: closed
+:step_identity: claims.q3.transition
 :END:
 
 *** Claim
@@ -103,7 +106,7 @@ Replay carries typed state forward so that payload-bearing values remain distinc
 If a transition step requires undecidable reclassification of a byte after the fact, the claim MUST fail as a type violation.
 
 *** Runtime Basis
-Grounded by the type-first rules in =docs/LEXICON.md= and the split runtime/witness pipeline in =src/=.
+Grounded by the type-first rules in =docs/LEXICON.md= and the split runtime/witness pipeline in =runtime/kernel/=.
 
 *** Surface Witness
 Typed traces witness the distinction; downstream projections MAY display it but MUST NOT infer missing types.
@@ -120,12 +123,13 @@ Evidenced indirectly.
 :algorithm: Transition
 :authority: interpretive-over-runtime
 :surface: semantic anchor claim
-:maps_to: src/ttc_runtime.c, docs/ONTOLOGY.md
+:maps_to: runtime/kernel/ttc_runtime.c, docs/ONTOLOGY.md
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: open
+:step_identity: claims.q4.transition
 :END:
 
 *** Claim
@@ -161,6 +165,7 @@ Evidenced indirectly.
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: open
+:step_identity: claims.q5.transition
 :END:
 
 *** Claim
@@ -190,13 +195,14 @@ Evidenced indirectly.
 :algorithm: Transition
 :authority: interpretive-over-runtime
 :surface: collaborator boundary claim
-:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, src/ttc_runtime.c
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, runtime/kernel/ttc_runtime.c
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: open
-:END:
+:step_identity: claims.q6.transition
+:END;
 
 *** Claim
 Transition claims MUST prevent collaborators from bypassing law-defined state advance.
@@ -208,7 +214,7 @@ Collaborative intent remains downstream until it is materialized through the sam
 If a collaborator can write canonical state outside the transition path, the claim MUST fail as hidden authority.
 
 *** Runtime Basis
-Grounded by replay authority in =src/ttc_runtime.c= and collaboration discipline in =docs/PROPAGATION_CLAIMS_AND_FEDERATION.md=.
+Grounded by replay authority in =runtime/kernel/ttc_runtime.c= and collaboration discipline in =docs/PROPAGATION_CLAIMS_AND_FEDERATION.md=.
 
 *** Surface Witness
 Claims and receipts may describe collaboration; they MUST NOT become direct state writers.
@@ -225,13 +231,14 @@ Evidenced indirectly.
 :algorithm: Transition
 :authority: interpretive-over-runtime
 :surface: branch lineage claim
-:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, src/ttc_runtime.c
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, runtime/kernel/ttc_runtime.c
 :constructive_complexity: P
 :falsification_complexity: NP
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: open
-:END:
+:step_identity: claims.q7.transition
+:END;
 
 *** Claim
 Transition claims MUST require every branch trace to remain replayable from an explicit root.
@@ -260,13 +267,14 @@ Evidenced indirectly.
 :algorithm: Transition
 :authority: interpretive-over-runtime
 :surface: law-closure claim
-:maps_to: src/ttc_runtime.c, docs/SURFACES.md
+:maps_to: runtime/kernel/ttc_runtime.c, docs/SURFACES.md
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
 :convergence_behavior: deterministic
 :status: open
-:END:
+:step_identity: claims.q8.transition
+:END;
 
 *** Claim
 Transition claims MUST keep law closed even when interpretation remains open.
@@ -278,7 +286,7 @@ The transition step stays deterministic regardless of how many witness surfaces 
 If an interpretive overlay can alter the next transition result, the claim MUST fail.
 
 *** Runtime Basis
-Grounded by =src/ttc_runtime.c= and the surface discipline frozen in =docs/SURFACES.md=.
+Grounded by =runtime/kernel/ttc_runtime.c= and the surface discipline frozen in =docs/SURFACES.md=.
 
 *** Surface Witness
 Many surfaces MAY witness the same transition; none MAY redefine it.
@@ -297,7 +305,7 @@ Evidenced indirectly.
 :algorithm: Control-Plane
 :authority: interpretive-over-runtime
 :surface: structural authority claim
-:maps_to: src/ttc_grammar.c, docs/LEXICON.md
+:maps_to: runtime/kernel/ttc_grammar.c, docs/LEXICON.md
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
@@ -315,7 +323,7 @@ When structural roles are represented directly in the grammar and witness pipeli
 If interpretation depends on hidden parser state that is not derivable from the stream, the claim MUST fail.
 
 *** Runtime Basis
-Grounded by =src/ttc_grammar.c= and control vocabulary in =docs/LEXICON.md=.
+Grounded by =runtime/kernel/ttc_grammar.c= and control vocabulary in =docs/LEXICON.md=.
 
 *** Surface Witness
 Grammar roles and witness fields surface the structure; UI or narrative summaries MUST NOT invent new control authority.
@@ -332,7 +340,7 @@ Evidenced indirectly.
 :algorithm: Control-Plane
 :authority: interpretive-over-runtime
 :surface: movement channel claim
-:maps_to: src/ttc_grammar.c, src/ttc_address.c
+:maps_to: runtime/kernel/ttc_grammar.c, runtime/kernel/ttc_address.c
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
@@ -350,7 +358,7 @@ Movement remains replayable when channel, lane, and scope information are carrie
 Any motion control that is not represented in the stream or its lawful reconstruction MUST be rejected.
 
 *** Runtime Basis
-Grounded by =src/ttc_grammar.c= and =src/ttc_address.c=.
+Grounded by =runtime/kernel/ttc_grammar.c= and =runtime/kernel/ttc_address.c=.
 
 *** Surface Witness
 Address words and witness layers expose the channels; user-facing flow descriptions MAY summarize them but MUST NOT replace them.
@@ -367,7 +375,7 @@ Evidenced indirectly.
 :algorithm: Control-Plane
 :authority: interpretive-over-runtime
 :surface: control payload distinction claim
-:maps_to: src/ttc_grammar.c, docs/LEXICON.md
+:maps_to: runtime/kernel/ttc_grammar.c, docs/LEXICON.md
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
@@ -385,7 +393,7 @@ Reserved structural markers and typed interpretation paths make control roles re
 An ambiguous token whose role cannot be determined from lawful context MUST fail closed.
 
 *** Runtime Basis
-Grounded by grammar interpretation in =src/ttc_grammar.c= and reserved-term discipline in =docs/LEXICON.md=.
+Grounded by grammar interpretation in =runtime/kernel/ttc_grammar.c= and reserved-term discipline in =docs/LEXICON.md=.
 
 *** Surface Witness
 Control tokens are surfaced through grammar and witness layers; projections MUST consume the decoded result rather than guess token meaning.
@@ -402,7 +410,7 @@ Evidenced indirectly.
 :algorithm: Control-Plane
 :authority: interpretive-over-runtime
 :surface: boundary-preservation claim
-:maps_to: src/ttc_grammar.c, docs/SURFACES.md
+:maps_to: runtime/kernel/ttc_grammar.c, docs/SURFACES.md
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
@@ -420,7 +428,7 @@ When boundaries are explicit in the decoded structure, multiple projections can 
 If a projection requires merged or guessed boundaries that are not present in the decoded structure, the claim MUST fail.
 
 *** Runtime Basis
-Grounded by =src/ttc_grammar.c= and surface rules in =docs/SURFACES.md=.
+Grounded by =runtime/kernel/ttc_grammar.c= and surface rules in =docs/SURFACES.md=.
 
 *** Surface Witness
 Boundary metadata witnesses grouping; rendered grouping MUST follow it rather than replace it.
@@ -437,7 +445,7 @@ Evidenced indirectly.
 :algorithm: Control-Plane
 :authority: interpretive-over-runtime
 :surface: intervention access claim
-:maps_to: docs/LEXICON.md, src/ttc_grammar.c
+:maps_to: docs/LEXICON.md, runtime/kernel/ttc_grammar.c
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
@@ -455,7 +463,7 @@ Intervention remains replayable when access is opened and closed through lawful 
 Any implicit access mode with no structural marker MUST be rejected.
 
 *** Runtime Basis
-Grounded by escape-depth handling in =src/ttc_grammar.c= and control vocabulary in =docs/LEXICON.md=.
+Grounded by escape-depth handling in =runtime/kernel/ttc_grammar.c= and control vocabulary in =docs/LEXICON.md=.
 
 *** Surface Witness
 Receipts MAY show that access occurred; the control plane remains authoritative for how it was opened.
@@ -472,7 +480,7 @@ Evidenced indirectly.
 :algorithm: Control-Plane
 :authority: interpretive-over-runtime
 :surface: explicit collaboration scope claim
-:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, src/ttc_grammar.c
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, runtime/kernel/ttc_grammar.c
 :constructive_complexity: P
 :falsification_complexity: P
 :convergence_class: DTIME
@@ -490,7 +498,7 @@ When channels, lanes, and roles are carried in the shared structure, collaborato
 Private control channels that cannot be surfaced to peers MUST fail as hidden authority.
 
 *** Runtime Basis
-Grounded by federation discipline in =docs/PROPAGATION_CLAIMS_AND_FEDERATION.md= and grammar/address structure in =src/=.
+Grounded by federation discipline in =docs/PROPAGATION_CLAIMS_AND_FEDERATION.md= and grammar/address structure in =runtime/kernel/=.
 
 *** Surface Witness
 Claims, proposals, and receipts MAY witness the scopes; they MUST NOT invent scope not present in the control plane.
@@ -507,7 +515,7 @@ Evidenced indirectly.
 :algorithm: Control-Plane
 :authority: interpretive-over-runtime
 :surface: branch separation claim
-:maps_to: src/ttc_address.c, docs/PROPAGATION_CLAIMS_AND_FEDERATION.md
+:maps_to: runtime/kernel/ttc_address.c, docs/PROPAGATION_CLAIMS_AND_FEDERATION.md
 :constructive_complexity: P
 :falsification_complexity: NP
 :convergence_class: DTIME
@@ -525,7 +533,7 @@ A branch can remain returnable when its structure is kept explicit rather than l
 Cross-layer leakage that removes the distinction between canonical and branch scopes MUST be rejected.
 
 *** Runtime Basis
-Grounded by address structure in =src/ttc_address.c= and branch semantics in the federation docs.
+Grounded by address structure in =runtime/kernel/ttc_address.c= and branch semantics in the federation docs.
 
 *** Surface Witness
 Branch-scoped artifacts witness the split; merged display layers MUST NOT collapse it.

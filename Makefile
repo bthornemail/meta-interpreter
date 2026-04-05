@@ -1,7 +1,7 @@
 CC ?= gcc
 CFLAGS ?= -O2 -std=c99 -Wall -Wextra
 
-SRC_DIR ?= src
+SRC_DIR ?= runtime/kernel
 BIN_DIR ?= bin
 ARTIFACT_DIR ?= artifacts
 TRIE_SAMPLE_DIR ?= $(ARTIFACT_DIR)/xX/p0/0/0
@@ -187,7 +187,7 @@ narrative-frame-export:
 seal-page: build
 	@if [ -z "$(INPUT)" ]; then \
 		echo "usage: make seal-page INPUT=payload.bin OUTPUT=artifacts/seal/matrix_seal_page.html [RULE=current|delta64] [SEED=N] [NOTE='...']"; \
-		echo "example: make seal-page INPUT=demo/samples/ttc_payload_sample.bin OUTPUT=artifacts/seal/matrix_seal_page.html"; \
+		echo "example: make seal-page INPUT=surfaces/samples/ttc_payload_sample.bin OUTPUT=artifacts/seal/matrix_seal_page.html"; \
 		exit 1; \
 	fi
 	python3 ./scripts/projection/generate_matrix_seal_page.py \
@@ -199,13 +199,13 @@ seal-page: build
 		$(if $(NOTE),--note "$(NOTE)",)
 
 deploy-medium:
-	./deploy/scripts/deploy-medium.sh
+	./system-image/deploy/scripts/deploy-medium.sh
 
 deploy-large:
-	./deploy/scripts/deploy-large.sh
+	./system-image/deploy/scripts/deploy-large.sh
 
 deploy-small:
-	./deploy/scripts/deploy-small.sh
+	./system-image/deploy/scripts/deploy-small.sh
 
 aztec-transport-check: $(FRAMEWORK_BIN)
 	./scripts/validate_aztec_transport.sh
@@ -263,7 +263,7 @@ clean:
 	rm -f $(RUNTIME_OBJ) $(INCIDENCE_OBJ) $(CARRIER_OBJ) $(GRAMMAR_OBJ) $(ADDRESS_OBJ) $(WITNESS_OBJ) $(PROJECTION_OBJ) $(MATRIX_OBJ) $(AZTEC_OBJ) $(RUNTIME_LIB) $(WITNESS_LIB) $(MATRIX_LIB) $(AZTEC_LIB) $(FRAMEWORK_LIB)
 	rm -f $(ARTIFACT_DIR)/*.txt $(ARTIFACT_DIR)/*.json $(ARTIFACT_DIR)/*.pgm $(ARTIFACT_DIR)/*.ndjson $(ARTIFACT_DIR)/*.bin
 	find $(ARTIFACT_DIR)/xx $(ARTIFACT_DIR)/xX $(ARTIFACT_DIR)/Xx $(ARTIFACT_DIR)/XX -type f \( -name "trace.log" -o -name "state.bin" -o -name "board.txt" -o -name "aztec.txt" -o -name "meta.json" -o -name ".canon" -o -name ".block" -o -name ".artifact" -o -name ".bitboard" -o -name ".golden" -o -name ".negative" -o -name ".vs_overlay" \) 2>/dev/null | xargs -r rm -f
-	find blocks/xx blocks/xX blocks/Xx blocks/XX -type f \( -name ".canon" -o -name ".block" -o -name ".artifact" -o -name ".bitboard" -o -name ".golden" -o -name ".negative" \) 2>/dev/null | xargs -r rm -f
+	find runtime/blocks/xx runtime/blocks/xX runtime/blocks/Xx runtime/blocks/XX -type f \( -name ".canon" -o -name ".block" -o -name ".artifact" -o -name ".bitboard" -o -name ".golden" -o -name ".negative" \) 2>/dev/null | xargs -r rm -f
 
 rules.extract:
 	./scripts/extract_rules.sh

@@ -153,7 +153,7 @@ Scripts are tagged by which layer they operate on.
 | `validate_framework.sh` | runtime | `implemented` | `core` | Framework validation |
 | `validate_adapters.sh` | runtime | `implemented` | `core` | Adapter validation |
 | `validate_symbolic.sh` | witness | `implemented` | `core` | Symbolic validation |
-| `validate_aztec_transport.sh` | transport | `implemented` | `core` | Aztec transport validation |
+| `validate_aztec_transport.sh` | transport | `implemented` | `core` | Aztec compat alias validation |
 
 ---
 
