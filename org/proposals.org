@@ -1,0 +1,851 @@
+#+title: Proposals
+#+author: Codex
+#+startup: overview
+#+options: toc:2 num:nil
+#+property: header-args :tangle no
+
+* Escape Proposals
+
+** Q1 / Escape
+:PROPERTIES:
+:CUSTOM_ID: q1-escape
+:mode: compile
+:artifact_role: proposal
+:question: Q1
+:algorithm: Escape
+:authority: interpretive-over-runtime
+:surface: bounded intervention proposal
+:maps_to: docs/LEXICON.md, src/ttc_grammar.c
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Escape proposals MUST treat intervention as bounded access to truth, not as a replacement for truth.
+
+*** Constructive Proof
+Intervention remains lawful when it opens explicit scope and returns to the normal replay path.
+
+*** Falsification Proof
+An intervention proposal that attempts to define truth without return MUST be rejected.
+
+*** Runtime Basis
+Grounded by escape-depth handling in =src/ttc_grammar.c= and intervention language in =docs/LEXICON.md=.
+
+*** Surface Witness
+Proposals witness intervention intent; they MUST NOT become direct truth sources.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q2 / Escape
+:PROPERTIES:
+:CUSTOM_ID: q2-escape
+:mode: compile
+:artifact_role: proposal
+:question: Q2
+:algorithm: Escape
+:authority: interpretive-over-runtime
+:surface: bounded movement proposal
+:maps_to: src/ttc_grammar.c, docs/ONTOLOGY.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Escape proposals MUST preserve deterministic movement by returning control to the lawful next step.
+
+*** Constructive Proof
+The system moves lawfully when an escape proposal ends in deterministic return rather than open-ended divergence.
+
+*** Falsification Proof
+A proposal that cannot specify how movement returns to the replay path MUST fail.
+
+*** Runtime Basis
+Grounded by grammar-state return behavior and the replay-first rules in =docs/ONTOLOGY.md=.
+
+*** Surface Witness
+Escape scope is witnessed through proposals and receipts; the movement law remains external to the proposal.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q3 / Escape
+:PROPERTIES:
+:CUSTOM_ID: q3-escape
+:mode: compile
+:artifact_role: proposal
+:question: Q3
+:algorithm: Escape
+:authority: interpretive-over-runtime
+:surface: access delimiter proposal
+:maps_to: src/ttc_grammar.c, docs/LEXICON.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Escape proposals MUST distinguish payload from control through explicit access delimiters.
+
+*** Constructive Proof
+Literal payload remains transparent when intervention access is expressed through lawful structural markers rather than hidden interpretation.
+
+*** Falsification Proof
+If a proposal depends on silently reclassifying payload as access control, it MUST be rejected.
+
+*** Runtime Basis
+Grounded by grammar interpretation and reserved-marker vocabulary.
+
+*** Surface Witness
+The proposal surface may describe the intended access, but the control boundary remains authoritative.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q4 / Escape
+:PROPERTIES:
+:CUSTOM_ID: q4-escape
+:mode: compile
+:artifact_role: proposal
+:question: Q4
+:algorithm: Escape
+:authority: interpretive-over-runtime
+:surface: projection-window proposal
+:maps_to: docs/PROJECTION_UI.md, docs/LEXICON.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Escape proposals MUST affect interpretation windows only, not committed prior meaning.
+
+*** Constructive Proof
+Meaning remains preserved when the proposal is confined to a bounded live window and leaves committed frames untouched.
+
+*** Falsification Proof
+Any proposal that rewrites prior committed meaning through escape semantics MUST be rejected.
+
+*** Runtime Basis
+Grounded by projection-only language in =docs/PROJECTION_UI.md= and escape vocabulary in the lexicon.
+
+*** Surface Witness
+UI views may show the live window; they MUST NOT back-propagate it into canonical meaning.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q5 / Escape
+:PROPERTIES:
+:CUSTOM_ID: q5-escape
+:mode: compile
+:artifact_role: proposal
+:question: Q5
+:algorithm: Escape
+:authority: interpretive-over-runtime
+:surface: intervention-with-return proposal
+:maps_to: src/ttc_grammar.c, docs/LEXICON.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: closed
+:END:
+
+*** Claim
+Escape proposals MUST provide bounded intervention with deterministic return.
+
+*** Constructive Proof
+An explicit access introducer, finite scope, and return-to-data path preserve replay while permitting intervention.
+
+*** Falsification Proof
+Time-based closure, implicit closure, or open-ended access MUST be rejected.
+
+*** Runtime Basis
+Grounded by =src/ttc_grammar.c= and the repo’s escape vocabulary.
+
+*** Surface Witness
+Proposals and receipts may witness intervention; they MUST NOT replace deterministic return.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q6 / Escape
+:PROPERTIES:
+:CUSTOM_ID: q6-escape
+:mode: compile
+:artifact_role: proposal
+:question: Q6
+:algorithm: Escape
+:authority: interpretive-over-runtime
+:surface: bounded collaboration proposal
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, docs/LEXICON.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Escape proposals MUST keep collaboration inside a bounded intervention window.
+
+*** Constructive Proof
+Collaborative action remains inspectable when it is proposed within explicit scope and leaves a returnable trail.
+
+*** Falsification Proof
+A never-closing collaboration mode with no bounded window MUST fail.
+
+*** Runtime Basis
+Grounded by federation discipline and escape vocabulary.
+
+*** Surface Witness
+Receipts may attest that the window opened; the proposal itself remains non-authoritative until accepted lawfully.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q7 / Escape
+:PROPERTIES:
+:CUSTOM_ID: q7-escape
+:mode: compile
+:artifact_role: proposal
+:question: Q7
+:algorithm: Escape
+:authority: interpretive-over-runtime
+:surface: fork-with-return proposal
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md
+:constructive_complexity: NP
+:falsification_complexity: P
+:convergence_class: NTIME
+:convergence_behavior: branching
+:status: open
+:END:
+
+*** Claim
+Escape proposals MUST allow branching only when return remains explicit.
+
+*** Constructive Proof
+A fork opened within lawful intervention remains admissible when its base, delta, and return path remain stated.
+
+*** Falsification Proof
+A branch proposal with no return path or lineage MUST be rejected.
+
+*** Runtime Basis
+Grounded by branch and reconciliation language in the federation docs.
+
+*** Surface Witness
+The proposal surface may describe the fork; closure and receipts must witness whether return remains lawful.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q8 / Escape
+:PROPERTIES:
+:CUSTOM_ID: q8-escape
+:mode: compile
+:artifact_role: proposal
+:question: Q8
+:algorithm: Escape
+:authority: interpretive-over-runtime
+:surface: bounded openness proposal
+:maps_to: docs/LEXICON.md, docs/SURFACES.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Escape proposals MAY open interpretation temporarily, but they MUST keep legal closure bounded.
+
+*** Constructive Proof
+Openness stays lawful when it is explicitly scoped and deterministically closed.
+
+*** Falsification Proof
+If openness has no deterministic boundary, the proposal MUST fail.
+
+*** Runtime Basis
+Grounded by surface discipline and intervention vocabulary in the docs.
+
+*** Surface Witness
+The proposal is a bounded opening surface only; it MUST NOT redefine closure law.
+
+*** Coverage
+Evidenced indirectly.
+
+* Fano Path Proposals
+
+** Q1 / Fano Path
+:PROPERTIES:
+:CUSTOM_ID: q1-fano-path
+:mode: compile
+:artifact_role: proposal
+:question: Q1
+:algorithm: Fano Path
+:authority: interpretive-over-runtime
+:surface: emphasis proposal
+:maps_to: src/ttc_runtime.c, scripts/ttc_symbolic_encode
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Fano-path proposals MUST treat emphasis as advisory rather than sovereign truth.
+
+*** Constructive Proof
+The path-emphasis layer remains lawful when it is derived from deterministic schedule and leaves canonical truth unchanged.
+
+*** Falsification Proof
+If emphasis is promoted to the source of truth, the proposal MUST be rejected.
+
+*** Runtime Basis
+Grounded by Fano triplet generation in =src/ttc_runtime.c= and symbolic encode helpers.
+
+*** Surface Witness
+Path emphasis is surfaced as advisory selection only.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q2 / Fano Path
+:PROPERTIES:
+:CUSTOM_ID: q2-fano-path
+:mode: compile
+:artifact_role: proposal
+:question: Q2
+:algorithm: Fano Path
+:authority: interpretive-over-runtime
+:surface: horizon steering proposal
+:maps_to: src/ttc_runtime.c, src/ttc_witness.c
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Fano-path proposals SHOULD steer emphasis over a lawful horizon without mutating movement law.
+
+*** Constructive Proof
+Horizon bias remains lawful when it selects among already lawful next emphases instead of changing canonical transition.
+
+*** Falsification Proof
+An arbitrary jump outside the declared scheduler basis MUST fail.
+
+*** Runtime Basis
+Grounded by Fano triplet and winner logic in =src/ttc_runtime.c= and =src/ttc_witness.c=.
+
+*** Surface Witness
+Emphasis displays may change focus; they MUST NOT change underlying movement.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q3 / Fano Path
+:PROPERTIES:
+:CUSTOM_ID: q3-fano-path
+:mode: compile
+:artifact_role: proposal
+:question: Q3
+:algorithm: Fano Path
+:authority: interpretive-over-runtime
+:surface: non-parser proposal
+:maps_to: docs/LEXICON.md, scripts/ttc_symbolic_encode
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Fano-path proposals MUST NOT take over control-plane parsing.
+
+*** Constructive Proof
+The system stays lawful when path emphasis is chosen after decoding rather than being used to parse control structure.
+
+*** Falsification Proof
+If Fano-path logic is used as parser authority, the proposal MUST be rejected.
+
+*** Runtime Basis
+Grounded by separation between runtime/grammar and symbolic helpers.
+
+*** Surface Witness
+Emphasis lines witness focus only; they MUST NOT reinterpret raw control structure.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q4 / Fano Path
+:PROPERTIES:
+:CUSTOM_ID: q4-fano-path
+:mode: compile
+:artifact_role: proposal
+:question: Q4
+:algorithm: Fano Path
+:authority: interpretive-over-runtime
+:surface: focus-without-semantic-rewrite proposal
+:maps_to: docs/PROJECTION_UI.md, src/ttc_witness.c
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Fano-path proposals MAY change focus, but they MUST NOT change semantic truth value.
+
+*** Constructive Proof
+Meaning is preserved when the emphasis plane selects attention without changing the canonical source.
+
+*** Falsification Proof
+If an emphasis choice rewrites the source meaning, the proposal MUST fail.
+
+*** Runtime Basis
+Grounded by witness generation and projection rules.
+
+*** Surface Witness
+Projection focus MAY shift; canonical meaning MUST remain fixed.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q5 / Fano Path
+:PROPERTIES:
+:CUSTOM_ID: q5-fano-path
+:mode: compile
+:artifact_role: proposal
+:question: Q5
+:algorithm: Fano Path
+:authority: interpretive-over-runtime
+:surface: next-horizon proposal
+:maps_to: src/ttc_witness.c, docs/LEXICON.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Fano-path proposals MAY bias the next horizon, but they MUST NOT overwrite the current committed frame.
+
+*** Constructive Proof
+Intervention remains replay-safe when emphasis operates on the next lawful horizon only.
+
+*** Falsification Proof
+An immediate sovereign replacement of the current canonical frame MUST be rejected.
+
+*** Runtime Basis
+Grounded by the witness path selection layer and intervention vocabulary.
+
+*** Surface Witness
+Emphasis receipts may witness the bias; the current frame remains authoritative until the next lawful step.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q6 / Fano Path
+:PROPERTIES:
+:CUSTOM_ID: q6-fano-path
+:mode: compile
+:artifact_role: proposal
+:question: Q6
+:algorithm: Fano Path
+:authority: interpretive-over-runtime
+:surface: inspectable priority proposal
+:maps_to: docs/PROJECTION_UI.md, docs/PROPAGATION_CLAIMS_AND_FEDERATION.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Fano-path proposals SHOULD keep collaborative prioritization inspectable.
+
+*** Constructive Proof
+Priority remains lawful when the active emphasis context is visible and reviewable rather than private.
+
+*** Falsification Proof
+Opaque prioritization with no visible lane or queue MUST fail as hidden authority.
+
+*** Runtime Basis
+Grounded by projection-control law and federation discipline.
+
+*** Surface Witness
+Readouts MAY show emphasis; they MUST NOT grant hidden priority channels.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q7 / Fano Path
+:PROPERTIES:
+:CUSTOM_ID: q7-fano-path
+:mode: compile
+:artifact_role: proposal
+:question: Q7
+:algorithm: Fano Path
+:authority: interpretive-over-runtime
+:surface: origin-preserving branch proposal
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, src/ttc_witness.c
+:constructive_complexity: NP
+:falsification_complexity: P
+:convergence_class: NTIME
+:convergence_behavior: branching
+:status: open
+:END:
+
+*** Claim
+Fano-path proposals MAY steer branch emphasis, but they MUST preserve origin and returnability.
+
+*** Constructive Proof
+Branch emphasis remains lawful when it keeps the canonical origin explicit while exploring alternative emphasis paths.
+
+*** Falsification Proof
+A path proposal that erases the canonical origin or fork root MUST fail.
+
+*** Runtime Basis
+Grounded by federation branch language and witness path selection.
+
+*** Surface Witness
+Branch emphasis is advisory; lineage remains the required witness.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q8 / Fano Path
+:PROPERTIES:
+:CUSTOM_ID: q8-fano-path
+:mode: compile
+:artifact_role: proposal
+:question: Q8
+:algorithm: Fano Path
+:authority: interpretive-over-runtime
+:surface: bounded openness proposal
+:maps_to: src/ttc_witness.c, docs/SURFACES.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Fano-path proposals MAY keep advisory openness, but they MUST stay bounded by lawful scheduler structure.
+
+*** Constructive Proof
+Openness remains safe when it is limited to focus selection rather than state mutation.
+
+*** Falsification Proof
+A random or sovereign chooser that replaces law with free selection MUST fail.
+
+*** Runtime Basis
+Grounded by witness selection logic and surface rules.
+
+*** Surface Witness
+Advisory focus is a witness surface only.
+
+*** Coverage
+Evidenced indirectly.
+
+* Proposal / Receipt Proposals
+
+** Q1 / Proposal/Receipt
+:PROPERTIES:
+:CUSTOM_ID: q1-proposal-receipt
+:mode: compile
+:artifact_role: proposal
+:question: Q1
+:algorithm: Proposal/Receipt
+:authority: interpretive-over-runtime
+:surface: deferred intervention proposal
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, scripts/narrative/validate_narrative_binding.py
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Proposal/receipt proposals MUST treat proposals as downstream artifacts, not as truth sources.
+
+*** Constructive Proof
+The proposal stays lawful when it is represented explicitly and only later accepted or rejected against replay.
+
+*** Falsification Proof
+Silent mutation with no proposal or receipt trail MUST fail.
+
+*** Runtime Basis
+Grounded by the federation docs and current narrative binding validators.
+
+*** Surface Witness
+Proposal artifacts and receipts witness intervention; they MUST NOT replace canonical replay.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q2 / Proposal/Receipt
+:PROPERTIES:
+:CUSTOM_ID: q2-proposal-receipt
+:mode: compile
+:artifact_role: proposal
+:question: Q2
+:algorithm: Proposal/Receipt
+:authority: interpretive-over-runtime
+:surface: deferred movement proposal
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, scripts/narrative/validate_narrative_binding.py
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Proposal/receipt proposals MUST move state only through lawful deferred commit points.
+
+*** Constructive Proof
+Movement remains replayable when intervention becomes an explicit artifact before any commit is recognized.
+
+*** Falsification Proof
+Mid-frame direct mutation with no deferred artifact MUST be rejected.
+
+*** Runtime Basis
+Grounded by narrative binding reproducibility and downstream artifact discipline.
+
+*** Surface Witness
+Bound artifacts witness the deferred move; they MUST NOT bypass canonical movement law.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q3 / Proposal/Receipt
+:PROPERTIES:
+:CUSTOM_ID: q3-proposal-receipt
+:mode: compile
+:artifact_role: proposal
+:question: Q3
+:algorithm: Proposal/Receipt
+:authority: interpretive-over-runtime
+:surface: explicit intervention artifact
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Proposal/receipt proposals MUST keep intervention explicit rather than hiding it as control bytes.
+
+*** Constructive Proof
+Explicit artifacts separate intervention intent from payload/control decoding.
+
+*** Falsification Proof
+An inline hidden command with no artifact schema MUST fail.
+
+*** Runtime Basis
+Grounded by artifact-role language in the federation docs.
+
+*** Surface Witness
+Proposal surfaces name the intended change; they MUST remain separate from transport framing.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q4 / Proposal/Receipt
+:PROPERTIES:
+:CUSTOM_ID: q4-proposal-receipt
+:mode: compile
+:artifact_role: proposal
+:question: Q4
+:algorithm: Proposal/Receipt
+:authority: interpretive-over-runtime
+:surface: semantic change proposal
+:maps_to: docs/NARRATIVE_WITNESS_BINDING.md, docs/PROPAGATION_CLAIMS_AND_FEDERATION.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Proposal/receipt proposals MUST make semantic changes explicit before commit.
+
+*** Constructive Proof
+Meaning remains verifiable when candidate changes are proposed, receipted, and compared prior to acceptance.
+
+*** Falsification Proof
+Unreceipted semantic drift MUST fail as unverifiable change.
+
+*** Runtime Basis
+Grounded by narrative witness binding and artifact-role rules.
+
+*** Surface Witness
+Receipts may witness semantic change proposals; the proposal itself MUST remain non-authoritative until validated.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q5 / Proposal/Receipt
+:PROPERTIES:
+:CUSTOM_ID: q5-proposal-receipt
+:mode: compile
+:artifact_role: proposal
+:question: Q5
+:algorithm: Proposal/Receipt
+:authority: interpretive-over-runtime
+:surface: intervention artifact gate
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, docs/NARRATIVE_WITNESS_BINDING.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Proposal/receipt proposals MUST be the lawful intervention gate when direct mutation is not allowed.
+
+*** Constructive Proof
+An intervention stays replay-safe when it is first turned into a proposal artifact and then validated through receipts.
+
+*** Falsification Proof
+If no proposal or receipt exists for the intervention, the action MUST fail.
+
+*** Runtime Basis
+Grounded by artifact and receipt rules in the federation and narrative docs.
+
+*** Surface Witness
+Proposals and receipts witness intervention; runtime law remains external to them.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q6 / Proposal/Receipt
+:PROPERTIES:
+:CUSTOM_ID: q6-proposal-receipt
+:mode: compile
+:artifact_role: proposal
+:question: Q6
+:algorithm: Proposal/Receipt
+:authority: interpretive-over-runtime
+:surface: collaboration artifact lane
+:maps_to: scripts/narrative/validate_narrative_binding.py, docs/PROPAGATION_CLAIMS_AND_FEDERATION.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: closed
+:END:
+
+*** Claim
+Proposal/receipt proposals MUST enable collaboration through explicit accept, reject, or defer trails.
+
+*** Constructive Proof
+Collaborative intervention remains inspectable when proposals and receipts are reproducible and auditable.
+
+*** Falsification Proof
+Silent acceptance or hidden commit MUST be rejected as hidden authority.
+
+*** Runtime Basis
+Grounded by =scripts/narrative/validate_narrative_binding.py= and the federation docs.
+
+*** Surface Witness
+Narrative bound artifacts and receipts witness the trail; they MUST NOT become direct truth sources.
+
+*** Coverage
+Executable now.
+
+** Q7 / Proposal/Receipt
+:PROPERTIES:
+:CUSTOM_ID: q7-proposal-receipt
+:mode: compile
+:artifact_role: proposal
+:question: Q7
+:algorithm: Proposal/Receipt
+:authority: interpretive-over-runtime
+:surface: diffable branch proposal
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, scripts/narrative/export_narrative_frames.mjs
+:constructive_complexity: NP
+:falsification_complexity: P
+:convergence_class: NTIME
+:convergence_behavior: branching
+:status: open
+:END:
+
+*** Claim
+Proposal/receipt proposals MUST keep branch differences diffable against a canonical reference.
+
+*** Constructive Proof
+Branch deltas remain returnable when they are carried as explicit artifacts with identifiable bases.
+
+*** Falsification Proof
+An undiffable mutation with no branch lineage MUST fail.
+
+*** Runtime Basis
+Grounded by federation branch rules and frame export artifacts.
+
+*** Surface Witness
+Proposal and receipt surfaces witness branch deltas; they MUST preserve comparison against canonical reference.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q8 / Proposal/Receipt
+:PROPERTIES:
+:CUSTOM_ID: q8-proposal-receipt
+:mode: compile
+:artifact_role: proposal
+:question: Q8
+:algorithm: Proposal/Receipt
+:authority: interpretive-over-runtime
+:surface: accountable openness proposal
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Proposal/receipt proposals MAY keep differences negotiable, but they MUST keep them accountable.
+
+*** Constructive Proof
+Openness remains lawful when every difference is proposed, receipted, and bounded by declared contract.
+
+*** Falsification Proof
+Freeform mutation without artifacts or receipts MUST fail.
+
+*** Runtime Basis
+Grounded by artifact, contract, and receipt rules in the federation docs.
+
+*** Surface Witness
+The proposal surface opens discussion; the receipt surface closes accountability.
+
+*** Coverage
+Evidenced indirectly.

@@ -1,0 +1,287 @@
+#+title: Closure
+#+author: Codex
+#+startup: overview
+#+options: toc:2 num:nil
+#+property: header-args :tangle no
+
+* Branch / Reconciliation Closures
+
+** Q1 / Branch/Reconciliation
+:PROPERTIES:
+:CUSTOM_ID: q1-branch-reconciliation
+:mode: compile
+:artifact_role: closure
+:question: Q1
+:algorithm: Branch/Reconciliation
+:authority: interpretive-over-runtime
+:surface: canonical reference closure
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md
+:constructive_complexity: PSPACE
+:falsification_complexity: P
+:convergence_class: PSPACE
+:convergence_behavior: branching
+:status: open
+:END:
+
+*** Claim
+Branch/reconciliation closures MUST preserve a canonical reference while evaluating divergence.
+
+*** Constructive Proof
+Truth remains anchored when every branch is compared against an explicit canonical baseline rather than replacing it.
+
+*** Falsification Proof
+Any branch that attempts to overwrite the canonical reference without reconciliation law MUST fail.
+
+*** Runtime Basis
+Grounded by branch, comparison, and reconciliation rules in the federation docs.
+
+*** Surface Witness
+Closure artifacts witness admissibility and return conditions; they MUST NOT become a second truth source.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q2 / Branch/Reconciliation
+:PROPERTIES:
+:CUSTOM_ID: q2-branch-reconciliation
+:mode: compile
+:artifact_role: closure
+:question: Q2
+:algorithm: Branch/Reconciliation
+:authority: interpretive-over-runtime
+:surface: lawful fork movement closure
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md
+:constructive_complexity: PSPACE
+:falsification_complexity: NP
+:convergence_class: PSPACE
+:convergence_behavior: branching
+:status: open
+:END:
+
+*** Claim
+Branch/reconciliation closures MUST require every fork to move lawfully from an explicit root.
+
+*** Constructive Proof
+Movement remains admissible when base state, deltas, and return remain replayable from the branch root.
+
+*** Falsification Proof
+An undefined fork with no root or replay basis MUST be rejected.
+
+*** Runtime Basis
+Grounded by branch lineage rules in the federation docs.
+
+*** Surface Witness
+Branch closure witnesses lineage requirements; branch views MUST follow them.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q3 / Branch/Reconciliation
+:PROPERTIES:
+:CUSTOM_ID: q3-branch-reconciliation
+:mode: compile
+:artifact_role: closure
+:question: Q3
+:algorithm: Branch/Reconciliation
+:authority: interpretive-over-runtime
+:surface: cross-scope closure
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, docs/SURFACES.md
+:constructive_complexity: PSPACE
+:falsification_complexity: P
+:convergence_class: PSPACE
+:convergence_behavior: branching
+:status: open
+:END:
+
+*** Claim
+Branch/reconciliation closures MUST prevent control intent from leaking across scopes unlawfully.
+
+*** Constructive Proof
+Reconciliation remains lawful when each branch and shared delta stays within its declared layer.
+
+*** Falsification Proof
+Cross-scope leakage without lawfully declared relation MUST be rejected.
+
+*** Runtime Basis
+Grounded by surface discipline and federation scope language.
+
+*** Surface Witness
+Closure surfaces witness whether layers stay separate; presentations MUST NOT collapse them.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q4 / Branch/Reconciliation
+:PROPERTIES:
+:CUSTOM_ID: q4-branch-reconciliation
+:mode: compile
+:artifact_role: closure
+:question: Q4
+:algorithm: Branch/Reconciliation
+:authority: interpretive-over-runtime
+:surface: diffable semantics closure
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, docs/NARRATIVE_WITNESS_BINDING.md
+:constructive_complexity: PSPACE
+:falsification_complexity: NP
+:convergence_class: PSPACE
+:convergence_behavior: branching
+:status: open
+:END:
+
+*** Claim
+Branch/reconciliation closures MUST preserve meaning by keeping branch semantics diffable against the canonical reference.
+
+*** Constructive Proof
+Semantic multiplicity remains lawful when every branch can still be compared, validated, and returned against the canonical center.
+
+*** Falsification Proof
+An unanchored branch semantics with no base comparison MUST fail.
+
+*** Runtime Basis
+Grounded by federation reconciliation rules and narrative witness binding discipline.
+
+*** Surface Witness
+Receipts and closure artifacts witness comparison outcomes; they MUST NOT replace the canonical anchor.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q5 / Branch/Reconciliation
+:PROPERTIES:
+:CUSTOM_ID: q5-branch-reconciliation
+:mode: compile
+:artifact_role: closure
+:question: Q5
+:algorithm: Branch/Reconciliation
+:authority: interpretive-over-runtime
+:surface: fork-without-overwrite closure
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md
+:constructive_complexity: PSPACE
+:falsification_complexity: P
+:convergence_class: PSPACE
+:convergence_behavior: branching
+:status: open
+:END:
+
+*** Claim
+Branch/reconciliation closures MAY materialize a fork, but they MUST prevent direct canonical overwrite.
+
+*** Constructive Proof
+Intervention remains lawful when divergence is expressed as a branch rather than as mutation of the canonical trace.
+
+*** Falsification Proof
+Any branch intent that directly rewrites canonical state MUST be rejected.
+
+*** Runtime Basis
+Grounded by branch/fork rules in the federation docs.
+
+*** Surface Witness
+Closure witnesses whether divergence is bounded and returnable.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q6 / Branch/Reconciliation
+:PROPERTIES:
+:CUSTOM_ID: q6-branch-reconciliation
+:mode: compile
+:artifact_role: closure
+:question: Q6
+:algorithm: Branch/Reconciliation
+:authority: interpretive-over-runtime
+:surface: shared-delta closure
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md
+:constructive_complexity: PSPACE
+:falsification_complexity: NP
+:convergence_class: PSPACE
+:convergence_behavior: branching
+:status: open
+:END:
+
+*** Claim
+Branch/reconciliation closures MUST make shared deltas explicit when collaboration spans multiple traces.
+
+*** Constructive Proof
+Collaboration remains accountable when branch deltas are published and compared under declared contract.
+
+*** Falsification Proof
+Unscoped propagation across traces without explicit artifacts MUST fail.
+
+*** Runtime Basis
+Grounded by federation sharing and reconciliation rules.
+
+*** Surface Witness
+Closure and receipt surfaces witness shared-delta decisions; they MUST preserve scope.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q7 / Branch/Reconciliation
+:PROPERTIES:
+:CUSTOM_ID: q7-branch-reconciliation
+:mode: compile
+:artifact_role: closure
+:question: Q7
+:algorithm: Branch/Reconciliation
+:authority: interpretive-over-runtime
+:surface: returnability closure
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, scripts/narrative/validate_narrative_frame_export.py
+:constructive_complexity: PSPACE
+:falsification_complexity: NP
+:convergence_class: PSPACE
+:convergence_behavior: branching
+:status: closed
+:END:
+
+*** Claim
+Branch/reconciliation closures MUST preserve canonical center and return path.
+
+*** Constructive Proof
+Returnability holds when base index, deltas, and reconciliation outcome remain explicit and replayable.
+
+*** Falsification Proof
+An irrecoverable fork with no lineage or return contract MUST be rejected.
+
+*** Runtime Basis
+Grounded by branch/reconciliation doctrine in the federation docs and indirect receipt evidence from =scripts/narrative/validate_narrative_frame_export.py=.
+
+*** Surface Witness
+Frame manifests and receipts MAY witness returnable divergence, but the closure rule remains external to the witness.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q8 / Branch/Reconciliation
+:PROPERTIES:
+:CUSTOM_ID: q8-branch-reconciliation
+:mode: compile
+:artifact_role: closure
+:question: Q8
+:algorithm: Branch/Reconciliation
+:authority: interpretive-over-runtime
+:surface: multiplicity-with-center closure
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md
+:constructive_complexity: PSPACE
+:falsification_complexity: NP
+:convergence_class: PSPACE
+:convergence_behavior: branching
+:status: open
+:END:
+
+*** Claim
+Branch/reconciliation closures MAY permit multiplicity of worlds, but they MUST preserve a canonical center and lawful return.
+
+*** Constructive Proof
+Interpretive openness remains safe when the branch set stays accountable to canonical comparison and return.
+
+*** Falsification Proof
+Loss of canonical return path MUST fail as fragmentation.
+
+*** Runtime Basis
+Grounded by the federation document’s reconciliation and fork rules.
+
+*** Surface Witness
+Closure artifacts witness admissibility and return; open branch discussion MUST remain downstream.
+
+*** Coverage
+Evidenced indirectly.

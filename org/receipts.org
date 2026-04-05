@@ -1,0 +1,287 @@
+#+title: Receipts
+#+author: Codex
+#+startup: overview
+#+options: toc:2 num:nil
+#+property: header-args :tangle no
+
+* Projection Receipts
+
+** Q1 / Projection
+:PROPERTIES:
+:CUSTOM_ID: q1-projection
+:mode: compile
+:artifact_role: receipt
+:question: Q1
+:algorithm: Projection
+:authority: interpretive-over-runtime
+:surface: projection receipt
+:maps_to: scripts/projection/validate_projection_render.py, docs/PROJECTION_UI.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Projection receipts MUST witness derived state, not replace the source of truth.
+
+*** Constructive Proof
+A projection is lawful when it is rebuilt from the same canonical state and emits the same witness hashes and selected identity.
+
+*** Falsification Proof
+If a cached or hand-edited projection is treated as authority over replay, the receipt MUST fail.
+
+*** Runtime Basis
+Grounded by =scripts/projection/validate_projection_render.py= and projection discipline in =docs/PROJECTION_UI.md=.
+
+*** Surface Witness
+Projection snapshots, SVG, canvas, and hashes witness derivation only.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q2 / Projection
+:PROPERTIES:
+:CUSTOM_ID: q2-projection
+:mode: compile
+:artifact_role: receipt
+:question: Q2
+:algorithm: Projection
+:authority: interpretive-over-runtime
+:surface: rendered motion receipt
+:maps_to: scripts/projection/validate_projection_render.py, docs/PROJECTION_UI.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Projection receipts MUST render movement from canonical state rather than inventing movement locally.
+
+*** Constructive Proof
+Rendered motion remains lawful when it is regenerated from the same selected step and resolved identity.
+
+*** Falsification Proof
+Projection-driven state movement with no event or log basis MUST be rejected.
+
+*** Runtime Basis
+Grounded by projection render checks and projection law in the docs.
+
+*** Surface Witness
+Rendered motion is a receipt surface only.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q3 / Projection
+:PROPERTIES:
+:CUSTOM_ID: q3-projection
+:mode: compile
+:artifact_role: receipt
+:question: Q3
+:algorithm: Projection
+:authority: interpretive-over-runtime
+:surface: decoded-view receipt
+:maps_to: scripts/projection/validate_projection_render.py, docs/LEXICON.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Projection receipts MUST consume decoded structure rather than guessing control from raw surfaces.
+
+*** Constructive Proof
+Receipts remain lawful when the renderer uses already-decoded state and explicit witness fields.
+
+*** Falsification Proof
+Any renderer-side guessing of control boundaries MUST fail.
+
+*** Runtime Basis
+Grounded by projection snapshot checks and the control vocabulary in =docs/LEXICON.md=.
+
+*** Surface Witness
+Projection receipts show decoded state only; they MUST NOT act as parsers.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q4 / Projection
+:PROPERTIES:
+:CUSTOM_ID: q4-projection
+:mode: compile
+:artifact_role: receipt
+:question: Q4
+:algorithm: Projection
+:authority: interpretive-over-runtime
+:surface: equivalent projection receipt
+:maps_to: scripts/projection/validate_projection_render.py, scripts/projection/validate_media_render.py
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: closed
+:END:
+
+*** Claim
+Projection receipts MUST preserve meaning across text, graph, SVG, canvas, and media surfaces.
+
+*** Constructive Proof
+Equivalent projections remain lawful when they preserve the same selected identity, frame resolution, and witness hashes across surfaces.
+
+*** Falsification Proof
+If one projection surface changes selected identity or rendered witness while the canonical source is unchanged, the receipt MUST fail.
+
+*** Runtime Basis
+Grounded by =scripts/projection/validate_projection_render.py= and =scripts/projection/validate_media_render.py=.
+
+*** Surface Witness
+Projection receipts witness equivalence only; they MUST NOT define runtime meaning.
+
+*** Coverage
+Executable now.
+
+** Q5 / Projection
+:PROPERTIES:
+:CUSTOM_ID: q5-projection
+:mode: compile
+:artifact_role: receipt
+:question: Q5
+:algorithm: Projection
+:authority: interpretive-over-runtime
+:surface: non-authoritative pause receipt
+:maps_to: docs/PROJECTION_UI.md, docs/NARRATIVE_WITNESS_BINDING.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Projection receipts MAY show local pause or dwell, but they MUST NOT make pause authoritative.
+
+*** Constructive Proof
+Replay remains preserved when a local pause changes presentation only and leaves selected identity untouched.
+
+*** Falsification Proof
+If UI dwell time defines canonical scope, the receipt MUST fail.
+
+*** Runtime Basis
+Grounded by projection and narrative UI discipline in the docs.
+
+*** Surface Witness
+Pause is a view receipt only.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q6 / Projection
+:PROPERTIES:
+:CUSTOM_ID: q6-projection
+:mode: compile
+:artifact_role: receipt
+:question: Q6
+:algorithm: Projection
+:authority: interpretive-over-runtime
+:surface: collaborator snapshot receipt
+:maps_to: docs/PROJECTION_UI.md, docs/NARRATIVE_WITNESS_BINDING.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Projection receipts SHOULD expose shared snapshots rather than hidden renderer internals.
+
+*** Constructive Proof
+Collaboration remains inspectable when participants view the same exported witness state rather than private UI internals.
+
+*** Falsification Proof
+Projection-only scraped state used as canonical authority MUST fail.
+
+*** Runtime Basis
+Grounded by projection UI law and narrative witness rules.
+
+*** Surface Witness
+Snapshots are witness surfaces only.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q7 / Projection
+:PROPERTIES:
+:CUSTOM_ID: q7-projection
+:mode: compile
+:artifact_role: receipt
+:question: Q7
+:algorithm: Projection
+:authority: interpretive-over-runtime
+:surface: branch-view receipt
+:maps_to: docs/NARRATIVE_WITNESS_BINDING.md, docs/PROJECTION_UI.md
+:constructive_complexity: P
+:falsification_complexity: NP
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Projection receipts MUST preserve the canonical anchor even from branch views.
+
+*** Constructive Proof
+Return remains available when the receipt carries the branch view as a witness over a canonical reference, not as a replacement.
+
+*** Falsification Proof
+A projection-only branch identity with no canonical anchor MUST fail.
+
+*** Runtime Basis
+Grounded by narrative witness binding and projection rules.
+
+*** Surface Witness
+Branch views are downstream receipts only.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q8 / Projection
+:PROPERTIES:
+:CUSTOM_ID: q8-projection
+:mode: compile
+:artifact_role: receipt
+:question: Q8
+:algorithm: Projection
+:authority: interpretive-over-runtime
+:surface: many-views receipt
+:maps_to: docs/PROJECTION_UI.md, docs/SURFACES.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Projection receipts MAY admit many views, but they MUST map back to one canonical source.
+
+*** Constructive Proof
+Openness remains lawful when many projections can be regenerated from the same source state.
+
+*** Falsification Proof
+Any view elevated to source-of-truth MUST fail.
+
+*** Runtime Basis
+Grounded by projection discipline in the docs and current render validators.
+
+*** Surface Witness
+Each view is a receipt of derivation, not an origin of truth.
+
+*** Coverage
+Evidenced indirectly.

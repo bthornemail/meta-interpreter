@@ -1,0 +1,569 @@
+#+title: Claims
+#+author: Codex
+#+startup: overview
+#+options: toc:2 num:nil
+#+property: header-args :tangle no
+
+* Transition Claims
+
+** Q1 / Transition
+:PROPERTIES:
+:CUSTOM_ID: q1-transition
+:mode: compile
+:artifact_role: claim
+:question: Q1
+:algorithm: Transition
+:authority: interpretive-over-runtime
+:surface: canonical runtime claim
+:maps_to: src/ttc_runtime.c, scripts/validate_framework.sh, Makefile framework-check
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: closed
+:END:
+
+*** Claim
+Transition claims MUST treat deterministic replay as the source of truth.
+
+*** Constructive Proof
+The same typed input replayed through the canonical runtime and framework tools yields the same emitted canonical layers and the same recovered payload.
+
+*** Falsification Proof
+Any direct overwrite that cannot be replayed from the same typed input MUST fail by mismatch in canonical emission or recovered bytes.
+
+*** Runtime Basis
+Grounded by =src/ttc_runtime.c= and =scripts/validate_framework.sh= through =make framework-check=.
+
+*** Surface Witness
+Canonical emission, runtime layer output, and artifact roundtrips witness the claim; logs and filenames MUST NOT redefine it.
+
+*** Coverage
+Executable now.
+
+** Q2 / Transition
+:PROPERTIES:
+:CUSTOM_ID: q2-transition
+:mode: compile
+:artifact_role: claim
+:question: Q2
+:algorithm: Transition
+:authority: interpretive-over-runtime
+:surface: canonical movement claim
+:maps_to: src/ttc_runtime.c, scripts/validate_framework.sh
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: closed
+:END:
+
+*** Claim
+Transition claims MUST describe movement as a bounded deterministic state advance.
+
+*** Constructive Proof
+Repeated replay from the same prior state and law constants produces the same next-state materialization.
+
+*** Falsification Proof
+A next-state result that varies for the same replay basis MUST be rejected as non-canonical movement.
+
+*** Runtime Basis
+Grounded by canonical runtime encode/decode checks and repeated framework emission under =scripts/validate_framework.sh=.
+
+*** Surface Witness
+State traces and runtime receipts witness movement; renderer order and operator prose MAY describe it but MUST NOT define it.
+
+*** Coverage
+Executable now.
+
+** Q3 / Transition
+:PROPERTIES:
+:CUSTOM_ID: q3-transition
+:mode: compile
+:artifact_role: claim
+:question: Q3
+:algorithm: Transition
+:authority: interpretive-over-runtime
+:surface: typed transition claim
+:maps_to: src/ttc_runtime.c, docs/LEXICON.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Transition claims MUST preserve type distinctions and MUST NOT collapse payload and control into one untyped state.
+
+*** Constructive Proof
+Replay carries typed state forward so that payload-bearing values remain distinct from structural interpretation state.
+
+*** Falsification Proof
+If a transition step requires undecidable reclassification of a byte after the fact, the claim MUST fail as a type violation.
+
+*** Runtime Basis
+Grounded by the type-first rules in =docs/LEXICON.md= and the split runtime/witness pipeline in =src/=.
+
+*** Surface Witness
+Typed traces witness the distinction; downstream projections MAY display it but MUST NOT infer missing types.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q4 / Transition
+:PROPERTIES:
+:CUSTOM_ID: q4-transition
+:mode: compile
+:artifact_role: claim
+:question: Q4
+:algorithm: Transition
+:authority: interpretive-over-runtime
+:surface: semantic anchor claim
+:maps_to: src/ttc_runtime.c, docs/ONTOLOGY.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Transition claims MUST preserve meaning by reproducing the same canonical basis before any projection-specific rendering occurs.
+
+*** Constructive Proof
+Stable replay yields a stable canonical basis that downstream renderers can consume without changing state identity.
+
+*** Falsification Proof
+If the same replay basis yields different canonical state before any projection step, meaning preservation MUST fail.
+
+*** Runtime Basis
+Grounded by replay-first language in =docs/ONTOLOGY.md= and the canonical runtime pipeline.
+
+*** Surface Witness
+Projection surfaces witness the result; they MUST NOT define the canonical basis they depend on.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q5 / Transition
+:PROPERTIES:
+:CUSTOM_ID: q5-transition
+:mode: compile
+:artifact_role: claim
+:question: Q5
+:algorithm: Transition
+:authority: interpretive-over-runtime
+:surface: intervention boundary claim
+:maps_to: docs/LEXICON.md, docs/ONTOLOGY.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Transition claims MUST preserve replay when intervention occurs by resuming lawful movement only at a valid next transition boundary.
+
+*** Constructive Proof
+An intervention that returns to the normal transition chain without mutating committed prior state remains replayable.
+
+*** Falsification Proof
+Any intervention that changes committed state without a lawful next transition boundary MUST be rejected.
+
+*** Runtime Basis
+Grounded by address-first replay law in =docs/ONTOLOGY.md= and intervention discipline in the lexicon and surfaces docs.
+
+*** Surface Witness
+Receipts and proposals MAY witness intervention, but the transition boundary remains authoritative.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q6 / Transition
+:PROPERTIES:
+:CUSTOM_ID: q6-transition
+:mode: compile
+:artifact_role: claim
+:question: Q6
+:algorithm: Transition
+:authority: interpretive-over-runtime
+:surface: collaborator boundary claim
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, src/ttc_runtime.c
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Transition claims MUST prevent collaborators from bypassing law-defined state advance.
+
+*** Constructive Proof
+Collaborative intent remains downstream until it is materialized through the same transition rules as any other input.
+
+*** Falsification Proof
+If a collaborator can write canonical state outside the transition path, the claim MUST fail as hidden authority.
+
+*** Runtime Basis
+Grounded by replay authority in =src/ttc_runtime.c= and collaboration discipline in =docs/PROPAGATION_CLAIMS_AND_FEDERATION.md=.
+
+*** Surface Witness
+Claims and receipts may describe collaboration; they MUST NOT become direct state writers.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q7 / Transition
+:PROPERTIES:
+:CUSTOM_ID: q7-transition
+:mode: compile
+:artifact_role: claim
+:question: Q7
+:algorithm: Transition
+:authority: interpretive-over-runtime
+:surface: branch lineage claim
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, src/ttc_runtime.c
+:constructive_complexity: P
+:falsification_complexity: NP
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Transition claims MUST require every branch trace to remain replayable from an explicit root.
+
+*** Constructive Proof
+When a branch is materialized from a known base and lawful deltas, each step can still be interpreted under the same transition semantics.
+
+*** Falsification Proof
+An untracked fork with no explicit replay basis MUST be rejected as fragmented lineage.
+
+*** Runtime Basis
+Grounded by replay-first authority and branch/reconciliation language in =docs/PROPAGATION_CLAIMS_AND_FEDERATION.md=.
+
+*** Surface Witness
+Branch artifacts witness divergence; they MUST NOT erase the canonical origin.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q8 / Transition
+:PROPERTIES:
+:CUSTOM_ID: q8-transition
+:mode: compile
+:artifact_role: claim
+:question: Q8
+:algorithm: Transition
+:authority: interpretive-over-runtime
+:surface: law-closure claim
+:maps_to: src/ttc_runtime.c, docs/SURFACES.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Transition claims MUST keep law closed even when interpretation remains open.
+
+*** Constructive Proof
+The transition step stays deterministic regardless of how many witness surfaces or interpretive overlays are layered above it.
+
+*** Falsification Proof
+If an interpretive overlay can alter the next transition result, the claim MUST fail.
+
+*** Runtime Basis
+Grounded by =src/ttc_runtime.c= and the surface discipline frozen in =docs/SURFACES.md=.
+
+*** Surface Witness
+Many surfaces MAY witness the same transition; none MAY redefine it.
+
+*** Coverage
+Evidenced indirectly.
+
+* Control-Plane Claims
+
+** Q1 / Control-Plane
+:PROPERTIES:
+:CUSTOM_ID: q1-control-plane
+:mode: compile
+:artifact_role: claim
+:question: Q1
+:algorithm: Control-Plane
+:authority: interpretive-over-runtime
+:surface: structural authority claim
+:maps_to: src/ttc_grammar.c, docs/LEXICON.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Control-plane claims MUST keep structural channels explicit so that authority is derived from typed structure rather than parser guesswork.
+
+*** Constructive Proof
+When structural roles are represented directly in the grammar and witness pipeline, the control context can be reconstructed from the stream itself.
+
+*** Falsification Proof
+If interpretation depends on hidden parser state that is not derivable from the stream, the claim MUST fail.
+
+*** Runtime Basis
+Grounded by =src/ttc_grammar.c= and control vocabulary in =docs/LEXICON.md=.
+
+*** Surface Witness
+Grammar roles and witness fields surface the structure; UI or narrative summaries MUST NOT invent new control authority.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q2 / Control-Plane
+:PROPERTIES:
+:CUSTOM_ID: q2-control-plane
+:mode: compile
+:artifact_role: claim
+:question: Q2
+:algorithm: Control-Plane
+:authority: interpretive-over-runtime
+:surface: movement channel claim
+:maps_to: src/ttc_grammar.c, src/ttc_address.c
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Control-plane claims MUST encode lawful movement through explicit structural channels rather than out-of-band instructions.
+
+*** Constructive Proof
+Movement remains replayable when channel, lane, and scope information are carried through the same deterministic pipeline as payload.
+
+*** Falsification Proof
+Any motion control that is not represented in the stream or its lawful reconstruction MUST be rejected.
+
+*** Runtime Basis
+Grounded by =src/ttc_grammar.c= and =src/ttc_address.c=.
+
+*** Surface Witness
+Address words and witness layers expose the channels; user-facing flow descriptions MAY summarize them but MUST NOT replace them.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q3 / Control-Plane
+:PROPERTIES:
+:CUSTOM_ID: q3-control-plane
+:mode: compile
+:artifact_role: claim
+:question: Q3
+:algorithm: Control-Plane
+:authority: interpretive-over-runtime
+:surface: control payload distinction claim
+:maps_to: src/ttc_grammar.c, docs/LEXICON.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Control-plane claims MUST separate control from payload explicitly.
+
+*** Constructive Proof
+Reserved structural markers and typed interpretation paths make control roles reconstructible without reclassifying payload bytes as control.
+
+*** Falsification Proof
+An ambiguous token whose role cannot be determined from lawful context MUST fail closed.
+
+*** Runtime Basis
+Grounded by grammar interpretation in =src/ttc_grammar.c= and reserved-term discipline in =docs/LEXICON.md=.
+
+*** Surface Witness
+Control tokens are surfaced through grammar and witness layers; projections MUST consume the decoded result rather than guess token meaning.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q4 / Control-Plane
+:PROPERTIES:
+:CUSTOM_ID: q4-control-plane
+:mode: compile
+:artifact_role: claim
+:question: Q4
+:algorithm: Control-Plane
+:authority: interpretive-over-runtime
+:surface: boundary-preservation claim
+:maps_to: src/ttc_grammar.c, docs/SURFACES.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Control-plane claims MUST preserve structural boundaries so that meaning survives projection changes.
+
+*** Constructive Proof
+When boundaries are explicit in the decoded structure, multiple projections can rebuild equivalent groupings from the same canonical basis.
+
+*** Falsification Proof
+If a projection requires merged or guessed boundaries that are not present in the decoded structure, the claim MUST fail.
+
+*** Runtime Basis
+Grounded by =src/ttc_grammar.c= and surface rules in =docs/SURFACES.md=.
+
+*** Surface Witness
+Boundary metadata witnesses grouping; rendered grouping MUST follow it rather than replace it.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q5 / Control-Plane
+:PROPERTIES:
+:CUSTOM_ID: q5-control-plane
+:mode: compile
+:artifact_role: claim
+:question: Q5
+:algorithm: Control-Plane
+:authority: interpretive-over-runtime
+:surface: intervention access claim
+:maps_to: docs/LEXICON.md, src/ttc_grammar.c
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Control-plane claims MUST represent intervention through explicit structural access rather than hidden mode changes.
+
+*** Constructive Proof
+Intervention remains replayable when access is opened and closed through lawful structural markers inside the same control plane.
+
+*** Falsification Proof
+Any implicit access mode with no structural marker MUST be rejected.
+
+*** Runtime Basis
+Grounded by escape-depth handling in =src/ttc_grammar.c= and control vocabulary in =docs/LEXICON.md=.
+
+*** Surface Witness
+Receipts MAY show that access occurred; the control plane remains authoritative for how it was opened.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q6 / Control-Plane
+:PROPERTIES:
+:CUSTOM_ID: q6-control-plane
+:mode: compile
+:artifact_role: claim
+:question: Q6
+:algorithm: Control-Plane
+:authority: interpretive-over-runtime
+:surface: explicit collaboration scope claim
+:maps_to: docs/PROPAGATION_CLAIMS_AND_FEDERATION.md, src/ttc_grammar.c
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Control-plane claims MUST make collaboration scopes explicit.
+
+*** Constructive Proof
+When channels, lanes, and roles are carried in the shared structure, collaborators can inspect what scope a proposed action inhabits.
+
+*** Falsification Proof
+Private control channels that cannot be surfaced to peers MUST fail as hidden authority.
+
+*** Runtime Basis
+Grounded by federation discipline in =docs/PROPAGATION_CLAIMS_AND_FEDERATION.md= and grammar/address structure in =src/=.
+
+*** Surface Witness
+Claims, proposals, and receipts MAY witness the scopes; they MUST NOT invent scope not present in the control plane.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q7 / Control-Plane
+:PROPERTIES:
+:CUSTOM_ID: q7-control-plane
+:mode: compile
+:artifact_role: claim
+:question: Q7
+:algorithm: Control-Plane
+:authority: interpretive-over-runtime
+:surface: branch separation claim
+:maps_to: src/ttc_address.c, docs/PROPAGATION_CLAIMS_AND_FEDERATION.md
+:constructive_complexity: P
+:falsification_complexity: NP
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Control-plane claims MUST preserve structural separation between canonical, branch, and shared layers.
+
+*** Constructive Proof
+A branch can remain returnable when its structure is kept explicit rather than leaking into the canonical lane silently.
+
+*** Falsification Proof
+Cross-layer leakage that removes the distinction between canonical and branch scopes MUST be rejected.
+
+*** Runtime Basis
+Grounded by address structure in =src/ttc_address.c= and branch semantics in the federation docs.
+
+*** Surface Witness
+Branch-scoped artifacts witness the split; merged display layers MUST NOT collapse it.
+
+*** Coverage
+Evidenced indirectly.
+
+** Q8 / Control-Plane
+:PROPERTIES:
+:CUSTOM_ID: q8-control-plane
+:mode: compile
+:artifact_role: claim
+:question: Q8
+:algorithm: Control-Plane
+:authority: interpretive-over-runtime
+:surface: bounded openness claim
+:maps_to: docs/LEXICON.md, docs/SURFACES.md
+:constructive_complexity: P
+:falsification_complexity: P
+:convergence_class: DTIME
+:convergence_behavior: deterministic
+:status: open
+:END:
+
+*** Claim
+Control-plane claims MUST keep structural law closed while allowing bounded interpretive openness above it.
+
+*** Constructive Proof
+Explicit structural boundaries preserve legal closure even when multiple downstream views and interpretations remain available.
+
+*** Falsification Proof
+Unbounded ambiguity in the structural layer MUST fail because it destroys lawful closure.
+
+*** Runtime Basis
+Grounded by the control vocabulary and surface rules in =docs/LEXICON.md= and =docs/SURFACES.md=.
+
+*** Surface Witness
+Projections MAY vary; the control plane MUST remain closed and reconstructible.
+
+*** Coverage
+Evidenced indirectly.
